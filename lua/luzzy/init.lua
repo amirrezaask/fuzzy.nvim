@@ -59,6 +59,10 @@ function __Luzzy_next_line()
   vim.api.nvim_buf_clear_namespace(current_luzzy.buf, LuzzyHighlight, 0, -1)
   __Luzzy_highlight(current_luzzy.buf, current_luzzy.selected_line) 
 end
+function __Luzzy_close()
+  vim.api.nvim_set_current_win(current_luzzy.current_win)
+  current_luzzy.closer()
+end
 
 
 function Luzzy.new(opts)
@@ -77,9 +81,10 @@ function Luzzy.new(opts)
     vim.api.nvim_buf_set_keymap(buf, 'i', '<C-p>', '<cmd> lua __Luzzy_prev_line()<CR>', {})
     vim.api.nvim_buf_set_keymap(buf, 'i', '<C-n>', '<cmd> lua __Luzzy_next_line()<CR>', {})
     vim.api.nvim_buf_set_keymap(buf, 'i', '<CR>', '<cmd> lua __Luzzy_callback()<CR>', {})
-    vim.cmd([[ startinsert ]])
+    vim.api.nvim_buf_set_keymap(buf, 'i', '<C-c>', '<cmd> lua __Luzzy_close()<CR>', {})
+    vim.api.nvim_buf_set_keymap(buf, 'i', '<esc>', '<cmd> lua __Luzzy_close()<CR>', {})
+    vim.cmd [[ startinsert! ]]
   end)
-  
   opts.collection = {}
   uv.spawn(opts.bin, {args=opts.args, stdio={_, stdout, stderr}}, function(code, signal)
     if code ~= 0 then

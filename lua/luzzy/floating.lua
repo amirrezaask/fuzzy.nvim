@@ -50,7 +50,6 @@ local function floating_buffer_with_border(win_width, win_height, row, col)
   local border_buf, border_win, border_closer = floating_border(win_width, win_height, row, col) 
 
   local buf, win, closer = floating_buffer(win_width, win_height, row, col)
- 
   return buf, win, border_buf, border_win, function()
     border_closer()
     closer()
