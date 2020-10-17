@@ -26,6 +26,9 @@ end
 
 function __Luzzy_updater()
   vim.schedule(function()
+    if not vim.api.nvim_buf_is_valid(current_luzzy.buf) then
+      return
+    end
     local new_input = vim.api.nvim_buf_get_lines(current_luzzy.buf, -2, -1, false)[1]
     if new_input == current_luzzy.input then
       return
@@ -37,7 +40,10 @@ function __Luzzy_updater()
 end
 
 function __Luzzy_drawer()
-vim.schedule(function()
+  vim.schedule(function()
+    if not vim.api.nvim_buf_is_valid(current_luzzy.buf) then
+      return
+    end
     vim.api.nvim_buf_set_lines(current_luzzy.buf, 0, -2, false, current_luzzy.collection)
     if current_luzzy.selected_line == -1 then
       current_luzzy.selected_line = #current_luzzy.collection -1
@@ -83,7 +89,7 @@ function Luzzy.new(opts)
     vim.api.nvim_buf_set_keymap(buf, 'i', '<CR>', '<cmd> lua __Luzzy_callback()<CR>', {})
     vim.api.nvim_buf_set_keymap(buf, 'i', '<C-c>', '<cmd> lua __Luzzy_close()<CR>', {})
     vim.api.nvim_buf_set_keymap(buf, 'i', '<esc>', '<cmd> lua __Luzzy_close()<CR>', {})
-    vim.cmd [[ startinsert! ]]
+    vim.cmd [[ autocmd BufOpen <buffer> startinsert! ]]
   end)
   opts.collection = {}
   uv.spawn(opts.bin, {args=opts.args, stdio={_, stdout, stderr}}, function(code, signal)
