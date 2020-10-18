@@ -1,7 +1,5 @@
 -- Smith-Waterman algorithm
 -- https://tiefenauer.github.io/blog/smith-waterman/
---
---
 local function cartesian(a1, a2)
   local out = {}
   for _, i in ipairs(a1) do

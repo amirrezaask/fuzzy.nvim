@@ -15,7 +15,6 @@ local function ngrams_of(s, n)
     end
   end
   if #ngrams > 0 then
-    print('ngrams from_cache')
     return ngrams
   end
   for i=1,#s do
@@ -43,7 +42,6 @@ local function levenshtein_distance(str1, str2)
     return #str1
   end
   if __cache_score[str1..str2] ~= nil then
-    print('lev from cache')
     return __cache_score[str1..str2]
   end
   local len1, len2 = #str1, #str2
