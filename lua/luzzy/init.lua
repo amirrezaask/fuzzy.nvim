@@ -16,6 +16,7 @@ end
 function __Luzzy_callback()
   local line = vim.api.nvim_buf_get_lines(current_luzzy.buf, current_luzzy.selected_line, current_luzzy.selected_line+1, false)[1]
   vim.api.nvim_set_current_win(current_luzzy.current_win)
+  vim.cmd [[ call feedkeys("\<C-c>") ]]
   current_luzzy.closer()
   current_luzzy.callback(line)
 end
@@ -66,6 +67,7 @@ function __Luzzy_next_line()
   __Luzzy_highlight(current_luzzy.buf, current_luzzy.selected_line) 
 end
 function __Luzzy_close()
+  vim.cmd [[ call feedkeys("\<C-c>") ]]
   vim.api.nvim_set_current_win(current_luzzy.current_win)
   current_luzzy.closer()
 end
@@ -79,6 +81,7 @@ function Luzzy.new(opts)
   opts.selected_line = -1
   vim.schedule(function()
     opts.current_win = vim.api.nvim_get_current_win()
+    vim.cmd [[ startinsert! ]]
     local buf, win, _, _, closer = floating.floating_buffer(0.6, location.center)
     opts.buf = buf
     opts.win = win
@@ -86,10 +89,11 @@ function Luzzy.new(opts)
     vim.cmd([[ autocmd TextChangedI <buffer> lua __Luzzy_updater() ]])
     vim.api.nvim_buf_set_keymap(buf, 'i', '<C-p>', '<cmd> lua __Luzzy_prev_line()<CR>', {})
     vim.api.nvim_buf_set_keymap(buf, 'i', '<C-n>', '<cmd> lua __Luzzy_next_line()<CR>', {})
+    vim.api.nvim_buf_set_keymap(buf, 'i', '<C-j>', '<cmd> lua __Luzzy_next_line()<CR>', {})
+    vim.api.nvim_buf_set_keymap(buf, 'i', '<C-k>', '<cmd> lua __Luzzy_prev_line()<CR>', {})
     vim.api.nvim_buf_set_keymap(buf, 'i', '<CR>', '<cmd> lua __Luzzy_callback()<CR>', {})
     vim.api.nvim_buf_set_keymap(buf, 'i', '<C-c>', '<cmd> lua __Luzzy_close()<CR>', {})
     vim.api.nvim_buf_set_keymap(buf, 'i', '<esc>', '<cmd> lua __Luzzy_close()<CR>', {})
-    vim.cmd [[ autocmd BufOpen <buffer> startinsert! ]]
   end)
   opts.collection = {}
   uv.spawn(opts.bin, {args=opts.args, stdio={_, stdout, stderr}}, function(code, signal)
