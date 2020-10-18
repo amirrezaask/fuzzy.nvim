@@ -15,9 +15,7 @@ end
 
 function __Luzzy_callback()
   local line = vim.api.nvim_buf_get_lines(current_luzzy.buf, current_luzzy.selected_line, current_luzzy.selected_line+1, false)[1]
-  vim.api.nvim_set_current_win(current_luzzy.current_win)
-  vim.cmd [[ call feedkeys("\<C-c>") ]]
-  current_luzzy.closer()
+  __Luzzy_close()
   current_luzzy.callback(line)
 end
 
@@ -77,6 +75,7 @@ function __Luzzy_next_line()
 end
 function __Luzzy_close()
   vim.cmd [[ call feedkeys("\<C-c>") ]]
+  current_luzzy.clean()
   vim.api.nvim_set_current_win(current_luzzy.current_win)
   current_luzzy.closer()
 end
@@ -86,7 +85,8 @@ function Luzzy.new(opts)
   local stdout = uv.new_pipe(false)
   local stderr = uv.new_pipe(false)
   opts.input = ''
-  opts.alg = opts.alg or lev
+  opts.alg = opts.alg or lev.match
+  opts.clean = lev.clean
   opts.selected_line = -1
   vim.schedule(function()
     opts.current_win = vim.api.nvim_get_current_win()

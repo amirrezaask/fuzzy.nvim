@@ -97,11 +97,10 @@ local function match(str, collection)
   return output 
 end
 
--- local list = match('tmp 123', {'./tmp', './tmp/123', './tmp/456'})
--- for i=1,#list do
---   print(list[i].word)
---   print(list[i].score)
--- end
-
-return match
-
+return {
+  match = match,
+  clean = function()
+    __cache_score = {}
+    __ngrams_cache = {}
+  end,
+}
