@@ -9,10 +9,6 @@ local current_luzzy = nil
 
 local LuzzyHighlight = vim.api.nvim_create_namespace('LuzzyHighlight')
 
-function __Luzzy_updater()
-  current_luzzy:updater()
-end
-
 function __Luzzy_callback()
   local line = vim.api.nvim_buf_get_lines(current_luzzy.buf, current_luzzy.selected_line, current_luzzy.selected_line+1, false)[1]
   __Luzzy_close()
@@ -43,7 +39,9 @@ function __Luzzy_drawer()
     if not vim.api.nvim_buf_is_valid(current_luzzy.buf) then
       return
     end
-    vim.api.nvim_buf_set_lines(current_luzzy.buf, 0, -2, false, current_luzzy.collection)
+    local buf_size = vim.api.nvim_win_get_height(current_luzzy.win)
+    vim.api.nvim_buf_set_lines(current_luzzy.buf, 0, -2, false, table.slice(current_luzzy.collection, #current_luzzy.collection+1-buf_size, #current_luzzy.collection))
+
     if current_luzzy.selected_line == -1 then
       current_luzzy.selected_line = #current_luzzy.collection -1
     end
@@ -54,24 +52,27 @@ function __Luzzy_drawer()
   end)
 end
 
-function __Luzzy_prev_line()
+function __Luzzy_update_selection()
   local lines = vim.api.nvim_buf_get_lines(current_luzzy.buf, 0, -1, false)
-  current_luzzy.selected_line = current_luzzy.selected_line - 1
   if current_luzzy.selected_line < 0 then
-   current_luzzy.selected_line = #lines-2 
+    current_luzzy.selected_line = #lines-2 
+  end
+  if current_luzzy.selected_line >= #lines-1 then
+    current_luzzy.selected_line = 0
   end
   vim.api.nvim_buf_clear_namespace(current_luzzy.buf, LuzzyHighlight, 0, -1)
   __Luzzy_highlight(current_luzzy.buf, current_luzzy.selected_line) 
+
 end
 
-function __Luzzy_next_line()
-  local lines = vim.api.nvim_buf_get_lines(current_luzzy.buf, 0, -1, false)
-  current_luzzy.selected_line = current_luzzy.selected_line + 1
-  if current_luzzy.selected_line >= #lines-1 then
-   current_luzzy.selected_line = 0
+function __Luzzy_prev_line()
+  current_luzzy.selected_line = current_luzzy.selected_line - 1
+  __Luzzy_update_selection()
   end
-  vim.api.nvim_buf_clear_namespace(current_luzzy.buf, LuzzyHighlight, 0, -1)
-  __Luzzy_highlight(current_luzzy.buf, current_luzzy.selected_line) 
+
+function __Luzzy_next_line()
+  current_luzzy.selected_line = current_luzzy.selected_line + 1
+  __Luzzy_update_selection()
 end
 function __Luzzy_close()
   vim.cmd [[ call feedkeys("\<C-c>") ]]
