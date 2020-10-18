@@ -1,5 +1,5 @@
 local api = vim.api
-local location = require'fuzzy.location'
+local location = require'luzzy.location'
 
 -- Create a floating buffer with given win_width and win_height in given row and col.
 local function floating_buffer(win_width, win_height, row, col)
