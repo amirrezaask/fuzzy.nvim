@@ -97,6 +97,9 @@ function Luzzy.new(opts)
   end)
   opts.collection = opts.collection or {}
   if #opts.collection == 0 then
+    if not opts.bin then
+      return 
+    end
     uv.spawn(opts.bin, {args=opts.args, stdio={_, stdout, stderr}}, function(code, signal)
       if code ~= 0 then
         print(string.format('process exited with %s and %s', code, signal))
