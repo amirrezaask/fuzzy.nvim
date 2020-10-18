@@ -57,12 +57,21 @@ function __Luzzy_drawer()
 end
 
 function __Luzzy_prev_line()
+  local lines = vim.api.nvim_buf_get_lines(current_luzzy.buf, 0, -1, false)
   current_luzzy.selected_line = current_luzzy.selected_line - 1
+  if current_luzzy.selected_line < 0 then
+   current_luzzy.selected_line = #lines-2 
+  end
   vim.api.nvim_buf_clear_namespace(current_luzzy.buf, LuzzyHighlight, 0, -1)
   __Luzzy_highlight(current_luzzy.buf, current_luzzy.selected_line) 
 end
+
 function __Luzzy_next_line()
+  local lines = vim.api.nvim_buf_get_lines(current_luzzy.buf, 0, -1, false)
   current_luzzy.selected_line = current_luzzy.selected_line + 1
+  if current_luzzy.selected_line >= #lines-1 then
+   current_luzzy.selected_line = 0
+  end
   vim.api.nvim_buf_clear_namespace(current_luzzy.buf, LuzzyHighlight, 0, -1)
   __Luzzy_highlight(current_luzzy.buf, current_luzzy.selected_line) 
 end
