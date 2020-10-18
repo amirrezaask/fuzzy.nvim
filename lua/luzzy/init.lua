@@ -25,6 +25,7 @@ function __Luzzy_updater()
       return
     end
     local new_input = vim.api.nvim_buf_get_lines(current_luzzy.buf, -2, -1, false)[1]
+    new_input = string.sub(new_input, 3, #new_input)
     if new_input == current_luzzy.input then
       return
     end
@@ -94,6 +95,7 @@ function Luzzy.new(opts)
     vim.cmd [[ startinsert! ]]
     local buf, win, _, _, closer = floating.floating_buffer(0.6, location.center)
     opts.buf = buf
+    vim.fn.prompt_setprompt(opts.buf, '> ')
     opts.win = win
     opts.closer = closer
     vim.cmd([[ autocmd TextChangedI <buffer> lua __Luzzy_updater() ]])
