@@ -95,38 +95,42 @@ function Luzzy.new(opts)
     vim.api.nvim_buf_set_keymap(buf, 'i', '<C-c>', '<cmd> lua __Luzzy_close()<CR>', {})
     vim.api.nvim_buf_set_keymap(buf, 'i', '<esc>', '<cmd> lua __Luzzy_close()<CR>', {})
   end)
-  opts.collection = {}
-  uv.spawn(opts.bin, {args=opts.args, stdio={_, stdout, stderr}}, function(code, signal)
-    if code ~= 0 then
-      print(string.format('process exited with %s and %s', code, signal))
-      stdout:read_stop()
-      stderr:read_stop()
-      stdout:close()
-      stderr:close()
-    end
-  end)
-  uv.read_start(stdout, function(err, data)
-    if err then
-      print(err)
-      return
-    end
-    if data then
-      for _, d in ipairs(vim.split(data, '\n')) do
-        if d == "" then goto continue end
-        table.insert(opts.collection, d)
-        ::continue::
+  opts.collection = opts.collection or {}
+  if #opts.collection == 0 then
+    uv.spawn(opts.bin, {args=opts.args, stdio={_, stdout, stderr}}, function(code, signal)
+      if code ~= 0 then
+        print(string.format('process exited with %s and %s', code, signal))
+        stdout:read_stop()
+        stderr:read_stop()
+        stdout:close()
+        stderr:close()
       end
-      __Luzzy_updater()
-    end
-  end)
-  uv.read_start(stderr, function(err, data)
-    if err then
-      print(err)
-    end
-    if data then
-      print(data)
-    end
-  end)
+    end)
+    uv.read_start(stdout, function(err, data)
+      if err then
+        print(err)
+        return
+      end
+      if data then
+        for _, d in ipairs(vim.split(data, '\n')) do
+          if d == "" then goto continue end
+          table.insert(opts.collection, d)
+          ::continue::
+        end
+        __Luzzy_updater()
+      end
+    end)
+    uv.read_start(stderr, function(err, data)
+      if err then
+        print(err)
+      end
+      if data then
+        print(data)
+      end
+    end)
+  else
+    __Luzzy_updater()
+  end
   current_luzzy = opts
 end
 
