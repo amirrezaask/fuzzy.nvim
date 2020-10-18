@@ -13,6 +13,9 @@ vim.cmd [[ command! Buffers lua require('luzzy.internal').buffers{} ]]
 vim.cmd [[ command! Rg lua require('luzzy.internal').rg{} ]]
 vim.cmd [[ command! Colors lua require('luzzy.internal').colors{} ]]
 vim.cmd [[ command! Cd lua require('luzzy.internal').cd{} ]]
+vim.cmd [[ command! LspReferences lua require('luzzy.internal').lsp_references{} ]]
+vim.cmd [[ command! LspDocumentSymbols lua require('luzzy.internal').lsp_document_symbols{} ]]
+vim.cmd [[ command! LspWorkspaceSymbols lua require('luzzy.internal').lsp_workspace_symbols{} ]]
 
 return {
   fd_files = function(opts)
@@ -185,5 +188,35 @@ return {
         helpers.open_file_at(segments[1], segments[2])
       end
     }
+  end,
+  lsp_references = function(opts)
+    opts = opts or {}
+    local params = vim.lsp.util.make_position_params()
+    params.context = { includeDeclaration = true }
+    local results_lsp = vim.lsp.buf_request_sync(0, "textDocument/references", params, opts.timeout or 10000)
+    local locations = {}
+    for _, server_results in pairs(results_lsp) do
+      if server_results.result then
+        vim.list_extend(locations, vim.lsp.util.locations_to_items(server_results.result) or {})
+      end
+    end
+    local callback = function(line)
+      local segments = split(line, ":")
+      helpers.open_file_at(segments[1], segments[2])
+    end
+    opts.callback = callback
+    local lines = {}
+    for _, loc in ipairs(locations) do
+      table.insert(lines, string.format('%s:%s:%s', loc.filename, loc.lnum, loc.text))
+    end
+    Luzzy.new {
+      collection = lines,
+      callback = function(line)
+        local segments = split(line, ":")
+        helpers.open_file_at(segments[1], segments[2])
+      end
+
+    }
+
   end
 }
