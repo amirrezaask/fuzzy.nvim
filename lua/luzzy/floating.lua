@@ -121,9 +121,8 @@ return {
   execute = execute,
   floating_terminal = floating_terminal,
   floating_buffer_with_prompt = floating_buffer_with_prompt,
-  floating_buffer = function(scale, loc)
-    local win_height, win_width = floating_window_size(scale)
-    local row, col = loc(win_height, win_width)
-    return floating_buffer_with_border(win_width, win_height, row, col)
+  floating_buffer = function(width, height, loc)
+    local row, col = loc(height, width)
+    return floating_buffer_with_border(width, height, row, col)
   end,
 } 

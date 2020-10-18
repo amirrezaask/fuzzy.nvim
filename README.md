@@ -19,3 +19,6 @@ and string distance computing to make Luzzy faster.
 - BLines
 - Buffers
 - Rg
+- LspReferences
+- LspWorkspaceSymbols
+- LspDocumentSymbols
