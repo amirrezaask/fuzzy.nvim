@@ -42,7 +42,7 @@ return {
     if not opts.hidden then
       table.insert(opts.args, '-not')
       table.insert(opts.args, '-path')
-      table.insert(opts.args, [['*/\.*']])
+      table.insert(opts.args, [[*/\.*]])
     end
     table.insert(opts.args, '-type')
     table.insert(opts.args, 's,f')
