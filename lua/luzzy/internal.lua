@@ -63,7 +63,7 @@ return {
       end, function(err)
         print(err)
       end),
-      sorter = sorter.Levenshtein,
+      sorter = sorter.FZF,
       drawer = drawer.new(),
       handler = function(line)
         helpers.open_file(line)
@@ -113,7 +113,7 @@ return {
       end, function(err)
         print(err)
       end),
-      sorter = sorter.Levenshtein,
+      sorter = sorter.FZF,
       drawer = drawer.new(),
       handler = function(line)
         local filename = vim.split(line, ':')[1]

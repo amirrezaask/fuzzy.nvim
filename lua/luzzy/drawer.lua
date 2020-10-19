@@ -23,7 +23,7 @@ function M.new()
   vim.api.nvim_buf_set_keymap(buf, 'i', '<esc>', '<cmd> lua __Luzzy_close()<CR>', {})
   vim.api.nvim_buf_set_keymap(buf, 'i', '<CR>',  '<cmd> lua __Luzzy_handler()<CR>', {})
 
-  vim.fn.prompt_setprompt(opts.buf, '> ')
+  vim.fn.prompt_setprompt(buf, '> ')
   
   vim.cmd([[ autocmd TextChangedI <buffer> lua __Luzzy_updater() ]])
   

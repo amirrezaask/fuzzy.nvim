@@ -49,13 +49,14 @@ function __Luzzy_updater()
       return
     end
     CURRENT_LUZZY.input = new_input
-    CURRENT_LUZZY.collection = CURRENT_LUZZY.sorter(CURRENT_LUZZY.input, CURRENT_LUZZY.collection)
+    CURRENT_LUZZY.collection = CURRENT_LUZZY.sorter(CURRENT_LUZZY.input, CURRENT_LUZZY.base_collection)
   end)  
   CURRENT_LUZZY.drawer:draw(CURRENT_LUZZY.collection)
 end
 
 function Luzzy.new(opts)
   CURRENT_LUZZY = opts
+  CURRENT_LUZZY.base_collection = opts.collection
   if opts.source then
     opts.source()
   end
