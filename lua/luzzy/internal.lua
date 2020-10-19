@@ -130,23 +130,32 @@ return {
       end
     end
     Luzzy.new {
-      collection = _buffers, 
-      callback = function(line)
+      sorter = sorter.Levenshtein,
+      drawer = drawer.new(),
+      handler = function(line)
         local buffer_name = vim.split(line, ':')[2]
         vim.cmd(string.format('buffer %s', buffer_name))
-      end
+      end,
+      collection = _buffers,
     }
   end,
   buffer_lines = function(opts)
     local filename = vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf())
+    local collection = {}
     Luzzy.new {
-      bin = 'cat',
-      args = {'--number', filename},
-      callback = function(line)
+      collection = collection,
+      source = source.NewBinSource('cat', {'--number', filename}, function(data)
+        table.insert(collection, data) 
+      end, function(err)
+        print(err)
+      end),
+      sorter = sorter.Levenshtein,
+      drawer = drawer.new(),
+      handler = function(line)
         local number = vim.split(line, '  ')[3]
         helpers.open_file_at(filename, number)
-      end
-    } 
+      end,
+    }
   end,
   cd = function(opts)
     opts = opts or {}
@@ -162,6 +171,7 @@ return {
     table.insert(opts.args, '-type')
     table.insert(opts.args, 's,d')
     local collection = {}
+
     Luzzy.new {
       collection = collection,
       source = source.NewBinSource('find', opts.args, function(data)
@@ -178,11 +188,13 @@ return {
   end,
   colors = function(opts)
     Luzzy.new {
-      collection = vim.fn.getcompletion('', 'color'),
-      callback = function(color)
+      sorter = sorter.Levenshtein,
+      drawer = drawer.new(),
+      handler = function(color)
         vim.cmd(string.format('colorscheme %s', color))
-      end
-    } 
+      end,
+      collection = vim.fn.getcompletion('', 'color'),
+    }
   end,
   lsp_document_symbols = function(opts)
     opts = opts or {}
@@ -203,7 +215,9 @@ return {
     local cmd = table.concat(lines, '\n')
     Luzzy.new {
       collection = lines,
-      callback = function(line)
+      sorter = sorter.Levenshtein,
+      drawer = drawer.new(),
+      handler = function(line)
         local segments = split(line, ":")
         helpers.open_file_at(segments[1], segments[2])
       end
@@ -227,10 +241,12 @@ return {
     end
     Luzzy.new {
       collection = lines,
-      callback = function(line)
+      handler = function(line)
         local segments = split(line, ":")
         helpers.open_file_at(segments[1], segments[2])
-      end
+      end,
+      sorter = sorter.Levenshtein,
+      drawer = drawer.new(),
     }
   end,
   lsp_references = function(opts)
@@ -255,12 +271,12 @@ return {
     end
     Luzzy.new {
       collection = lines,
-      callback = function(line)
+      handler = function(line)
         local segments = split(line, ":")
         helpers.open_file_at(segments[1], segments[2])
-      end
-
+      end,
+      sorter = sorter.Levenshtein,
+      drawer = drawer.new(),
     }
-
   end
 }

@@ -56,34 +56,12 @@ end
 
 function Luzzy.new(opts)
   CURRENT_LUZZY = opts
-  opts.source()
+  if opts.source then
+    opts.source()
+  end
   opts.drawer:draw(opts.collection)
 end
 
--- local source = require'luzzy.source'
--- local drawers = require'luzzy.drawer'
--- local sorter = require'luzzy.sorter'
--- local helpers = require'luzzy.helpers'
--- local collection = {}
--- Luzzy.new {
---   on_exit = function()
---     sorter.Levenshtein.clean()
---   end,
---   collection = collection,
---   source = source.NewBinSource('find', {}, function(data)
---     table.insert(collection, data)
---   end, function(err)
---     print(err)
---   end),
---   drawer = drawers.new(),
---   sorter = sorter.Levenshtein,
---   handler = function(line)
---     print('inja')
---     helpers.open_file(line)
---   end
--- }
-
 return {
-  current = CURRENT_LUZZY,
   Luzzy = Luzzy,
 }

@@ -2,7 +2,6 @@ local uv = vim.loop
 
 local M = {}
 
-
 function M.NewBinSource(bin, args, stdout_handler, stderr_handler)
   return function()
     local stdout = uv.new_pipe(false)
