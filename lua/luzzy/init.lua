@@ -39,20 +39,21 @@ end
 CURRENT_LUZZY = nil
 
 function __Luzzy_updater()
-  vim.schedule(function()
-    if not vim.api.nvim_buf_is_valid(CURRENT_LUZZY.buf) then
-      return
-    end
-    local new_input = vim.api.nvim_buf_get_lines(CURRENT_LUZZY.buf, -2, -1, false)[1]
-    new_input = string.sub(new_input, 3, #new_input)
-    if new_input == CURRENT_LUZZY.input then
-      return
-    end
-    CURRENT_LUZZY.input = new_input
-    CURRENT_LUZZY.collection = CURRENT_LUZZY.sorter(CURRENT_LUZZY.input, CURRENT_LUZZY.base_collection)
-  end)  
+  local new_input = vim.api.nvim_buf_get_lines(CURRENT_LUZZY.buf, -2, -1, false)[1]
+  new_input = string.sub(new_input, 3, #new_input)
+  if new_input == CURRENT_LUZZY.input then
+    return
+  end
+  if not vim.api.nvim_buf_is_valid(CURRENT_LUZZY.buf) then
+    return
+  end
+  CURRENT_LUZZY.input = new_input
+  CURRENT_LUZZY.collection = CURRENT_LUZZY.sorter(CURRENT_LUZZY.input, CURRENT_LUZZY.base_collection)
   CURRENT_LUZZY.drawer:draw(CURRENT_LUZZY.collection)
-end
+  local lines = vim.api.nvim_buf_get_lines(CURRENT_LUZZY.buf, 0, -1, false)
+  CURRENT_LUZZY.drawer.selected_line = #lines-2 
+  CURRENT_LUZZY.drawer:update_selection()
+  end
 
 function Luzzy.new(opts)
   CURRENT_LUZZY = opts

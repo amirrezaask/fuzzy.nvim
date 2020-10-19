@@ -108,7 +108,7 @@ return {
     local collection = {}
     Luzzy.new {
       collection = collection,
-      source = source.NewBinSource('rg', {'--column', '--line-number', '--no-heading', '--smart-case', ''}, function(data)
+      source = source.NewBinSource('rg', {'--column', '--line-number', '--no-heading', '--smart-case', '-e', ''}, function(data)
         table.insert(collection, data) 
       end, function(err)
         print(err)

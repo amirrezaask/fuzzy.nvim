@@ -52,18 +52,16 @@ function M.new()
       __Luzzy_highlight(self.buf,LuzzyDrawerHighlight, self.selected_line) 
     end,
     draw = function(self, collection)
-      vim.schedule(function()
-        if not vim.api.nvim_buf_is_valid(buf) then
-          return
-        end
-        local buf_size = vim.api.nvim_win_get_height(win)
-        vim.api.nvim_buf_set_lines(buf, 0, -2, false, table.slice(collection, #collection+1-buf_size, #collection))
+      if not vim.api.nvim_buf_is_valid(buf) then
+        return
+      end
+      local buf_size = vim.api.nvim_win_get_height(win)
+      vim.api.nvim_buf_set_lines(buf, 0, -2, false, table.slice(collection, #collection+1-buf_size, #collection))
 
-        if self.selected_line == -1 then
-          self.selected_line = #collection -1
-        end
-        __Luzzy_highlight(self.buf, LuzzyDrawerHighlight, self.selected_line)
-      end)
+      if self.selected_line == -1 then
+        self.selected_line = #collection -1
+      end
+      __Luzzy_highlight(self.buf, LuzzyDrawerHighlight, self.selected_line)
     end
   }
 end
