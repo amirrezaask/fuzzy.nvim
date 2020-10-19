@@ -5,154 +5,85 @@ local location = require'luzzy.location'
 local helpers = require('luzzy.helpers')
 local Luzzy = {}
 
-local current_luzzy = nil
+--[[
+  Source function() collection
+  Drawer function(collection) Draw on display
+  Sorter function(query, collection) sorts the collection
+  Handler function(line) handles user choice
+--]]
 
-local LuzzyHighlight = vim.api.nvim_create_namespace('LuzzyHighlight')
 
-function __Luzzy_callback()
-  local line = vim.api.nvim_buf_get_lines(current_luzzy.buf, current_luzzy.selected_line, current_luzzy.selected_line+1, false)[1]
-  __Luzzy_close()
-  current_luzzy.callback(line)
-end
-
-function __Luzzy_highlight(buf, line)
+function __Luzzy_highlight(buf, hl_group, line)
   if #vim.api.nvim_buf_get_lines(buf, 0, -1, false) < 2 then
     return
   end
-  vim.api.nvim_buf_add_highlight(buf, LuzzyHighlight, 'Error', line, 0, -1)
+  vim.api.nvim_buf_add_highlight(buf, hl_group , 'Error', line, 0, -1)
 end
+
+
+function __Luzzy_handler()
+  local line = vim.api.nvim_buf_get_lines(CURRENT_LUZZY.buf, CURRENT_LUZZY.drawer.selected_line, CURRENT_LUZZY.drawer.selected_line+1, false)[1]
+  print(line)
+  __Luzzy_close()
+  CURRENT_LUZZY.handler(line)
+end
+
+function __Luzzy_close()
+  vim.cmd [[ call feedkeys("\<C-c>") ]]
+  -- CURRENT_LUZZY.on_exit()
+  vim.api.nvim_set_current_win(CURRENT_LUZZY.current_win)
+  CURRENT_LUZZY.drawer:closer()
+end
+
+
+CURRENT_LUZZY = nil
 
 function __Luzzy_updater()
   vim.schedule(function()
-    if not vim.api.nvim_buf_is_valid(current_luzzy.buf) then
+    if not vim.api.nvim_buf_is_valid(CURRENT_LUZZY.buf) then
       return
     end
-    local new_input = vim.api.nvim_buf_get_lines(current_luzzy.buf, -2, -1, false)[1]
+    local new_input = vim.api.nvim_buf_get_lines(CURRENT_LUZZY.buf, -2, -1, false)[1]
     new_input = string.sub(new_input, 3, #new_input)
-    if new_input == current_luzzy.input then
+    if new_input == CURRENT_LUZZY.input then
       return
     end
-    current_luzzy.input = new_input
-    current_luzzy.collection = current_luzzy.alg(current_luzzy.input, current_luzzy.collection)
+    CURRENT_LUZZY.input = new_input
+    CURRENT_LUZZY.collection = CURRENT_LUZZY.sorter(CURRENT_LUZZY.input, CURRENT_LUZZY.collection)
   end)  
-  __Luzzy_drawer()
+  CURRENT_LUZZY.drawer:draw(CURRENT_LUZZY.collection)
 end
-
-function __Luzzy_drawer()
-  vim.schedule(function()
-    if not vim.api.nvim_buf_is_valid(current_luzzy.buf) then
-      return
-    end
-    local buf_size = vim.api.nvim_win_get_height(current_luzzy.win)
-    vim.api.nvim_buf_set_lines(current_luzzy.buf, 0, -2, false, table.slice(current_luzzy.collection, #current_luzzy.collection+1-buf_size, #current_luzzy.collection))
-
-    if current_luzzy.selected_line == -1 then
-      current_luzzy.selected_line = #current_luzzy.collection -1
-    end
-    __Luzzy_highlight(current_luzzy.buf, current_luzzy.selected_line)
-    if current_luzzy.drawer ~= nil then
-      current_luzzy:drawer()
-    end
-  end)
-end
-
-function __Luzzy_update_selection()
-  local lines = vim.api.nvim_buf_get_lines(current_luzzy.buf, 0, -1, false)
-  if current_luzzy.selected_line < 0 then
-    current_luzzy.selected_line = #lines-2 
-  end
-  if current_luzzy.selected_line >= #lines-1 then
-    current_luzzy.selected_line = 0
-  end
-  vim.api.nvim_buf_clear_namespace(current_luzzy.buf, LuzzyHighlight, 0, -1)
-  __Luzzy_highlight(current_luzzy.buf, current_luzzy.selected_line) 
-
-end
-
-function __Luzzy_prev_line()
-  current_luzzy.selected_line = current_luzzy.selected_line - 1
-  __Luzzy_update_selection()
-  end
-
-function __Luzzy_next_line()
-  current_luzzy.selected_line = current_luzzy.selected_line + 1
-  __Luzzy_update_selection()
-end
-function __Luzzy_close()
-  vim.cmd [[ call feedkeys("\<C-c>") ]]
-  current_luzzy.clean()
-  vim.api.nvim_set_current_win(current_luzzy.current_win)
-  current_luzzy.closer()
-end
-
 
 function Luzzy.new(opts)
-  local stdout = uv.new_pipe(false)
-  local stderr = uv.new_pipe(false)
-  opts.input = ''
-  opts.alg = opts.alg or lev.match
-  opts.clean = lev.clean
-  opts.selected_line = -1
-  vim.schedule(function()
-    opts.current_win = vim.api.nvim_get_current_win()
-    vim.cmd [[ startinsert! ]]
-    local buf, win, closer = floating.floating_buffer(math.ceil(vim.api.nvim_get_option('columns')/2), math.ceil(vim.api.nvim_get_option('lines')/2), location.bottom_center)
-    opts.buf = buf
-    vim.fn.prompt_setprompt(opts.buf, '> ')
-    opts.win = win
-    opts.closer = closer
-    vim.cmd([[ autocmd TextChangedI <buffer> lua __Luzzy_updater() ]])
-    vim.api.nvim_buf_set_keymap(buf, 'i', '<C-p>', '<cmd> lua __Luzzy_prev_line()<CR>', {})
-    vim.api.nvim_buf_set_keymap(buf, 'i', '<C-n>', '<cmd> lua __Luzzy_next_line()<CR>', {})
-    vim.api.nvim_buf_set_keymap(buf, 'i', '<C-j>', '<cmd> lua __Luzzy_next_line()<CR>', {})
-    vim.api.nvim_buf_set_keymap(buf, 'i', '<C-k>', '<cmd> lua __Luzzy_prev_line()<CR>', {})
-    vim.api.nvim_buf_set_keymap(buf, 'i', '<CR>', '<cmd> lua __Luzzy_callback()<CR>', {})
-    vim.api.nvim_buf_set_keymap(buf, 'i', '<C-c>', '<cmd> lua __Luzzy_close()<CR>', {})
-    vim.api.nvim_buf_set_keymap(buf, 'i', '<esc>', '<cmd> lua __Luzzy_close()<CR>', {})
-  end)
-  opts.collection = opts.collection or {}
-  if #opts.collection == 0 then
-    if not opts.bin then
-      return 
-    end
-    uv.spawn(opts.bin, {args=opts.args, stdio={_, stdout, stderr}}, function(code, signal)
-      if code ~= 0 then
-        print(string.format('process exited with %s and %s', code, signal))
-        stdout:read_stop()
-        stderr:read_stop()
-        stdout:close()
-        stderr:close()
-      end
-    end)
-    uv.read_start(stdout, function(err, data)
-      if err then
-        print(err)
-        return
-      end
-      if data then
-        for _, d in ipairs(vim.split(data, '\n')) do
-          if d == "" then goto continue end
-          table.insert(opts.collection, d)
-          ::continue::
-        end
-        __Luzzy_updater()
-      end
-    end)
-    uv.read_start(stderr, function(err, data)
-      if err then
-        print(err)
-      end
-      if data then
-        print(data)
-      end
-    end)
-  else
-    __Luzzy_updater()
-  end
-  current_luzzy = opts
+  CURRENT_LUZZY = opts
+  opts.source()
+  opts.drawer:draw(opts.collection)
 end
 
+-- local source = require'luzzy.source'
+-- local drawers = require'luzzy.drawer'
+-- local sorter = require'luzzy.sorter'
+-- local helpers = require'luzzy.helpers'
+-- local collection = {}
+-- Luzzy.new {
+--   on_exit = function()
+--     sorter.Levenshtein.clean()
+--   end,
+--   collection = collection,
+--   source = source.NewBinSource('find', {}, function(data)
+--     table.insert(collection, data)
+--   end, function(err)
+--     print(err)
+--   end),
+--   drawer = drawers.new(),
+--   sorter = sorter.Levenshtein,
+--   handler = function(line)
+--     print('inja')
+--     helpers.open_file(line)
+--   end
+-- }
+
 return {
-  current = current_luzzy,
+  current = CURRENT_LUZZY,
   Luzzy = Luzzy,
 }
