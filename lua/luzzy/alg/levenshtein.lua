@@ -69,21 +69,26 @@ local function sort(list)
   return list
 end
 
-local function match(str, collection)
+local function match(query, collection)
   local list = {}
   for i=1,#collection do
-    if str == nil or collection[i] == nil then
+    if query == nil or collection[i] == nil then
       goto continue
     end
-    local ngrams = ngrams_of(collection[i], 5)
-    local min_distance_of_ngrams = 100000
-    for _, n in ipairs(ngrams) do
-      local distance = levenshtein_distance(str, n)
-      if distance < min_distance_of_ngrams then
-        min_distance_of_ngrams = distance
+    local ngrams_data = ngrams_of(collection[i], 3)
+    local ngrams_query = ngrams_of(query, 3)
+    local total = 0
+    for _, nq in ipairs(ngrams_query) do
+      local min_distance_of_ngrams = 100000
+      for _, nd in ipairs(ngrams_data) do
+        local distance = levenshtein_distance(nq, nd)
+        if distance < min_distance_of_ngrams then
+          min_distance_of_ngrams = distance
+        end
       end
+      total = total + min_distance_of_ngrams 
     end
-    local word_score = {score=min_distance_of_ngrams, word=collection[i]}
+    local word_score = {score=total, word=collection[i]}
     table.insert(list, word_score)
     ::continue::
   end

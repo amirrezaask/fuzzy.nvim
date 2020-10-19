@@ -96,7 +96,7 @@ function Luzzy.new(opts)
   vim.schedule(function()
     opts.current_win = vim.api.nvim_get_current_win()
     vim.cmd [[ startinsert! ]]
-    local buf, win, _, _, closer = floating.floating_buffer(math.ceil(vim.api.nvim_get_option('columns')/3), math.ceil(vim.api.nvim_get_option('lines')/2), location.bottom_center)
+    local buf, win, _, _, closer = floating.floating_buffer(math.ceil(vim.api.nvim_get_option('columns')/2), math.ceil(vim.api.nvim_get_option('lines')/2), location.bottom_center)
     opts.buf = buf
     vim.fn.prompt_setprompt(opts.buf, '> ')
     opts.win = win
