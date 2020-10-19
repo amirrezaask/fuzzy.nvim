@@ -1,21 +1,22 @@
 local Luzzy = require('luzzy').Luzzy
-local lev = require('luzzy.alg.levenshtein')
 local helpers = require('luzzy.helpers')
-
+local source = require('luzzy.source')
+local sorter = require('luzzy.sorter')
+local drawer = require('luzzy.drawer')
 
 -- Register execute commands
-vim.cmd [[ command! Files lua require('luzzy.internal').find_files{} ]]
-vim.cmd [[ command! Fd lua require('luzzy.internal').fd_files{} ]]
-vim.cmd [[ command! GFiles lua require('luzzy.internal').git_files{} ]]
-vim.cmd [[ command! GGrep lua require('luzzy.internal').git_grep{} ]]
-vim.cmd [[ command! BLines lua require('luzzy.internal').buffer_lines{} ]]
-vim.cmd [[ command! Buffers lua require('luzzy.internal').buffers{} ]]
-vim.cmd [[ command! Rg lua require('luzzy.internal').rg{} ]]
-vim.cmd [[ command! Colors lua require('luzzy.internal').colors{} ]]
-vim.cmd [[ command! Cd lua require('luzzy.internal').cd{} ]]
-vim.cmd [[ command! LspReferences lua require('luzzy.internal').lsp_references{} ]]
-vim.cmd [[ command! LspDocumentSymbols lua require('luzzy.internal').lsp_document_symbols{} ]]
-vim.cmd [[ command! LspWorkspaceSymbols lua require('luzzy.internal').lsp_workspace_symbols{} ]]
+-- vim.cmd [[ command! Files lua require('luzzy.internal').find_files{} ]]
+-- vim.cmd [[ command! Fd lua require('luzzy.internal').fd_files{} ]]
+-- vim.cmd [[ command! GFiles lua require('luzzy.internal').git_files{} ]]
+-- vim.cmd [[ command! GGrep lua require('luzzy.internal').git_grep{} ]]
+-- vim.cmd [[ command! BLines lua require('luzzy.internal').buffer_lines{} ]]
+-- vim.cmd [[ command! Buffers lua require('luzzy.internal').buffers{} ]]
+-- vim.cmd [[ command! Rg lua require('luzzy.internal').rg{} ]]
+-- vim.cmd [[ command! Colors lua require('luzzy.internal').colors{} ]]
+-- vim.cmd [[ command! Cd lua require('luzzy.internal').cd{} ]]
+-- vim.cmd [[ command! LspReferences lua require('luzzy.internal').lsp_references{} ]]
+-- vim.cmd [[ command! LspDocumentSymbols lua require('luzzy.internal').lsp_document_symbols{} ]]
+-- vim.cmd [[ command! LspWorkspaceSymbols lua require('luzzy.internal').lsp_workspace_symbols{} ]]
 
 return {
   fd_files = function(opts)
@@ -26,12 +27,19 @@ return {
     if opts.hidden then
       hidden = '--hidden'
     end
+    local collection = {}
     Luzzy.new {
-      bin = 'fdfind',
-      args = {'-t', 'file', '-t', 'symlink', opts.cwd, opts.hidden },
-      callback =  function(line)
+      collection = collection,
+      source = source.NewBinSource('fdfind', opts.args, function(data)
+        table.insert(collection, data) 
+      end, function(err)
+        print(err)
+      end),
+      sorter = sorter.Levenshtein,
+      drawer = drawer.new(),
+      handler = function(line)
         helpers.open_file(line)
-      end
+      end,
     }
   end,
   find_files = function(opts)
@@ -47,41 +55,71 @@ return {
     end
     table.insert(opts.args, '-type')
     table.insert(opts.args, 's,f')
+    local collection = {}
     Luzzy.new {
-      bin = 'find',
-      args = opts.args,
-      callback = function(line)
+      collection = collection,
+      source = source.NewBinSource('find', opts.args, function(data)
+        table.insert(collection, data) 
+      end, function(err)
+        print(err)
+      end),
+      sorter = sorter.Levenshtein,
+      drawer = drawer.new(),
+      handler = function(line)
         helpers.open_file(line)
     end,
     }
   end,
   git_files = function(opts)
+    local collection = {}
     Luzzy.new {
-      bin = 'git',
-      args = {'ls-files'},
-      callback = function(line)
+      collection = collection,
+      source = source.NewBinSource('git', {'ls-files'}, function(data)
+        table.insert(collection, data) 
+      end, function(err)
+        print(err)
+      end),
+      sorter = sorter.Levenshtein,
+      drawer = drawer.new(),
+      handler = function(line)
         helpers.open_file(line)
       end,
-    } 
+    }
   end,
   git_grep = function(opts)
+    local collection = {}
     Luzzy.new {
-      bin = 'git',
-      args = {'grep', '-n', [[]]},
-      callback = function(line)
+      collection = collection,
+      source = source.NewBinSource('git', {'grep', '-n', [[]]}, function(data)
+        table.insert(collection, data) 
+      end, function(err)
+        print(err)
+      end),
+      sorter = sorter.Levenshtein,
+      drawer = drawer.new(),
+      handler = function(line)
         local filename = vim.split(line, ':')[1]
         local linum = vim.split(line, ':')[2]
         helpers.open_file_at(filename, linum)
-      end
+      end,
     }
   end,
   rg = function(opts)
+    local collection = {}
     Luzzy.new {
-      bin = 'rg',
-      args = {'--column', '--line-number', '--no-heading', '--smart-case', ''},
-      callback = function(line)
-        helpers.open_file_at(vim.split(line, ':')[1], vim.split(line, ':')[2])
-      end
+      collection = collection,
+      source = source.NewBinSource('rg', {'--column', '--line-number', '--no-heading', '--smart-case', ''}, function(data)
+        table.insert(collection, data) 
+      end, function(err)
+        print(err)
+      end),
+      sorter = sorter.Levenshtein,
+      drawer = drawer.new(),
+      handler = function(line)
+        local filename = vim.split(line, ':')[1]
+        local linum = vim.split(line, ':')[2]
+        helpers.open_file_at(filename, linum)
+      end,
     }
   end,
   buffers = function(opts)
@@ -92,23 +130,32 @@ return {
       end
     end
     Luzzy.new {
-      collection = _buffers, 
-      callback = function(line)
+      sorter = sorter.Levenshtein,
+      drawer = drawer.new(),
+      handler = function(line)
         local buffer_name = vim.split(line, ':')[2]
         vim.cmd(string.format('buffer %s', buffer_name))
-      end
+      end,
+      collection = _buffers,
     }
   end,
   buffer_lines = function(opts)
     local filename = vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf())
+    local collection = {}
     Luzzy.new {
-      bin = 'cat',
-      args = {'--number', filename},
-      callback = function(line)
+      collection = collection,
+      source = source.NewBinSource('cat', {'--number', filename}, function(data)
+        table.insert(collection, data) 
+      end, function(err)
+        print(err)
+      end),
+      sorter = sorter.Levenshtein,
+      drawer = drawer.new(),
+      handler = function(line)
         local number = vim.split(line, '  ')[3]
         helpers.open_file_at(filename, number)
-      end
-    } 
+      end,
+    }
   end,
   cd = function(opts)
     opts = opts or {}
@@ -123,22 +170,31 @@ return {
     end
     table.insert(opts.args, '-type')
     table.insert(opts.args, 's,d')
-    Luzzy.new{
-      bin = 'find',
-      args = opts.args,
-      callback = function(line)
-        print(line)
-        vim.cmd (string.format('! cd %s', line))
-      end
+    local collection = {}
+
+    Luzzy.new {
+      collection = collection,
+      source = source.NewBinSource('find', opts.args, function(data)
+        table.insert(collection, data) 
+      end, function(err)
+        print(err)
+      end),
+      sorter = sorter.Levenshtein,
+      drawer = drawer.new(),
+      handler = function(line)
+        vim.cmd(string.format('! cd %s', line))
+      end,
     }
   end,
   colors = function(opts)
     Luzzy.new {
-      collection = vim.fn.getcompletion('', 'color'),
-      callback = function(color)
+      sorter = sorter.Levenshtein,
+      drawer = drawer.new(),
+      handler = function(color)
         vim.cmd(string.format('colorscheme %s', color))
-      end
-    } 
+      end,
+      collection = vim.fn.getcompletion('', 'color'),
+    }
   end,
   lsp_document_symbols = function(opts)
     opts = opts or {}
@@ -159,7 +215,9 @@ return {
     local cmd = table.concat(lines, '\n')
     Luzzy.new {
       collection = lines,
-      callback = function(line)
+      sorter = sorter.Levenshtein,
+      drawer = drawer.new(),
+      handler = function(line)
         local segments = split(line, ":")
         helpers.open_file_at(segments[1], segments[2])
       end
@@ -183,10 +241,12 @@ return {
     end
     Luzzy.new {
       collection = lines,
-      callback = function(line)
+      handler = function(line)
         local segments = split(line, ":")
         helpers.open_file_at(segments[1], segments[2])
-      end
+      end,
+      sorter = sorter.Levenshtein,
+      drawer = drawer.new(),
     }
   end,
   lsp_references = function(opts)
@@ -211,12 +271,12 @@ return {
     end
     Luzzy.new {
       collection = lines,
-      callback = function(line)
+      handler = function(line)
         local segments = split(line, ":")
         helpers.open_file_at(segments[1], segments[2])
-      end
-
+      end,
+      sorter = sorter.Levenshtein,
+      drawer = drawer.new(),
     }
-
   end
 }
