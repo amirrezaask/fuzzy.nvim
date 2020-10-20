@@ -23,18 +23,14 @@ return {
     opts = opts or {}
     opts.cwd = '.'
     opts.hidden = opts.hidden or false
-    local hidden = ''
     if opts.hidden then
-      hidden = '--hidden'
+      opts.hidden = '--hidden'
+    else
+      opts.hidden = ''
     end
-    local collection = {}
+    local cmd = string.format('fdfind %s %s', opts.cwd, opts.hidden)
     Luzzy.new {
-      collection = collection,
-      source = source.NewBinSource('fdfind', opts.args, function(data)
-        table.insert(collection, data) 
-      end, function(err)
-        print(err)
-      end),
+      source = source.NewBinSource(cmd),
       sorter = sorter.Levenshtein,
       drawer = drawer.new(),
       handler = function(line)
@@ -49,21 +45,14 @@ return {
     opts.args = opts.args or {}
     table.insert(opts.args, opts.cwd)
     if not opts.hidden then
-      table.insert(opts.args, '-not')
-      table.insert(opts.args, '-path')
-      table.insert(opts.args, [[*/\.*]])
+      table.insert(opts.args, [[-not -path '*/\.*']])
     end
-    table.insert(opts.args, '-type')
-    table.insert(opts.args, 's,f')
+    table.insert(opts.args, '-type s,f')
     local collection = {}
+    local cmd = string.format('find %s', table.concat(opts.args, ' '))
     Luzzy.new {
-      collection = collection,
-      source = source.NewBinSource('find', opts.args, function(data)
-        table.insert(collection, data) 
-      end, function(err)
-        print(err)
-      end),
-      sorter = sorter.Fzy,
+      source = source.NewBinSource(cmd),
+      sorter = sorter.FZF,
       drawer = drawer.new(),
       handler = function(line)
         helpers.open_file(line)
@@ -74,11 +63,7 @@ return {
     local collection = {}
     Luzzy.new {
       collection = collection,
-      source = source.NewBinSource('git', {'ls-files'}, function(data)
-        table.insert(collection, data) 
-      end, function(err)
-        print(err)
-      end),
+      source = source.NewBinSource('git ls-files'),
       sorter = sorter.Levenshtein,
       drawer = drawer.new(),
       handler = function(line)
@@ -90,11 +75,7 @@ return {
     local collection = {}
     Luzzy.new {
       collection = collection,
-      source = source.NewBinSource('git', {'grep', '-n', [[]]}, function(data)
-        table.insert(collection, data) 
-      end, function(err)
-        print(err)
-      end),
+      source = source.NewBinSource('git grep -n ""'),
       sorter = sorter.FZF,
       drawer = drawer.new(),
       handler = function(line)
@@ -108,11 +89,7 @@ return {
     local collection = {}
     Luzzy.new {
       collection = collection,
-      source = source.NewBinSource('rg', {'--column', '--line-number', '--no-heading', '--smart-case', '-e', ''}, function(data)
-        table.insert(collection, data)
-      end, function(err)
-        print(err)
-      end),
+      source = source.NewBinSource('rg --column --line-number --no-heading --smart-case ""'),
       sorter = sorter.FZF,
       drawer = drawer.new(),
       handler = function(line)
@@ -141,14 +118,8 @@ return {
   end,
   buffer_lines = function(opts)
     local filename = vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf())
-    local collection = {}
     Luzzy.new {
-      collection = collection,
-      source = source.NewBinSource('cat', {'--number', filename}, function(data)
-        table.insert(collection, data) 
-      end, function(err)
-        print(err)
-      end),
+      source = source.NewBinSource(string.format('cat --number %s', filename)),
       sorter = sorter.Levenshtein,
       drawer = drawer.new(),
       handler = function(line)
@@ -164,25 +135,16 @@ return {
     opts.args = opts.args or {}
     table.insert(opts.args, opts.cwd)
     if not opts.hidden then
-      table.insert(opts.args, '-not')
-      table.insert(opts.args, '-path')
-      table.insert(opts.args, [[*/\.*]])
+      table.insert(opts.args, [[-not -path '*/\.*']])
     end
-    table.insert(opts.args, '-type')
-    table.insert(opts.args, 's,d')
-    local collection = {}
-
+    table.insert(opts.args, '-type s,d')
+    local cmd = string.format('find %s', table.concat(opts.args, ' '))
     Luzzy.new {
-      collection = collection,
-      source = source.NewBinSource('find', opts.args, function(data)
-        table.insert(collection, data) 
-      end, function(err)
-        print(err)
-      end),
-      sorter = sorter.Levenshtein,
+      source = source.NewBinSource(cmd),
+      sorter = sorter.FZF,
       drawer = drawer.new(),
       handler = function(line)
-        vim.cmd(string.format('! cd %s', line))
+        vim.cmd(string.format('cd %s', line))
       end,
     }
   end,

@@ -59,12 +59,7 @@ function M.new()
         return
       end
       local buf_size = vim.api.nvim_win_get_height(win)
-      vim.api.nvim_buf_set_lines(buf, 0, -2, false, collection)
-
-      if self.selected_line == -1 then
-        self.selected_line = #collection -1
-      end
-      __Luzzy_highlight(self.buf, LuzzyDrawerHighlight, self.selected_line)
+      vim.api.nvim_buf_set_lines(buf, 0, -2, false, table.slice(collection, #collection+1-buf_size, #collection))
     end
   }
 end

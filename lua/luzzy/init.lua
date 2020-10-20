@@ -23,7 +23,6 @@ end
 
 function __Luzzy_handler()
   local line = vim.api.nvim_buf_get_lines(CURRENT_LUZZY.buf, CURRENT_LUZZY.drawer.selected_line, CURRENT_LUZZY.drawer.selected_line+1, false)[1]
-  print(line)
   __Luzzy_close()
   CURRENT_LUZZY.handler(line)
 end
@@ -52,16 +51,16 @@ function __Luzzy_updater()
   CURRENT_LUZZY.drawer:draw(CURRENT_LUZZY.collection)
   -- Always select last item after updating the buffer
   local lines = vim.api.nvim_buf_get_lines(CURRENT_LUZZY.buf, 0, -1, false)
-  CURRENT_LUZZY.drawer.selected_line = #lines-2 
+  CURRENT_LUZZY.drawer.selected_line = #lines-2
   CURRENT_LUZZY.drawer:update_selection()
   end
 
 function Luzzy.new(opts)
   CURRENT_LUZZY = opts
-  if opts.source then
-    opts.source()
-  end
   CURRENT_LUZZY.base_collection = CURRENT_LUZZY.collection
+  if opts.source then
+    CURRENT_LUZZY.base_collection = opts.source()
+  end
   __Luzzy_updater()
 end
 
