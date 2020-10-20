@@ -1,5 +1,5 @@
-# Fuzzy.nvim
-Fuzzy.nvim provides a simple mechanism and pipeline to create fuzzy matching in neovim.
+# Luzzy.nvim
+Luzzy.nvim provides a simple mechanism and pipeline to create fuzzy matching in neovim.
 
 # Terminology:
 - Source: source is a function that returns a list of data that we are going to search.
