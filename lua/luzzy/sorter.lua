@@ -5,9 +5,10 @@ local Sorter = {}
 
 function Sorter.FZF(query, collection)
   local input = table.concat(collection, '\n')
-  local cmd = string.format([[ fzf --filter='%s' ]], query)
-  local file = io.popen(cmd)
-  file:write(input)
+  local tmp = io.open('/tmp/sorter', 'w')
+  tmp:write(input)
+  tmp:close()
+  local file = io.popen(string.format([[ cat /tmp/sorter | fzf -f '%s' ]], query))
   local output = file:read('*all')
   file:close()
   output = vim.split(output, '\n')
@@ -17,12 +18,14 @@ end
 
 function Sorter.Fzy(query, collection)
   local input = table.concat(collection, '\n')
-  local cmd = string.format([[ fzy --show-matches='%s' ]], query)
-  local file = io.popen(cmd)
-  file:write(input)
+  local tmp = io.open('/tmp/sorter', 'w')
+  tmp:write(input)
+  tmp:close()
+  local file = io.popen(string.format([[ cat /tmp/sorter | fzy --show-matches='%s' ]], query))
   local output = file:read('*all')
   file:close()
   output = vim.split(output, '\n')
+  table.remove(output, #output)
   return output
 end
 

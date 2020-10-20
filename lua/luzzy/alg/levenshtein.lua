@@ -63,9 +63,10 @@ local function levenshtein_distance(str1, str2)
   __cache_score[str1..str2] = distance[len1][len2]
   return distance[len1][len2]
 end
+local quicksort = require'luzzy.alg.quicksort'
 
 local function sort(list)
-  table.sort(list, function(l1, l2) return l1.score > l2.score end) 
+  list = quicksort(list, 1, #list)
   return list
 end
 

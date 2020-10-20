@@ -63,11 +63,11 @@ return {
       end, function(err)
         print(err)
       end),
-      sorter = sorter.Levenshtein,
+      sorter = sorter.Fzy,
       drawer = drawer.new(),
       handler = function(line)
         helpers.open_file(line)
-    end,
+      end,
     }
   end,
   git_files = function(opts)
@@ -95,7 +95,7 @@ return {
       end, function(err)
         print(err)
       end),
-      sorter = sorter.Levenshtein,
+      sorter = sorter.FZF,
       drawer = drawer.new(),
       handler = function(line)
         local filename = vim.split(line, ':')[1]
@@ -113,7 +113,7 @@ return {
       end, function(err)
         print(err)
       end),
-      sorter = sorter.Levenshtein,
+      sorter = sorter.FZF,
       drawer = drawer.new(),
       handler = function(line)
         local filename = vim.split(line, ':')[1]
@@ -215,7 +215,7 @@ return {
     local cmd = table.concat(lines, '\n')
     Luzzy.new {
       collection = lines,
-      sorter = sorter.Levenshtein,
+      sorter = sorter.FZF,
       drawer = drawer.new(),
       handler = function(line)
         local segments = split(line, ":")
@@ -245,7 +245,7 @@ return {
         local segments = split(line, ":")
         helpers.open_file_at(segments[1], segments[2])
       end,
-      sorter = sorter.Levenshtein,
+      sorter = sorter.FZF,
       drawer = drawer.new(),
     }
   end,
