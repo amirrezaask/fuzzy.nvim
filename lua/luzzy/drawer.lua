@@ -55,6 +55,9 @@ function M.new()
       if not vim.api.nvim_buf_is_valid(buf) then
         return
       end
+      if #collection == 0 then
+        return
+      end
       local buf_size = vim.api.nvim_win_get_height(win)
       vim.api.nvim_buf_set_lines(buf, 0, -2, false, table.slice(collection, #collection+1-buf_size, #collection))
 

@@ -2,12 +2,13 @@
 -- Sorter interface for Luzzy
 local lev = require'luzzy.alg.levenshtein'
 local uv = vim.loop
-
+local helpers = require'luzzy.helpers'
 local Sorter = {}
+
 
 function Sorter.FZF(query, collection)
   local input = table.concat(collection, '\n')
-  local cmd = string.format([[! printf '%s' | fzf -f '%s' ]], input, query)
+  local cmd = string.format([[! printf '%s' | fzf --filter='%s' ]], input, query)
   local file = io.popen(cmd)
   local output = file:read('*all')
   file:close()
@@ -35,7 +36,6 @@ function Sorter.Fzy(query, collection)
   return output
 
 end
-
 
 function Sorter.Levenshtein(query, collection)
   return lev.match(query, collection) 
