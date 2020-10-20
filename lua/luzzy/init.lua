@@ -58,11 +58,11 @@ function __Luzzy_updater()
 
 function Luzzy.new(opts)
   CURRENT_LUZZY = opts
-  CURRENT_LUZZY.base_collection = opts.collection
   if opts.source then
     opts.source()
   end
-  opts.drawer:draw(opts.collection)
+  CURRENT_LUZZY.base_collection = CURRENT_LUZZY.collection
+  __Luzzy_updater()
 end
 
 return {

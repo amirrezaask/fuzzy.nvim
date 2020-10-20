@@ -1,40 +1,29 @@
 -- Sorter.lua
 -- Sorter interface for Luzzy
 local lev = require'luzzy.alg.levenshtein'
-local uv = vim.loop
-local helpers = require'luzzy.helpers'
 local Sorter = {}
-
 
 function Sorter.FZF(query, collection)
   local input = table.concat(collection, '\n')
-  local cmd = string.format([[! printf '%s' | fzf --filter='%s' ]], input, query)
+  local cmd = string.format([[ fzf --filter='%s' ]], query)
   local file = io.popen(cmd)
+  file:write(input)
   local output = file:read('*all')
   file:close()
   output = vim.split(output, '\n')
-  for i, o in ipairs(output) do
-    if o == '' then
-      table.remove(output, i)
-    end
-  end
+  table.remove(output, #output)
   return output
 end
 
 function Sorter.Fzy(query, collection)
   local input = table.concat(collection, '\n')
-  local cmd = string.format([[! printf '%s' | fzy --show-matches='%s' ]], input, query)
+  local cmd = string.format([[ fzy --show-matches='%s' ]], query)
   local file = io.popen(cmd)
+  file:write(input)
   local output = file:read('*all')
   file:close()
   output = vim.split(output, '\n')
-  for i, o in ipairs(output) do
-    if o == '' then
-      table.remove(output, i)
-    end
-  end
   return output
-
 end
 
 function Sorter.Levenshtein(query, collection)

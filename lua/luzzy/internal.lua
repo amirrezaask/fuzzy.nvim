@@ -35,7 +35,7 @@ return {
       end, function(err)
         print(err)
       end),
-      sorter = sorter.FZF(),
+      sorter = sorter.Levenshtein,
       drawer = drawer.new(),
       handler = function(line)
         helpers.open_file(line)
@@ -63,7 +63,7 @@ return {
       end, function(err)
         print(err)
       end),
-      sorter = sorter.Fzy,
+      sorter = sorter.Levenshtein,
       drawer = drawer.new(),
       handler = function(line)
         helpers.open_file(line)
@@ -109,7 +109,7 @@ return {
     Luzzy.new {
       collection = collection,
       source = source.NewBinSource('rg', {'--column', '--line-number', '--no-heading', '--smart-case', '-e', ''}, function(data)
-        table.insert(collection, data) 
+        table.insert(collection, data)
       end, function(err)
         print(err)
       end),
