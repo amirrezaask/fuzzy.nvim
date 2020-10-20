@@ -82,7 +82,7 @@ local function match(query, collection)
     for _, nq in ipairs(ngrams_query) do
       local min_distance_of_ngrams = 100000
       for _, nd in ipairs(ngrams_data) do
-        local distance = levenshtein_distance(nq, nd)
+        local distance = levenshtein_distance(string.lower(nq), string.lower(nd))
         if distance < min_distance_of_ngrams then
           min_distance_of_ngrams = distance
         end
