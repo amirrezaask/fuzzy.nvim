@@ -1,15 +1,20 @@
-# Luzzy.nvim
-All in lua fuzzy finder for neovim
+# Fuzzy.nvim
+Fuzzy.nvim provides a simple mechanism and pipeline to create fuzzy matching in neovim.
 
-# What is the difference with Fzf.vim, Fuzzy.nvim,...
-Luzzy is written completely in lua and has no dependency to FZF or any other fuzzy finders.
-Yet it's not as fast as FZF but I am working hard to smaller the speed gap.
+# Terminology:
+- Source: source is a function that returns a list of data that we are going to search.
+- Drawer: Drawer handles the floating window and displaying of the data.
+- Sorter: Sorter is a function that gets our input and sorts the source data based on that.
+- Handler: handler varies for each function and handles final user choice.
 
-# Algorithm
-Currently we use levenshtein string distance algorithm to compare given query to 
-collection we have and sort them, but first we run an NGram function on the collection data
-to make computing string distance easier. We have two layers of cache on both NGram generation
-and string distance computing to make Luzzy faster.
+# Source:
+- Table: Fuzzy searching on a Lua table.
+- Binary: Fuzzy can help you run system commands and capture the result and fuzzy search on it.
+
+# Sorter:
+- Levenshtein: Levenshtein sorter uses Levenshtein string distance algorithm with some help from NGram technique it would sort the list.
+- FZF: Ultra fast, powered by black magic terminal fuzzy finder.
+- Fzy: another terminal fuzzy finder.
 
 # Commands
 - Files
