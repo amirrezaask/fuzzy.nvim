@@ -5,18 +5,20 @@ local sorter = require('luzzy.sorter')
 local drawer = require('luzzy.drawer')
 
 -- Register execute commands
--- vim.cmd [[ command! Files lua require('luzzy.internal').find_files{} ]]
--- vim.cmd [[ command! Fd lua require('luzzy.internal').fd_files{} ]]
--- vim.cmd [[ command! GFiles lua require('luzzy.internal').git_files{} ]]
--- vim.cmd [[ command! GGrep lua require('luzzy.internal').git_grep{} ]]
--- vim.cmd [[ command! BLines lua require('luzzy.internal').buffer_lines{} ]]
--- vim.cmd [[ command! Buffers lua require('luzzy.internal').buffers{} ]]
--- vim.cmd [[ command! Rg lua require('luzzy.internal').rg{} ]]
--- vim.cmd [[ command! Colors lua require('luzzy.internal').colors{} ]]
--- vim.cmd [[ command! Cd lua require('luzzy.internal').cd{} ]]
--- vim.cmd [[ command! LspReferences lua require('luzzy.internal').lsp_references{} ]]
--- vim.cmd [[ command! LspDocumentSymbols lua require('luzzy.internal').lsp_document_symbols{} ]]
--- vim.cmd [[ command! LspWorkspaceSymbols lua require('luzzy.internal').lsp_workspace_symbols{} ]]
+vim.cmd [[ command! Files lua require('luzzy.internal').find_files{} ]]
+vim.cmd [[ command! Fd lua require('luzzy.internal').fd_files{} ]]
+vim.cmd [[ command! GFiles lua require('luzzy.internal').git_files{} ]]
+vim.cmd [[ command! GGrep lua require('luzzy.internal').git_grep{} ]]
+vim.cmd [[ command! BLines lua require('luzzy.internal').buffer_lines{} ]]
+vim.cmd [[ command! Buffers lua require('luzzy.internal').buffers{} ]]
+vim.cmd [[ command! Rg lua require('luzzy.internal').rg{} ]]
+vim.cmd [[ command! Colors lua require('luzzy.internal').colors{} ]]
+vim.cmd [[ command! Cd lua require('luzzy.internal').cd{} ]]
+vim.cmd [[ command! LspReferences lua require('luzzy.internal').lsp_references{} ]]
+vim.cmd [[ command! LspDocumentSymbols lua require('luzzy.internal').lsp_document_symbols{} ]]
+vim.cmd [[ command! LspWorkspaceSymbols lua require('luzzy.internal').lsp_workspace_symbols{} ]]
+
+LUZZY_DEFAULT_SORTER = sorter.Levenshtein 
 
 return {
   fd_files = function(opts)
@@ -31,7 +33,7 @@ return {
     local cmd = string.format('fdfind %s %s', opts.cwd, opts.hidden)
     Luzzy.new {
       source = source.NewBinSource(cmd),
-      sorter = sorter.Levenshtein,
+      sorter = LUZZY_DEFAULT_SORTER,
       drawer = drawer.new(),
       handler = function(line)
         helpers.open_file(line)
@@ -52,7 +54,7 @@ return {
     local cmd = string.format('find %s', table.concat(opts.args, ' '))
     Luzzy.new {
       source = source.NewBinSource(cmd),
-      sorter = sorter.FZF,
+      sorter = LUZZY_DEFAULT_SORTER,
       drawer = drawer.new(),
       handler = function(line)
         helpers.open_file(line)
@@ -64,7 +66,7 @@ return {
     Luzzy.new {
       collection = collection,
       source = source.NewBinSource('git ls-files'),
-      sorter = sorter.Levenshtein,
+      sorter = LUZZY_DEFAULT_SORTER,
       drawer = drawer.new(),
       handler = function(line)
         helpers.open_file(line)
@@ -107,7 +109,7 @@ return {
       end
     end
     Luzzy.new {
-      sorter = sorter.Levenshtein,
+      sorter = LUZZY_DEFAULT_SORTER,
       drawer = drawer.new(),
       handler = function(line)
         local buffer_name = vim.split(line, ':')[2]
@@ -120,7 +122,7 @@ return {
     local filename = vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf())
     Luzzy.new {
       source = source.NewBinSource(string.format('cat --number %s', filename)),
-      sorter = sorter.Levenshtein,
+      sorter = LUZZY_DEFAULT_SORTER,
       drawer = drawer.new(),
       handler = function(line)
         local number = vim.split(line, '  ')[3]
@@ -150,7 +152,7 @@ return {
   end,
   colors = function(opts)
     Luzzy.new {
-      sorter = sorter.Levenshtein,
+      sorter = LUZZY_DEFAULT_SORTER,
       drawer = drawer.new(),
       handler = function(color)
         vim.cmd(string.format('colorscheme %s', color))
@@ -237,7 +239,7 @@ return {
         local segments = split(line, ":")
         helpers.open_file_at(segments[1], segments[2])
       end,
-      sorter = sorter.Levenshtein,
+      sorter = LUZZY_DEFAULT_SORTER,
       drawer = drawer.new(),
     }
   end
