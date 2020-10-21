@@ -112,7 +112,9 @@ return {
     Fuzzy.new {
       collection = collection,
       source = source.NewBinSource('rg --column --line-number --no-heading --smart-case ""'),
-      sorter = sorter.FZF,
+      sorter = function(query, _)
+        return source.NewBinSource(string.format('rg --column --line-number --no-heading --smart-case "%s"', query))()
+      end,
       drawer = drawer.new(),
       handler = function(line)
         local filename = vim.split(line, ':')[1]
