@@ -3,6 +3,7 @@ local helpers = require('fuzzy.helpers')
 local source = require('fuzzy.source')
 local sorter = require('fuzzy.sorter')
 local drawer = require('fuzzy.drawer')
+local file_finder = require'fuzzy.file_finder'
 
 -- Register execute commands
 vim.cmd [[ command! Files lua require('fuzzy.internal').find_files{} ]]
@@ -21,6 +22,26 @@ vim.cmd [[ command! LspWorkspaceSymbols lua require('fuzzy.internal').lsp_worksp
 FUZZY_DEFAULT_SORTER = sorter.Levenshtein 
 
 return {
+  file_finder = function(opts)
+    opts = opts or {}
+    opts.cwd = '.'
+    opts.hidden = opts.hidden or false
+    Fuzzy.new {
+      source = function()
+        return file_finder.find({
+        path = opts.cwd,
+        depth = opts.depth,
+        hidden = opts.hidden
+      })
+      end,
+      sorter = FUZZY_DEFAULT_SORTER,
+      drawer = drawer.new(),
+      handler = function(line)
+        helpers.open_file(line)
+      end,
+    }
+
+  end,
   fd_files = function(opts)
     opts = opts or {}
     opts.cwd = '.'
