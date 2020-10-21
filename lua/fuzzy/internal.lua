@@ -1,24 +1,24 @@
-local Luzzy = require('luzzy').Luzzy
-local helpers = require('luzzy.helpers')
-local source = require('luzzy.source')
-local sorter = require('luzzy.sorter')
-local drawer = require('luzzy.drawer')
+local Fuzzy = require('fuzzy')
+local helpers = require('fuzzy.helpers')
+local source = require('fuzzy.source')
+local sorter = require('fuzzy.sorter')
+local drawer = require('fuzzy.drawer')
 
 -- Register execute commands
-vim.cmd [[ command! Files lua require('luzzy.internal').find_files{} ]]
-vim.cmd [[ command! Fd lua require('luzzy.internal').fd_files{} ]]
-vim.cmd [[ command! GFiles lua require('luzzy.internal').git_files{} ]]
-vim.cmd [[ command! GGrep lua require('luzzy.internal').git_grep{} ]]
-vim.cmd [[ command! BLines lua require('luzzy.internal').buffer_lines{} ]]
-vim.cmd [[ command! Buffers lua require('luzzy.internal').buffers{} ]]
-vim.cmd [[ command! Rg lua require('luzzy.internal').rg{} ]]
-vim.cmd [[ command! Colors lua require('luzzy.internal').colors{} ]]
-vim.cmd [[ command! Cd lua require('luzzy.internal').cd{} ]]
-vim.cmd [[ command! LspReferences lua require('luzzy.internal').lsp_references{} ]]
-vim.cmd [[ command! LspDocumentSymbols lua require('luzzy.internal').lsp_document_symbols{} ]]
-vim.cmd [[ command! LspWorkspaceSymbols lua require('luzzy.internal').lsp_workspace_symbols{} ]]
+vim.cmd [[ command! Files lua require('fuzzy.internal').find_files{} ]]
+vim.cmd [[ command! Fd lua require('fuzzy.internal').fd_files{} ]]
+vim.cmd [[ command! GFiles lua require('fuzzy.internal').git_files{} ]]
+vim.cmd [[ command! GGrep lua require('fuzzy.internal').git_grep{} ]]
+vim.cmd [[ command! BLines lua require('fuzzy.internal').buffer_lines{} ]]
+vim.cmd [[ command! Buffers lua require('fuzzy.internal').buffers{} ]]
+vim.cmd [[ command! Rg lua require('fuzzy.internal').rg{} ]]
+vim.cmd [[ command! Colors lua require('fuzzy.internal').colors{} ]]
+vim.cmd [[ command! Cd lua require('fuzzy.internal').cd{} ]]
+vim.cmd [[ command! LspReferences lua require('fuzzy.internal').lsp_references{} ]]
+vim.cmd [[ command! LspDocumentSymbols lua require('fuzzy.internal').lsp_document_symbols{} ]]
+vim.cmd [[ command! LspWorkspaceSymbols lua require('fuzzy.internal').lsp_workspace_symbols{} ]]
 
-LUZZY_DEFAULT_SORTER = sorter.Levenshtein 
+FUZZY_DEFAULT_SORTER = sorter.Levenshtein 
 
 return {
   fd_files = function(opts)
@@ -31,9 +31,9 @@ return {
       opts.hidden = ''
     end
     local cmd = string.format('fdfind %s %s', opts.cwd, opts.hidden)
-    Luzzy.new {
+    Fuzzy.new {
       source = source.NewBinSource(cmd),
-      sorter = LUZZY_DEFAULT_SORTER,
+      sorter = FUZZY_DEFAULT_SORTER,
       drawer = drawer.new(),
       handler = function(line)
         helpers.open_file(line)
@@ -50,11 +50,10 @@ return {
       table.insert(opts.args, [[-not -path '*/\.*']])
     end
     table.insert(opts.args, '-type s,f')
-    local collection = {}
     local cmd = string.format('find %s', table.concat(opts.args, ' '))
-    Luzzy.new {
+    Fuzzy.new {
       source = source.NewBinSource(cmd),
-      sorter = LUZZY_DEFAULT_SORTER,
+      sorter = FUZZY_DEFAULT_SORTER,
       drawer = drawer.new(),
       handler = function(line)
         helpers.open_file(line)
@@ -63,10 +62,10 @@ return {
   end,
   git_files = function(opts)
     local collection = {}
-    Luzzy.new {
+    Fuzzy.new {
       collection = collection,
       source = source.NewBinSource('git ls-files'),
-      sorter = LUZZY_DEFAULT_SORTER,
+      sorter = FUZZY_DEFAULT_SORTER,
       drawer = drawer.new(),
       handler = function(line)
         helpers.open_file(line)
@@ -75,7 +74,7 @@ return {
   end,
   git_grep = function(opts)
     local collection = {}
-    Luzzy.new {
+    Fuzzy.new {
       collection = collection,
       source = source.NewBinSource('git grep -n ""'),
       sorter = sorter.FZF,
@@ -89,7 +88,7 @@ return {
   end,
   rg = function(opts)
     local collection = {}
-    Luzzy.new {
+    Fuzzy.new {
       collection = collection,
       source = source.NewBinSource('rg --column --line-number --no-heading --smart-case ""'),
       sorter = sorter.FZF,
@@ -108,8 +107,8 @@ return {
         table.insert(_buffers, string.format("%s: %s", b, vim.api.nvim_buf_get_name(b)))
       end
     end
-    Luzzy.new {
-      sorter = LUZZY_DEFAULT_SORTER,
+    Fuzzy.new {
+      sorter = FUZZY_DEFAULT_SORTER,
       drawer = drawer.new(),
       handler = function(line)
         local buffer_name = vim.split(line, ':')[2]
@@ -120,9 +119,9 @@ return {
   end,
   buffer_lines = function(opts)
     local filename = vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf())
-    Luzzy.new {
+    Fuzzy.new {
       source = source.NewBinSource(string.format('cat --number %s', filename)),
-      sorter = LUZZY_DEFAULT_SORTER,
+      sorter = FUZZY_DEFAULT_SORTER,
       drawer = drawer.new(),
       handler = function(line)
         local number = vim.split(line, '  ')[3]
@@ -141,7 +140,7 @@ return {
     end
     table.insert(opts.args, '-type s,d')
     local cmd = string.format('find %s', table.concat(opts.args, ' '))
-    Luzzy.new {
+    Fuzzy.new {
       source = source.NewBinSource(cmd),
       sorter = sorter.FZF,
       drawer = drawer.new(),
@@ -151,8 +150,8 @@ return {
     }
   end,
   colors = function(opts)
-    Luzzy.new {
-      sorter = LUZZY_DEFAULT_SORTER,
+    Fuzzy.new {
+      sorter = FUZZY_DEFAULT_SORTER,
       drawer = drawer.new(),
       handler = function(color)
         vim.cmd(string.format('colorscheme %s', color))
@@ -177,7 +176,7 @@ return {
       table.insert(lines, string.format('%s:%s:%s', loc.filename, loc.lnum, loc.text))
     end
     local cmd = table.concat(lines, '\n')
-    Luzzy.new {
+    Fuzzy.new {
       collection = lines,
       sorter = sorter.FZF,
       drawer = drawer.new(),
@@ -203,7 +202,7 @@ return {
     for _, loc in ipairs(locations) do
       table.insert(lines, string.format('%s:%s:%s', loc.filename, loc.lnum, loc.text))
     end
-    Luzzy.new {
+    Fuzzy.new {
       collection = lines,
       handler = function(line)
         local segments = split(line, ":")
@@ -233,13 +232,13 @@ return {
     for _, loc in ipairs(locations) do
       table.insert(lines, string.format('%s:%s:%s', loc.filename, loc.lnum, loc.text))
     end
-    Luzzy.new {
+    Fuzzy.new {
       collection = lines,
       handler = function(line)
         local segments = split(line, ":")
         helpers.open_file_at(segments[1], segments[2])
       end,
-      sorter = LUZZY_DEFAULT_SORTER,
+      sorter = FUZZY_DEFAULT_SORTER,
       drawer = drawer.new(),
     }
   end

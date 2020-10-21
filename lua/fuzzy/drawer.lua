@@ -1,10 +1,10 @@
 -- Drawer
-local location = require'luzzy.location'
-local floating = require'luzzy.floating'
+local location = require'fuzzy.location'
+local floating = require'fuzzy.floating'
 
 local M = {}
 
-local LuzzyDrawerHighlight = vim.api.nvim_create_namespace('LuzzyDrawerHighlight')
+local FuzzyDrawerHighlight = vim.api.nvim_create_namespace('FuzzyDrawerHighlight')
 
 function M.new()
   local opts = {}
@@ -15,17 +15,17 @@ function M.new()
  
   local buf, win, closer = floating.floating_buffer(math.ceil(vim.api.nvim_get_option('columns')/2), math.ceil(vim.api.nvim_get_option('lines')/2), location.bottom_center)
 
-  vim.api.nvim_buf_set_keymap(buf, 'i', '<C-p>', '<cmd> lua CURRENT_LUZZY.drawer:selection_up()<CR>', {})
-  vim.api.nvim_buf_set_keymap(buf, 'i', '<C-k>', '<cmd> lua CURRENT_LUZZY.drawer:selection_up()<CR>', {})
-  vim.api.nvim_buf_set_keymap(buf, 'i', '<C-n>', '<cmd> lua CURRENT_LUZZY.drawer:selection_down()<CR>', {})
-  vim.api.nvim_buf_set_keymap(buf, 'i', '<C-j>', '<cmd> lua CURRENT_LUZZY.drawer:selection_down()<CR>', {})
-  vim.api.nvim_buf_set_keymap(buf, 'i', '<C-c>', '<cmd> lua __Luzzy_close()<CR>', {})
-  vim.api.nvim_buf_set_keymap(buf, 'i', '<esc>', '<cmd> lua __Luzzy_close()<CR>', {})
-  vim.api.nvim_buf_set_keymap(buf, 'i', '<CR>',  '<cmd> lua __Luzzy_handler()<CR>', {})
+  vim.api.nvim_buf_set_keymap(buf, 'i', '<C-p>', '<cmd> lua CURRENT_FUZZY.drawer:selection_up()<CR>', {})
+  vim.api.nvim_buf_set_keymap(buf, 'i', '<C-k>', '<cmd> lua CURRENT_FUZZY.drawer:selection_up()<CR>', {})
+  vim.api.nvim_buf_set_keymap(buf, 'i', '<C-n>', '<cmd> lua CURRENT_FUZZY.drawer:selection_down()<CR>', {})
+  vim.api.nvim_buf_set_keymap(buf, 'i', '<C-j>', '<cmd> lua CURRENT_FUZZY.drawer:selection_down()<CR>', {})
+  vim.api.nvim_buf_set_keymap(buf, 'i', '<C-c>', '<cmd> lua __Fuzzy_close()<CR>', {})
+  vim.api.nvim_buf_set_keymap(buf, 'i', '<esc>', '<cmd> lua __Fuzzy_close()<CR>', {})
+  vim.api.nvim_buf_set_keymap(buf, 'i', '<CR>',  '<cmd> lua __Fuzzy_handler()<CR>', {})
 
   vim.fn.prompt_setprompt(buf, '> ')
   
-  vim.cmd([[ autocmd TextChangedI <buffer> lua __Luzzy_updater() ]])
+  vim.cmd([[ autocmd TextChangedI <buffer> lua __Fuzzy_updater() ]])
   
   return {
     buf = buf,
@@ -48,8 +48,8 @@ function M.new()
       if self.selected_line >= #lines-1 then
         self.selected_line = 0
       end
-      vim.api.nvim_buf_clear_namespace(self.buf, LuzzyDrawerHighlight, 0, -1)
-      __Luzzy_highlight(self.buf,LuzzyDrawerHighlight, self.selected_line) 
+      vim.api.nvim_buf_clear_namespace(self.buf, FuzzyDrawerHighlight, 0, -1)
+      __Fuzzy_highlight(self.buf,FuzzyDrawerHighlight, self.selected_line) 
     end,
     draw = function(self, collection)
       if not vim.api.nvim_buf_is_valid(buf) then

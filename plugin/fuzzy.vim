@@ -1,0 +1,1 @@
+lua require'fuzzy.internal'
