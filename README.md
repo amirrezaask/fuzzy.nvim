@@ -16,15 +16,17 @@ Fuzzy.nvim provides a simple mechanism and pipeline to create fuzzy matching in 
 - FZF: Ultra fast, powered by black magic terminal fuzzy finder.
 - Fzy: another terminal fuzzy finder.
 
+
 # Commands
-- Files => using a luv (libuv bindings for lua) file operations.
-- Find
-- Fd
-- GFiles
-- GGrep
-- BLines
-- Buffers
-- Rg
+- Files => Using a luv (libuv bindings for lua) file operations.
+- Grep => Using luv for reading files and matching text in them. 
+- Find => using find program in Unix environments.
+- Fd => using fd program 
+- GFiles => Git files.
+- GGrep => Git grep.
+- BLines => current buffer lines.
+- Buffers => all buffers.
+- Rg => Rg greping.
 - LspReferences
 - LspWorkspaceSymbols
 - LspDocumentSymbols

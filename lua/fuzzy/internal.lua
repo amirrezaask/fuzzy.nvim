@@ -4,9 +4,11 @@ local source = require('fuzzy.source')
 local sorter = require('fuzzy.sorter')
 local drawer = require('fuzzy.drawer')
 local file_finder = require'fuzzy.file_finder'
+local grep = require'fuzzy.grep'
 
 -- Register execute commands
 vim.cmd [[ command! Files lua require('fuzzy.internal').file_finder{} ]]
+vim.cmd [[ command! Grep lua require('fuzzy.internal').grep{} ]]
 vim.cmd [[ command! Find lua require('fuzzy.internal').find{} ]]
 vim.cmd [[ command! Fd lua require('fuzzy.internal').fd{} ]]
 vim.cmd [[ command! GFiles lua require('fuzzy.internal').git_files{} ]]
@@ -23,6 +25,31 @@ vim.cmd [[ command! LspWorkspaceSymbols lua require('fuzzy.internal').lsp_worksp
 FUZZY_DEFAULT_SORTER = sorter.Levenshtein 
 
 return {
+  grep = function(opts)
+    opts = opts or {}
+    opts.cwd = '.'
+    opts.hidden = opts.hidden or false
+    local source_and_sorter = function()
+      local files = file_finder.find({
+        path = opts.cwd,
+        depth = opts.depth,
+        hidden = opts.hidden
+      })
+      local lines = grep.grep(files, CURRENT_FUZZY.input or '')
+      return lines
+    end
+    Fuzzy.new {
+      source = source_and_sorter,
+      sorter = source_and_sorter,
+      drawer = drawer.new(),
+      handler = function(line)
+        local filename = vim.split(line, ':')[1]
+        local linum = vim.split(line, ':')[2]
+        CURRENT_FUZZY.__grep_cache= {}
+        helpers.open_file_at(filename, linum)
+      end
+    }
+  end,
   file_finder = function(opts)
     opts = opts or {}
     opts.cwd = '.'

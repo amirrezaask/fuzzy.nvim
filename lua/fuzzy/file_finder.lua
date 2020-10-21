@@ -2,6 +2,7 @@ local uv = vim.loop
 local helpers = require'fuzzy.helpers'
 
 FILE_FINDER_DEFAULT_DEPTH = 5 
+
 -- list of files and directories recursively with optional depth.
 local function _scandir(output, path, depth, hidden)
   output = output or {}
