@@ -17,7 +17,8 @@ Fuzzy.nvim provides a simple mechanism and pipeline to create fuzzy matching in 
 - Fzy: another terminal fuzzy finder.
 
 # Commands
-- Files
+- Files => using a luv (libuv bindings for lua) file operations.
+- Find
 - Fd
 - GFiles
 - GGrep

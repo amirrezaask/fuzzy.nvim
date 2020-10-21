@@ -7,7 +7,8 @@ local file_finder = require'fuzzy.file_finder'
 
 -- Register execute commands
 vim.cmd [[ command! Files lua require('fuzzy.internal').file_finder{} ]]
-vim.cmd [[ command! Fd lua require('fuzzy.internal').fd_files{} ]]
+vim.cmd [[ command! Find lua require('fuzzy.internal').find{} ]]
+vim.cmd [[ command! Fd lua require('fuzzy.internal').fd{} ]]
 vim.cmd [[ command! GFiles lua require('fuzzy.internal').git_files{} ]]
 vim.cmd [[ command! GGrep lua require('fuzzy.internal').git_grep{} ]]
 vim.cmd [[ command! BLines lua require('fuzzy.internal').buffer_lines{} ]]
@@ -41,7 +42,7 @@ return {
       end,
     }
   end,
-  fd_files = function(opts)
+  fd = function(opts)
     opts = opts or {}
     opts.cwd = '.'
     opts.hidden = opts.hidden or false
@@ -60,7 +61,7 @@ return {
       end,
     }
   end,
-  find_files = function(opts)
+  find = function(opts)
     opts = opts or {}
     opts.cwd = opts.cwd or '.'
     opts.hidden = opts.hidden or false
