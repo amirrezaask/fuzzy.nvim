@@ -2,7 +2,6 @@ local uv = vim.loop
 local helpers = require'fuzzy.helpers'
 
 FILE_FINDER_DEFAULT_DEPTH = 5 
-
 -- list of files and directories recursively with optional depth.
 local function _scandir(output, path, depth, hidden)
   output = output or {}
@@ -15,7 +14,7 @@ local function _scandir(output, path, depth, hidden)
     if name == nil and type == nil then
       break
     end
-    if name[1] == '.' and not hidden then
+    if name:sub(0, 1) == '.' and not hidden then
       goto continue
     end
     if type == 'directory' then

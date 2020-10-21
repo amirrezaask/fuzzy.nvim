@@ -6,7 +6,7 @@ local drawer = require('fuzzy.drawer')
 local file_finder = require'fuzzy.file_finder'
 
 -- Register execute commands
-vim.cmd [[ command! Files lua require('fuzzy.internal').find_files{} ]]
+vim.cmd [[ command! Files lua require('fuzzy.internal').file_finder{} ]]
 vim.cmd [[ command! Fd lua require('fuzzy.internal').fd_files{} ]]
 vim.cmd [[ command! GFiles lua require('fuzzy.internal').git_files{} ]]
 vim.cmd [[ command! GGrep lua require('fuzzy.internal').git_grep{} ]]
@@ -40,7 +40,6 @@ return {
         helpers.open_file(line)
       end,
     }
-
   end,
   fd_files = function(opts)
     opts = opts or {}
