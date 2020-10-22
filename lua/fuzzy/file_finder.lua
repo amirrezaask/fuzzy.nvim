@@ -2,7 +2,7 @@ local uv = vim.loop
 local helpers = require'fuzzy.helpers'
 
 FILE_FINDER_DEFAULT_DEPTH = 5 
-
+FILE_FINDER_THRESHOLD = 500
 -- list of files and directories recursively with optional depth.
 local function _scandir(output, path, depth, hidden)
   output = output or {}
@@ -11,6 +11,9 @@ local function _scandir(output, path, depth, hidden)
   if depth == 0 then return output end
   local fs_t = uv.fs_scandir(path)
   while true do
+    if #output > FILE_FINDER_THRESHOLD then
+      return output
+    end
     local name, type = uv.fs_scandir_next(fs_t)
     if name == nil and type == nil then
       break

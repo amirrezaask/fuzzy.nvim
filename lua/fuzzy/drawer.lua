@@ -8,9 +8,9 @@ local FuzzyDrawerHighlight = vim.api.nvim_create_namespace('FuzzyDrawerHighlight
 
 local function fill_buffer(lines)
   local height = math.ceil(vim.api.nvim_get_option('lines'))
-  if height > #lines then
+  if height - #lines > 2 then
     local new_lines = {}
-    for i=1, height-#lines do
+    for _ = 1, height-#lines do
       table.insert(new_lines, '')
     end
     for i=1,#lines do

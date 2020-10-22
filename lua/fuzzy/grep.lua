@@ -24,7 +24,7 @@ local function read_file(file)
   uv.fs_close(fd)
   return data
 end
-
+GREP_FILE_THRESHOLD = 500
 local function grep_file(file, pattern, output)
   CURRENT_FUZZY.__grep_cache = CURRENT_FUZZY.__grep_cache or {}
   local text = CURRENT_FUZZY.__grep_cache[file]
@@ -33,6 +33,9 @@ local function grep_file(file, pattern, output)
     CURRENT_FUZZY.__grep_cache[file] = text
   end
   for i, t in ipairs(vim.split(text, '\n')) do
+    if #output == GREP_FILE_THRESHOLD then
+      return 
+    end
     if pattern == '' then
       table.insert(output, string.format('%s:%s:%s',file, i, t))
       goto continue
