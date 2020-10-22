@@ -6,6 +6,21 @@ local M = {}
 
 local FuzzyDrawerHighlight = vim.api.nvim_create_namespace('FuzzyDrawerHighlight')
 
+local function fill_buffer(lines)
+  local height = math.ceil(vim.api.nvim_get_option('lines'))
+  if height > #lines then
+    local new_lines = {}
+    for i=1, height-#lines do
+      table.insert(new_lines, '')
+    end
+    for i=1,#lines do
+      table.insert(new_lines, lines[i])
+    end
+    lines = new_lines
+  end
+  return lines
+end
+
 function M.new()
   local opts = {}
  
@@ -13,7 +28,7 @@ function M.new()
  
   vim.cmd [[ startinsert! ]]
  
-  local buf, win, closer = floating.floating_buffer(math.ceil(vim.api.nvim_get_option('columns')/2), math.ceil(vim.api.nvim_get_option('lines')/2), location.bottom_center)
+  local buf, win, closer = floating.floating_buffer(math.ceil(vim.api.nvim_get_option('columns')/2), math.ceil(vim.api.nvim_get_option('lines')), location.bottom_center)
 
   vim.api.nvim_buf_set_keymap(buf, 'i', '<C-p>', '<cmd> lua CURRENT_FUZZY.drawer:selection_up()<CR>', {})
   vim.api.nvim_buf_set_keymap(buf, 'i', '<C-k>', '<cmd> lua CURRENT_FUZZY.drawer:selection_up()<CR>', {})
@@ -58,7 +73,7 @@ function M.new()
       if #collection == 0 then
         return
       end
-      local buf_size = vim.api.nvim_win_get_height(win)
+      collection = fill_buffer(collection)
       vim.api.nvim_buf_set_lines(buf, 0, -2, false, collection)
     end
   }

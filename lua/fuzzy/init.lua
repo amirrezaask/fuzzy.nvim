@@ -11,8 +11,6 @@ local Fuzzy = {}
   Sorter function(query, collection) sorts the collection
   Handler function(line) handles user choice
 --]]
-
-
 function __Fuzzy_highlight(buf, hl_group, line)
   if #vim.api.nvim_buf_get_lines(buf, 0, -1, false) < 2 then
     return
