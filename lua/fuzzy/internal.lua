@@ -24,7 +24,14 @@ vim.cmd [[ command! LspDocumentSymbols lua require('fuzzy.internal').lsp_documen
 vim.cmd [[ command! LspWorkspaceSymbols lua require('fuzzy.internal').lsp_workspace_symbols{} ]]
 
 FUZZY_DEFAULT_SORTER = sorter.Levenshtein 
-FUZZY_MODE = vim.g.fuzzy_mode or 'terminal'
+local function use_default()
+  if vim.fn.executable('fzf') then
+    return false 
+  else
+    return true
+  end
+end
+
 
 return {
   grep = function(opts)
@@ -101,7 +108,7 @@ return {
     end
     table.insert(opts.args, '-type s,f')
     local cmd = string.format('find %s', table.concat(opts.args, ' '))
-    if FUZZY_MODE == 'default' then
+    if use_default() then
       Fuzzy.new {
         source = source.NewBinSource(cmd),
         sorter = FUZZY_DEFAULT_SORTER,
@@ -118,45 +125,69 @@ return {
   end,
   git_files = function(opts)
     local collection = {}
-    Fuzzy.new {
-      collection = collection,
-      source = source.NewBinSource('git ls-files'),
-      sorter = FUZZY_DEFAULT_SORTER,
-      drawer = drawer.new(),
-      handler = function(line)
+    if use_default() then
+      Fuzzy.new {
+        collection = collection,
+        source = source.NewBinSource('git ls-files'),
+        sorter = FUZZY_DEFAULT_SORTER,
+        drawer = drawer.new(),
+        handler = function(line)
+          helpers.open_file(line)
+        end,
+      }
+    else
+      terminal_fuzzy.fzf('git ls-files', function(line)
         helpers.open_file(line)
-      end,
-    }
+      end)
+    end
   end,
   git_grep = function(opts)
     local collection = {}
-    Fuzzy.new {
-      collection = collection,
-      source = source.NewBinSource('git grep -n ""'),
-      sorter = sorter.FZF,
-      drawer = drawer.new(),
-      handler = function(line)
+    local cmd = 'git grep -n ""'
+    if use_default() then
+      Fuzzy.new {
+        collection = collection,
+        source = source.NewBinSource(cmd),
+        sorter = sorter.FZF,
+        drawer = drawer.new(),
+        handler = function(line)
+          local filename = vim.split(line, ':')[1]
+          local linum = vim.split(line, ':')[2]
+          helpers.open_file_at(filename, linum)
+        end,
+      }
+    else
+      terminal_fuzzy.fzf(cmd, function(line)
         local filename = vim.split(line, ':')[1]
         local linum = vim.split(line, ':')[2]
         helpers.open_file_at(filename, linum)
-      end,
-    }
+      end)
+    end
   end,
   rg = function(opts)
     local collection = {}
-    Fuzzy.new {
-      collection = collection,
-      source = source.NewBinSource('rg --column --line-number --no-heading --smart-case ""'),
-      sorter = function(query, _)
-        return source.NewBinSource(string.format('rg --column --line-number --no-heading --smart-case "%s"', query))()
-      end,
-      drawer = drawer.new(),
-      handler = function(line)
+    local cmd = 'rg --column --line-number --no-heading --smart-case ""'
+    if use_default() then
+      Fuzzy.new {
+        collection = collection,
+        source = source.NewBinSource(),
+        sorter = function(query, _)
+          return source.NewBinSource(string.format('rg --column --line-number --no-heading --smart-case "%s"', query))()
+        end,
+        drawer = drawer.new(),
+        handler = function(line)
+          local filename = vim.split(line, ':')[1]
+          local linum = vim.split(line, ':')[2]
+          helpers.open_file_at(filename, linum)
+        end,
+      }
+    else
+      terminal_fuzzy.fzf(cmd, function(line)
         local filename = vim.split(line, ':')[1]
         local linum = vim.split(line, ':')[2]
         helpers.open_file_at(filename, linum)
-      end,
-    }
+      end)
+  end
   end,
   buffers = function(opts)
     local _buffers = {}
@@ -165,27 +196,43 @@ return {
         table.insert(_buffers, string.format("%s: %s", b, vim.api.nvim_buf_get_name(b)))
       end
     end
-    Fuzzy.new {
-      sorter = FUZZY_DEFAULT_SORTER,
-      drawer = drawer.new(),
-      handler = function(line)
+    if use_default() then
+      Fuzzy.new {
+        sorter = FUZZY_DEFAULT_SORTER,
+        drawer = drawer.new(),
+        handler = function(line)
+          local buffer_name = vim.split(line, ':')[2]
+          vim.cmd(string.format('buffer %s', buffer_name))
+        end,
+        collection = _buffers,
+      }
+    else
+      terminal_fuzzy.fzf(_buffers, function(line)
         local buffer_name = vim.split(line, ':')[2]
         vim.cmd(string.format('buffer %s', buffer_name))
-      end,
-      collection = _buffers,
-    }
+      end)
+    end
   end,
   buffer_lines = function(opts)
     local filename = vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf())
-    Fuzzy.new {
-      source = source.NewBinSource(string.format('cat --number %s', filename)),
-      sorter = FUZZY_DEFAULT_SORTER,
-      drawer = drawer.new(),
-      handler = function(line)
+    local cmd = string.format('cat --number %s', filename)
+    if use_default() then
+      Fuzzy.new {
+        source = source.NewBinSource(cmd),
+        sorter = FUZZY_DEFAULT_SORTER,
+        drawer = drawer.new(),
+        handler = function(line)
+          local number = vim.split(line, '  ')[3]
+          helpers.open_file_at(filename, number)
+        end,
+      }
+    else
+      terminal_fuzzy.fzf(cmd, 
+      function(line)
         local number = vim.split(line, '  ')[3]
         helpers.open_file_at(filename, number)
-      end,
-    }
+      end)
+    end
   end,
   cd = function(opts)
     opts = opts or {}
@@ -198,24 +245,36 @@ return {
     end
     table.insert(opts.args, '-type s,d')
     local cmd = string.format('find %s', table.concat(opts.args, ' '))
-    Fuzzy.new {
-      source = source.NewBinSource(cmd),
-      sorter = sorter.FZF,
-      drawer = drawer.new(),
-      handler = function(line)
+    if use_default() then
+      Fuzzy.new {
+        source = source.NewBinSource(cmd),
+        sorter = sorter.FZF,
+        drawer = drawer.new(),
+        handler = function(line)
+          vim.cmd(string.format('cd %s', line))
+        end,
+      }
+    else
+      terminal_fuzzy.fzf(cmd, function(line)
         vim.cmd(string.format('cd %s', line))
-      end,
-    }
+      end)
+    end
   end,
   colors = function(opts)
-    Fuzzy.new {
-      sorter = FUZZY_DEFAULT_SORTER,
-      drawer = drawer.new(),
-      handler = function(color)
+    if use_default() then
+      Fuzzy.new {
+        sorter = FUZZY_DEFAULT_SORTER,
+        drawer = drawer.new(),
+        handler = function(color)
+          vim.cmd(string.format('colorscheme %s', color))
+        end,
+        collection = vim.fn.getcompletion('', 'color'),
+      }
+    else
+      terminal_fuzzy.fzf(vim.fn.getcompletion('', 'color'), function(color)
         vim.cmd(string.format('colorscheme %s', color))
-      end,
-      collection = vim.fn.getcompletion('', 'color'),
-    }
+      end)
+    end
   end,
   lsp_document_symbols = function(opts)
     opts = opts or {}
@@ -234,15 +293,22 @@ return {
       table.insert(lines, string.format('%s:%s:%s', loc.filename, loc.lnum, loc.text))
     end
     local cmd = table.concat(lines, '\n')
-    Fuzzy.new {
-      collection = lines,
-      sorter = sorter.FZF,
-      drawer = drawer.new(),
-      handler = function(line)
+    if use_default() then
+      Fuzzy.new {
+        collection = lines,
+        sorter = sorter.FZF,
+        drawer = drawer.new(),
+        handler = function(line)
+          local segments = split(line, ":")
+          helpers.open_file_at(segments[1], segments[2])
+        end
+      }
+    else
+      terminal_fuzzy.fzf(lines, function(line)
         local segments = split(line, ":")
         helpers.open_file_at(segments[1], segments[2])
-      end
-    }
+      end)
+    end
   end,
   lsp_workspace_symbols = function(opts)
     opts = opts or {}
@@ -260,15 +326,22 @@ return {
     for _, loc in ipairs(locations) do
       table.insert(lines, string.format('%s:%s:%s', loc.filename, loc.lnum, loc.text))
     end
-    Fuzzy.new {
-      collection = lines,
-      handler = function(line)
+    if use_default() then
+      Fuzzy.new {
+        collection = lines,
+        handler = function(line)
+          local segments = split(line, ":")
+          helpers.open_file_at(segments[1], segments[2])
+        end,
+        sorter = sorter.FZF,
+        drawer = drawer.new(),
+      }
+    else
+      terminal_fuzzy.fzf(lines, function(line)
         local segments = split(line, ":")
         helpers.open_file_at(segments[1], segments[2])
-      end,
-      sorter = sorter.FZF,
-      drawer = drawer.new(),
-    }
+      end)
+    end
   end,
   lsp_references = function(opts)
     opts = opts or {}
@@ -290,14 +363,21 @@ return {
     for _, loc in ipairs(locations) do
       table.insert(lines, string.format('%s:%s:%s', loc.filename, loc.lnum, loc.text))
     end
-    Fuzzy.new {
-      collection = lines,
-      handler = function(line)
+    if use_default() then
+      Fuzzy.new {
+        collection = lines,
+        handler = function(line)
+          local segments = split(line, ":")
+          helpers.open_file_at(segments[1], segments[2])
+        end,
+        sorter = FUZZY_DEFAULT_SORTER,
+        drawer = drawer.new(),
+      }
+    else
+      terminal_fuzzy.fzf(lines, function(line)
         local segments = split(line, ":")
         helpers.open_file_at(segments[1], segments[2])
-      end,
-      sorter = FUZZY_DEFAULT_SORTER,
-      drawer = drawer.new(),
-    }
+      end)
+    end
   end
 }

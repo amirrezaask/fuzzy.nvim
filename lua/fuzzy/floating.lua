@@ -37,11 +37,11 @@ local function floating_terminal(cmd, callback, win_width, win_height, loc)
   vim.cmd [[ autocmd TermOpen * startinsert ]]
   vim.fn.termopen(cmd, {
     on_exit = function(_, _, _)
+      vim.api.nvim_set_current_win(current_window)
       if callback then
         local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
         callback(lines)
       end
-      vim.api.nvim_set_current_win(current_window)
       closer()
     end
   })
