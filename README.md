@@ -6,6 +6,7 @@ Fuzzy.nvim provides a simple mechanism and pipeline to create fuzzy matching in 
 - Drawer: Drawer handles the floating window and displaying of the data.
 - Sorter: Sorter is a function that gets our input and sorts the source data based on that.
 - Handler: handler varies for each function and handles final user choice.
+- TerminalFuzzy: If you want pure terminal interface like FZF itself use TerminalFuzzy.
 
 # Source:
 - Table: Fuzzy searching on a Lua table.

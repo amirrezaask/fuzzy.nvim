@@ -21,5 +21,11 @@ function TerminalFuzzy.fzf(stdin, handler)
     handler(lines[1])
   end)
 end
+function TerminalFuzzy.fzy(stdin, handler)
+  TerminalFuzzy.new(stdin, 'fzy', function(lines)
+    handler(lines[1])
+  end)
+end
+
 
 return TerminalFuzzy
