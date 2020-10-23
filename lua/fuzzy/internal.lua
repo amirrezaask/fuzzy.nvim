@@ -5,6 +5,7 @@ local sorter = require('fuzzy.sorter')
 local drawer = require('fuzzy.drawer')
 local file_finder = require'fuzzy.file_finder'
 local grep = require'fuzzy.grep'
+local terminal_fuzzy = require'fuzzy.terminal'
 
 -- Register execute commands
 vim.cmd [[ command! Files lua require('fuzzy.internal').file_finder{} ]]
@@ -23,6 +24,7 @@ vim.cmd [[ command! LspDocumentSymbols lua require('fuzzy.internal').lsp_documen
 vim.cmd [[ command! LspWorkspaceSymbols lua require('fuzzy.internal').lsp_workspace_symbols{} ]]
 
 FUZZY_DEFAULT_SORTER = sorter.Levenshtein 
+FUZZY_MODE = vim.g.fuzzy_mode or 'terminal'
 
 return {
   grep = function(opts)
@@ -99,14 +101,20 @@ return {
     end
     table.insert(opts.args, '-type s,f')
     local cmd = string.format('find %s', table.concat(opts.args, ' '))
-    Fuzzy.new {
-      source = source.NewBinSource(cmd),
-      sorter = FUZZY_DEFAULT_SORTER,
-      drawer = drawer.new(),
-      handler = function(line)
+    if FUZZY_MODE == 'default' then
+      Fuzzy.new {
+        source = source.NewBinSource(cmd),
+        sorter = FUZZY_DEFAULT_SORTER,
+        drawer = drawer.new(),
+        handler = function(line)
+          helpers.open_file(line)
+        end,
+      }
+    else
+      terminal_fuzzy.fzf(cmd, function(line)
         helpers.open_file(line)
-      end,
-    }
+      end)
+    end
   end,
   git_files = function(opts)
     local collection = {}

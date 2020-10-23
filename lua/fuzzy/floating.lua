@@ -27,18 +27,20 @@ local function floating_buffer(win_width, win_height, loc)
 end
 
 -- Create a simple floating terminal.
-local function floating_terminal(cmd, win_width, win_height, loc)
+local function floating_terminal(cmd, callback, win_width, win_height, loc)
   local current_window = vim.api.nvim_get_current_win()
 
-  local row, col = loc(win_height, win_width)
-
-  local buf, win, closer = floating_buffer(win_width, win_height, row, col)
+  local buf, win, closer = floating_buffer(win_width, win_height, loc)
   if cmd == "" or cmd == nil then
     cmd = vim.api.nvim_get_option('shell')
   end
   vim.cmd [[ autocmd TermOpen * startinsert ]]
   vim.fn.termopen(cmd, {
     on_exit = function(_, _, _)
+      if callback then
+        local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
+        callback(lines)
+      end
       vim.api.nvim_set_current_win(current_window)
       closer()
     end
