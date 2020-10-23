@@ -34,8 +34,6 @@ function M.new()
   vim.api.nvim_buf_set_keymap(buf, 'i', '<C-k>', '<cmd> lua CURRENT_FUZZY.drawer:selection_up()<CR>', {})
   vim.api.nvim_buf_set_keymap(buf, 'i', '<C-n>', '<cmd> lua CURRENT_FUZZY.drawer:selection_down()<CR>', {})
   vim.api.nvim_buf_set_keymap(buf, 'i', '<C-j>', '<cmd> lua CURRENT_FUZZY.drawer:selection_down()<CR>', {})
-  vim.api.nvim_buf_set_keymap(buf, 'i', '<C-c>', '<cmd> lua __Fuzzy_close()<CR>', {})
-  vim.api.nvim_buf_set_keymap(buf, 'i', '<esc>', '<cmd> lua __Fuzzy_close()<CR>', {})
   vim.api.nvim_buf_set_keymap(buf, 'i', '<CR>',  '<cmd> lua __Fuzzy_handler()<CR>', {})
 
   vim.fn.prompt_setprompt(buf, '> ')

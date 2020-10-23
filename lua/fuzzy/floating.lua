@@ -17,13 +17,17 @@ local function floating_buffer(win_width, win_height, loc)
   api.nvim_buf_set_option(buf, 'buftype','prompt')
 
   -- Set keymaps
-  vim.api.nvim_buf_set_keymap(buf, 'n', '<esc>', ':q<CR>', {})
-  vim.api.nvim_buf_set_keymap(buf, 'n', '<C-c>', ':q<CR>', {})
+  vim.api.nvim_buf_set_keymap(buf, 'i', '<C-c>', '<cmd> lua __Fuzzy_close()<CR>', {})
+  vim.api.nvim_buf_set_keymap(buf, 'i', '<esc>', '<cmd> lua __Fuzzy_close()<CR>', {})
 
   local win = api.nvim_open_win(buf, true, opts)
   return buf, win, function()
     vim.api.nvim_win_close(win, true)
   end
+end
+local __terminal_closer = nil
+function __FUZZY_TERMINAL_CLOSER()
+  __terminal_closer() 
 end
 
 -- Create a simple floating terminal.
@@ -31,6 +35,7 @@ local function floating_terminal(cmd, callback, win_width, win_height, loc)
   local current_window = vim.api.nvim_get_current_win()
 
   local buf, win, closer = floating_buffer(win_width, win_height, loc)
+  __terminal_closer = closer
   if cmd == "" or cmd == nil then
     cmd = vim.api.nvim_get_option('shell')
   end
