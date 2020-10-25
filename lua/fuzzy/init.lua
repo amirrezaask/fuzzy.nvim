@@ -10,6 +10,7 @@ local terminal_fuzzy = require'fuzzy.lib.terminal'
 -- Register execute commands
 vim.cmd [[ command! Files lua require('fuzzy').file_finder{} ]]
 vim.cmd [[ command! Grep lua require('fuzzy').grep{} ]]
+
 vim.cmd [[ command! Find lua require('fuzzy').find{} ]]
 vim.cmd [[ command! Fd lua require('fuzzy').fd{} ]]
 vim.cmd [[ command! GFiles lua require('fuzzy').git_files{} ]]
@@ -35,6 +36,23 @@ end
 
 return {
   grep = function(opts)
+    if vim.fn.executable('rg') ~= 0 then
+      return require'fuzzy'.rg(opts)
+    else
+      return require'fuzzy'.luv_grep(opts)
+    end
+  end,
+  file_finder = function(opts)
+    if vim.fn.executable('fdfind') ~= 0 or vim.fn.executable('fd') ~= 0 then
+      return require'fuzzy'.fd(opts)
+    elseif vim.fn.executable('find') ~= 0 then
+      return require'fuzzy'.find(opts)
+    else
+      return require'fuzzy'.luv_finder(opts)
+    end
+  end,
+
+  luv_grep = function(opts)
     opts = opts or {}
     opts.cwd = '.'
     opts.hidden = opts.hidden or false
@@ -59,7 +77,7 @@ return {
       end
     }
   end,
-  file_finder = function(opts)
+  luv_finder = function(opts)
     opts = opts or {}
     opts.cwd = '.'
     opts.hidden = opts.hidden or false
@@ -102,16 +120,17 @@ return {
     opts.cwd = opts.cwd or '.'
     opts.hidden = opts.hidden or false
     opts.args = opts.args or {}
-    table.insert(opts.args, opts.cwd)
-    if not opts.hidden then
-      table.insert(opts.args, [[-not -path '*/\.*']])
+    local hidden = [[-not -path '*/\.*']]
+    if opts.hidden then
+      hidden = ''
     end
-    table.insert(opts.args, '-type s,f')
-    local cmd = string.format('find %s', table.concat(opts.args, ' '))
+    local cmd = string.format('find %s %s -type s,f', opts.cwd, hidden)
     if use_default() then
       Fuzzy.new {
         source = source.NewBinSource(cmd),
-        sorter = FUZZY_DEFAULT_SORTER,
+        sorter = function(query, _)
+          return source.NewBinSource(string.format('find %s %s -iname "*%s*" -type s,f', opts.cwd, hidden, query))()
+        end,
         drawer = drawer.new(),
         handler = function(line)
           helpers.open_file(line)
