@@ -1,1 +1,1 @@
-lua require'fuzzy.internal'
+lua require'fuzzy'
