@@ -98,14 +98,13 @@ return {
   end,
   fd = function(opts)
     opts = opts or {}
-    opts.cwd = '.'
     opts.hidden = opts.hidden or false
     if opts.hidden then
       opts.hidden = '--hidden'
     else
       opts.hidden = ''
     end
-    local cmd = string.format('fdfind %s %s', opts.cwd, opts.hidden)
+    local cmd = string.format('fdfind %s --type f --type s', opts.hidden)
     Fuzzy.new {
       source = source.NewBinSource(cmd),
       sorter = FUZZY_DEFAULT_SORTER,
@@ -128,9 +127,7 @@ return {
     if use_default() then
       Fuzzy.new {
         source = source.NewBinSource(cmd),
-        sorter = function(query, _)
-          return source.NewBinSource(string.format('find %s %s -iname "*%s*" -type s,f', opts.cwd, hidden, query))()
-        end,
+        sorter = FUZZY_DEFAULT_SORTER,
         drawer = drawer.new(),
         handler = function(line)
           helpers.open_file(line)

@@ -102,6 +102,9 @@ function M.new()
       local height = vim.api.nvim_win_get_height(self.win)
       collection = table.slice(collection, 1, height - 1)
       self._start_of_data = height - #collection
+      if collection[#collection] ~= '' then
+        table.insert(collection, '')
+      end
       collection = fill_buffer(collection)
       vim.api.nvim_buf_set_lines(buf, 0, -2, false, collection)
       self.selected_line = height-2

@@ -47,12 +47,10 @@ function __Fuzzy_updater()
   CURRENT_FUZZY.input = new_input
   CURRENT_FUZZY.collection = CURRENT_FUZZY.sorter(CURRENT_FUZZY.input, CURRENT_FUZZY.collection)
   CURRENT_FUZZY.drawer:draw(CURRENT_FUZZY.collection)
-  -- Always select last item after updating the buffer
   end
 
 function Fuzzy.new(opts)
   CURRENT_FUZZY = opts
-  -- CURRENT_FUZZY.base_collection = CURRENT_FUZZY.collection
   if opts.source then
     CURRENT_FUZZY.collection = opts.source()
   end
