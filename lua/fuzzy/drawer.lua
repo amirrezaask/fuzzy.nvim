@@ -7,7 +7,7 @@ local M = {}
 local FuzzyDrawerHighlight = vim.api.nvim_create_namespace('FuzzyDrawerHighlight')
 
 local function fill_buffer(lines)
-  local height = math.ceil(vim.api.nvim_get_option('lines'))
+  local height = math.ceil(vim.api.nvim_win_get_height(CURRENT_FUZZY.drawer.win))
   if height - #lines > 2 then
     local new_lines = {}
     for _ = 1, height-#lines do
@@ -95,8 +95,9 @@ function M.new()
       if #collection == 0 then
         return
       end
+      collection = table.slice(collection, 1, vim.api.nvim_win_get_height(self.win)-1)
       collection = fill_buffer(collection)
-      vim.api.nvim_buf_set_lines(buf, 0, -2, false, collection)
+      vim.api.nvim_buf_set_lines(buf, 0, -2, false,collection)
     end
   }
 end

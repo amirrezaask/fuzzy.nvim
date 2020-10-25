@@ -165,14 +165,12 @@ return {
     end
   end,
   rg = function(opts)
-    local collection = {}
-    local cmd = 'rg --column --line-number --no-heading --smart-case ""'
+    local cmd = 'rg --column --line-number --no-heading --smart-case '
     if use_default() then
       Fuzzy.new {
-        collection = collection,
-        source = source.NewBinSource(string.format('rg --column --line-number --no-heading --smart-case ""')),
-        sorter = function(query, _)
-          return source.NewBinSource(string.format('rg --column --line-number --no-heading --smart-case "%s"', query))()
+        source = source.NewBinSource(string.format(cmd .. '""')),
+        sorter = function(query, coll)
+          return source.NewBinSource(string.format(cmd .. '"%s"', query))()
         end,
         drawer = drawer.new(),
         handler = function(line)

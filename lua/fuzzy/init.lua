@@ -45,7 +45,7 @@ function __Fuzzy_updater()
     return
   end
   CURRENT_FUZZY.input = new_input
-  CURRENT_FUZZY.collection = CURRENT_FUZZY.sorter(CURRENT_FUZZY.input, CURRENT_FUZZY.base_collection)
+  CURRENT_FUZZY.collection = CURRENT_FUZZY.sorter(CURRENT_FUZZY.input, CURRENT_FUZZY.collection)
   CURRENT_FUZZY.drawer:draw(CURRENT_FUZZY.collection)
   -- Always select last item after updating the buffer
   local lines = vim.api.nvim_buf_get_lines(CURRENT_FUZZY.buf, 0, -1, false)
@@ -55,9 +55,9 @@ function __Fuzzy_updater()
 
 function Fuzzy.new(opts)
   CURRENT_FUZZY = opts
-  CURRENT_FUZZY.base_collection = CURRENT_FUZZY.collection
+  -- CURRENT_FUZZY.base_collection = CURRENT_FUZZY.collection
   if opts.source then
-    CURRENT_FUZZY.base_collection = opts.source()
+    CURRENT_FUZZY.collection = opts.source()
   end
   __Fuzzy_updater()
 end
