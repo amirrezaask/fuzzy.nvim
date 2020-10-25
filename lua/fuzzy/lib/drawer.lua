@@ -4,6 +4,18 @@ local floating = require'fuzzy.lib.floating'
 
 local M = {}
 
+
+function table.slice(tbl, first, last, step)
+  local sliced = {}
+
+  for i = first or 1, last or #tbl, step or 1 do
+    sliced[#sliced+1] = tbl[i]
+  end
+
+  return sliced
+end
+
+
 local FuzzyDrawerHighlight = vim.api.nvim_create_namespace('FuzzyDrawerHighlight')
 
 local function fill_buffer(lines)
@@ -100,7 +112,7 @@ function M.new()
         return
       end
       local height = vim.api.nvim_win_get_height(self.win)
-      collection = table.slice(collection, 1, height - 1)
+      collection = table.slice(collection,1 , height - 1)
       self._start_of_data = height - #collection
       if collection[#collection] ~= '' then
         table.insert(collection, '')
