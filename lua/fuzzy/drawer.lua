@@ -28,7 +28,29 @@ function M.new()
  
   vim.cmd [[ startinsert! ]]
  
-  local buf, win, closer = floating.floating_buffer(math.ceil(vim.api.nvim_get_option('columns')/2), math.ceil(vim.api.nvim_get_option('lines')), location.bottom_center)
+  -- Check for options
+  -- should be set as vim.g.fuzzy_options = {location = "center", width = 50, height = 50}
+  local options = vim.g.fuzzy_options or {}
+  if options.location then
+    -- loc can be "center", "bottom" or a function
+    if options.location == 'center' then
+      loc = location.center
+    elseif options.location == 'bottom' then
+      loc = location.bottom_center
+    end
+  end
+  -- Width and height should be proportions (percentages) of the main window
+  local win_width = math.ceil(vim.api.nvim_get_option('columns')/2)
+  local win_height = math.ceil(vim.api.nvim_get_option('lines'))
+  if options.width then
+    local width = options.width
+    win_width = math.ceil(vim.api.nvim_get_option('columns')*width/100)
+  end
+  if options.height then
+    local height = options.height
+    win_height = math.ceil(vim.api.nvim_get_option('lines')*height/100)
+  end
+  local buf, win, closer = floating.floating_buffer(win_width, win_height, loc)
 
   vim.api.nvim_buf_set_keymap(buf, 'i', '<C-p>', '<cmd> lua CURRENT_FUZZY.drawer:selection_up()<CR>', {})
   vim.api.nvim_buf_set_keymap(buf, 'i', '<C-k>', '<cmd> lua CURRENT_FUZZY.drawer:selection_up()<CR>', {})
