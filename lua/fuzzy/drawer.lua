@@ -29,8 +29,8 @@ function M.new()
   vim.cmd [[ startinsert! ]]
  
   -- Check for options
+  -- should be set as vim.g.fuzzy_options = {location = "center", width = 50, height = 50}
   local options = vim.g.fuzzy_options or {}
-  local loc = location.bottom_center
   if options.location then
     -- loc can be "center", "bottom" or a function
     if options.location == 'center' then
