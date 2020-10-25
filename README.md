@@ -31,3 +31,17 @@ Fuzzy.nvim provides a simple mechanism and pipeline to create fuzzy matching in 
 - LspReferences
 - LspWorkspaceSymbols
 - LspDocumentSymbols
+
+# Options
+- You can set window location and geometry using the `g:fuzzy_options` variable :
+  - location can be `center`, `bottom` or a function with `win_width`(width of the floating window) and`win_height`(height of the floating window) as arguments returning the location of the NE corner of the floating window
+  - Width and height are in percent of the main window
+```lua
+lua << EOF
+  vim.g.fuzzy_options = {
+    location = "center",
+    width = 50,
+    height = 50
+  }
+EOF
+```
