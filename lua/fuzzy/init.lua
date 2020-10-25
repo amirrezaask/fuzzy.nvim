@@ -11,8 +11,6 @@ local terminal_fuzzy = require'fuzzy.lib.terminal'
 vim.cmd [[ command! Files lua require('fuzzy').file_finder{} ]]
 vim.cmd [[ command! Grep lua require('fuzzy').grep{} ]]
 
-vim.cmd [[ command! Find lua require('fuzzy').find{} ]]
-vim.cmd [[ command! Fd lua require('fuzzy').fd{} ]]
 vim.cmd [[ command! GFiles lua require('fuzzy').git_files{} ]]
 vim.cmd [[ command! GGrep lua require('fuzzy').git_grep{} ]]
 vim.cmd [[ command! BLines lua require('fuzzy').buffer_lines{} ]]

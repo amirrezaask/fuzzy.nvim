@@ -31,15 +31,13 @@ require('fuzzy').lsp_workspace_symbols{}
 - TerminalFuzzy: If you want pure terminal interface like FZF itself use TerminalFuzzy.
 
 # Commands
-- Files => Using a luv (libuv bindings for lua) file operations.
-- Grep => Using luv for reading files and matching text in them. 
-- Find => using find program in Unix environments.
-- Fd => using fd program 
-- GFiles => Git files.
-- GGrep => Git grep.
-- BLines => current buffer lines.
-- Buffers => all buffers.
-- Rg => Rg greping.
+- Files
+- Grep
+- GFiles
+- GGrep
+- BLines
+- Buffers
+- Rg
 - LspReferences
 - LspWorkspaceSymbols
 - LspDocumentSymbols
