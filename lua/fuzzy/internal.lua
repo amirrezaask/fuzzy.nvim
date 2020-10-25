@@ -25,7 +25,7 @@ vim.cmd [[ command! LspWorkspaceSymbols lua require('fuzzy.internal').lsp_worksp
 
 FUZZY_DEFAULT_SORTER = sorter.Levenshtein 
 local function use_default()
-  if vim.fn.executable('fzf') and not vim.g.fuzzy_terminal then
+  if vim.g.fuzzy_use_fzf then
     return false 
   else
     return true
