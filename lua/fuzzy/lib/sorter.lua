@@ -1,6 +1,6 @@
 -- Sorter.lua
 -- Sorter interface for Fuzzy
-local lev = require'fuzzy.alg.levenshtein'
+local lev = require'fuzzy.lib.alg.levenshtein'
 local Sorter = {}
 
 function Sorter.FZF(query, collection)

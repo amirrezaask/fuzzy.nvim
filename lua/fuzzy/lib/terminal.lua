@@ -1,6 +1,6 @@
 -- Terminal module for fuzzy.nvim => direct interface to terminal fuzzy finder
-local floating = require'fuzzy.floating'
-local location = require'fuzzy.location'
+local floating = require'fuzzy.lib.floating'
+local location = require'fuzzy.lib.location'
 
 local TerminalFuzzy = {}
 

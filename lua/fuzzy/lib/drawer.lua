@@ -1,6 +1,6 @@
 -- Drawer
-local location = require'fuzzy.location'
-local floating = require'fuzzy.floating'
+local location = require'fuzzy.lib.location'
+local floating = require'fuzzy.lib.floating'
 
 local M = {}
 
@@ -37,7 +37,11 @@ function M.new()
       loc = location.center
     elseif options.location == 'bottom' then
       loc = location.bottom_center
+    else
+      loc = location.bottom_center
     end
+  else 
+    loc = location.bottom_center
   end
   -- Width and height should be proportions (percentages) of the main window
   local win_width = math.ceil(vim.api.nvim_get_option('columns')/2)
@@ -68,23 +72,23 @@ function M.new()
     buf = buf,
     win = win,
     closer = closer,
+    _start_of_data = 1,
     selected_line = -1,
     selection_down = function(self)
       self.selected_line = self.selected_line + 1
+      if self.selected_line >= vim.api.nvim_win_get_height(self.win) -1 then
+        self.selected_line = self._start_of_data
+      end
       self:update_selection()
     end,
     selection_up = function(self)
       self.selected_line = self.selected_line - 1
+      if self.selected_line < self._start_of_data then
+        self.selected_line = vim.api.nvim_win_get_height(self.win) - 2
+      end
       self:update_selection()
     end,
     update_selection = function(self)
-      local lines = vim.api.nvim_buf_get_lines(self.buf, 0, -1, false)
-      if self.selected_line < 0 then
-        self.selected_line = #lines-2 
-      end
-      if self.selected_line >= #lines-1 then
-        self.selected_line = 0
-      end
       vim.api.nvim_buf_clear_namespace(self.buf, FuzzyDrawerHighlight, 0, -1)
       __Fuzzy_highlight(self.buf,FuzzyDrawerHighlight, self.selected_line) 
     end,
@@ -95,9 +99,16 @@ function M.new()
       if #collection == 0 then
         return
       end
-      collection = table.slice(collection, 1, vim.api.nvim_win_get_height(self.win)-1)
+      local height = vim.api.nvim_win_get_height(self.win)
+      collection = table.slice(collection, 1, height - 1)
+      self._start_of_data = height - #collection
+      if collection[#collection] ~= '' then
+        table.insert(collection, '')
+      end
       collection = fill_buffer(collection)
-      vim.api.nvim_buf_set_lines(buf, 0, -2, false,collection)
+      vim.api.nvim_buf_set_lines(buf, 0, -2, false, collection)
+      self.selected_line = height-2
+      self:update_selection()
     end
   }
 end
