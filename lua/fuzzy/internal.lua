@@ -170,7 +170,7 @@ return {
     if use_default() then
       Fuzzy.new {
         collection = collection,
-        source = source.NewBinSource(),
+        source = source.NewBinSource(string.format('rg --column --line-number --no-heading --smart-case ""')),
         sorter = function(query, _)
           return source.NewBinSource(string.format('rg --column --line-number --no-heading --smart-case "%s"', query))()
         end,
