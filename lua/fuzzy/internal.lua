@@ -180,7 +180,7 @@ return {
         end,
       }
     else
-      terminal_fuzzy.fzf(cmd, function(line)
+      terminal_fuzzy.fzf(cmd .. '""', function(line)
         local filename = vim.split(line, ':')[1]
         local linum = vim.split(line, ':')[2]
         helpers.open_file_at(filename, linum)
