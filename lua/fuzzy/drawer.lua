@@ -37,7 +37,11 @@ function M.new()
       loc = location.center
     elseif options.location == 'bottom' then
       loc = location.bottom_center
+    else
+      loc = location.bottom_center
     end
+  else 
+    loc = location.bottom_center
   end
   -- Width and height should be proportions (percentages) of the main window
   local win_width = math.ceil(vim.api.nvim_get_option('columns')/2)
