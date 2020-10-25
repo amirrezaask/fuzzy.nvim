@@ -1,27 +1,27 @@
-local Fuzzy = require('fuzzy')
-local helpers = require('fuzzy.helpers')
-local source = require('fuzzy.source')
-local sorter = require('fuzzy.sorter')
-local drawer = require('fuzzy.drawer')
-local file_finder = require'fuzzy.file_finder'
-local grep = require'fuzzy.grep'
-local terminal_fuzzy = require'fuzzy.terminal'
+local Fuzzy = require('fuzzy.lib')
+local helpers = require('fuzzy.lib.helpers')
+local source = require('fuzzy.lib.source')
+local sorter = require('fuzzy.lib.sorter')
+local drawer = require('fuzzy.lib.drawer')
+local file_finder = require'fuzzy.lib.file_finder'
+local grep = require'fuzzy.lib.grep'
+local terminal_fuzzy = require'fuzzy.lib.terminal'
 
 -- Register execute commands
-vim.cmd [[ command! Files lua require('fuzzy.internal').file_finder{} ]]
-vim.cmd [[ command! Grep lua require('fuzzy.internal').grep{} ]]
-vim.cmd [[ command! Find lua require('fuzzy.internal').find{} ]]
-vim.cmd [[ command! Fd lua require('fuzzy.internal').fd{} ]]
-vim.cmd [[ command! GFiles lua require('fuzzy.internal').git_files{} ]]
-vim.cmd [[ command! GGrep lua require('fuzzy.internal').git_grep{} ]]
-vim.cmd [[ command! BLines lua require('fuzzy.internal').buffer_lines{} ]]
-vim.cmd [[ command! Buffers lua require('fuzzy.internal').buffers{} ]]
-vim.cmd [[ command! Rg lua require('fuzzy.internal').rg{} ]]
-vim.cmd [[ command! Colors lua require('fuzzy.internal').colors{} ]]
-vim.cmd [[ command! Cd lua require('fuzzy.internal').cd{} ]]
-vim.cmd [[ command! LspReferences lua require('fuzzy.internal').lsp_references{} ]]
-vim.cmd [[ command! LspDocumentSymbols lua require('fuzzy.internal').lsp_document_symbols{} ]]
-vim.cmd [[ command! LspWorkspaceSymbols lua require('fuzzy.internal').lsp_workspace_symbols{} ]]
+vim.cmd [[ command! Files lua require('fuzzy').file_finder{} ]]
+vim.cmd [[ command! Grep lua require('fuzzy').grep{} ]]
+vim.cmd [[ command! Find lua require('fuzzy').find{} ]]
+vim.cmd [[ command! Fd lua require('fuzzy').fd{} ]]
+vim.cmd [[ command! GFiles lua require('fuzzy').git_files{} ]]
+vim.cmd [[ command! GGrep lua require('fuzzy').git_grep{} ]]
+vim.cmd [[ command! BLines lua require('fuzzy').buffer_lines{} ]]
+vim.cmd [[ command! Buffers lua require('fuzzy').buffers{} ]]
+vim.cmd [[ command! Rg lua require('fuzzy').rg{} ]]
+vim.cmd [[ command! Colors lua require('fuzzy').colors{} ]]
+vim.cmd [[ command! Cd lua require('fuzzy').cd{} ]]
+vim.cmd [[ command! LspReferences lua require('fuzzy').lsp_references{} ]]
+vim.cmd [[ command! LspDocumentSymbols lua require('fuzzy').lsp_document_symbols{} ]]
+vim.cmd [[ command! LspWorkspaceSymbols lua require('fuzzy').lsp_workspace_symbols{} ]]
 
 FUZZY_DEFAULT_SORTER = sorter.Levenshtein 
 local function use_default()

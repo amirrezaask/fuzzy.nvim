@@ -1,3 +1,5 @@
+local quicksort = require'fuzzy.lib.alg.quicksort'
+
 local __ngrams_cache = {}
 
 local function ngrams_of(s, n)
@@ -63,7 +65,6 @@ local function levenshtein_distance(str1, str2)
   __cache_score[str1..str2] = distance[len1][len2]
   return distance[len1][len2]
 end
-local quicksort = require'fuzzy.alg.quicksort'
 
 local function sort(list)
   list = quicksort(list, 1, #list)

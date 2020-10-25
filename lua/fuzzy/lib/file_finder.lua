@@ -1,5 +1,5 @@
 local uv = vim.loop
-local helpers = require'fuzzy.helpers'
+local helpers = require'fuzzy.lib.helpers'
 
 FILE_FINDER_DEFAULT_DEPTH = 5 
 FILE_FINDER_THRESHOLD = 2000 

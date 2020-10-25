@@ -1,8 +1,8 @@
 local uv = vim.loop
-local floating = require'fuzzy.floating'
-local lev = require'fuzzy.alg.levenshtein'
-local location = require'fuzzy.location'
-local helpers = require('fuzzy.helpers')
+local floating = require'fuzzy.lib.floating'
+local lev = require'fuzzy.lib.alg.levenshtein'
+local location = require'fuzzy.lib.location'
+local helpers = require('fuzzy.lib.helpers')
 local Fuzzy = {}
 
 --[[

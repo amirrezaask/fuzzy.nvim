@@ -1,6 +1,6 @@
 -- Drawer
-local location = require'fuzzy.location'
-local floating = require'fuzzy.floating'
+local location = require'fuzzy.lib.location'
+local floating = require'fuzzy.lib.floating'
 
 local M = {}
 

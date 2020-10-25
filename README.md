@@ -4,22 +4,22 @@ Fuzzy.nvim provides a simple mechanism and pipeline to create fuzzy matching in 
 # Example Usage
 ```lua
 -- Find files ( using Libuv )
-require('fuzzy.internal').file_finder{}
+require('fuzzy').file_finder{}
 
 -- Search for text ( using Libuv )
-require('fuzzy.internal').grep{}
+require('fuzzy').grep{}
 
 -- Search current buffer
-require('fuzzy.internal').buffer_lines{}
+require('fuzzy').buffer_lines{}
 
 -- Switch to any open buffer
-require('fuzzy.internal').buffers{}
+require('fuzzy').buffers{}
 
 -- Search LSP docuemnt symbols
-require('fuzzy.internal').lsp_document_symbols{}
+require('fuzzy').lsp_document_symbols{}
 
 -- Search LSP workspace symbols
-require('fuzzy.internal').lsp_workspace_symbols{}
+require('fuzzy').lsp_workspace_symbols{}
 
 ```
 
