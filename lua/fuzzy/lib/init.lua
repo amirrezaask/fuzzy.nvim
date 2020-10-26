@@ -4,6 +4,9 @@ local lev = require'fuzzy.lib.alg.levenshtein'
 local location = require'fuzzy.lib.location'
 local helpers = require('fuzzy.lib.helpers')
 local Fuzzy = {}
+FUZZY_OPTS = vim.g.fuzzy_options or {}
+
+FUZZY_DRAWER_HIGHLIGHT_GROUP = FUZZY_OPTS.hl_group or 'StatusLine'
 
 --[[
   Source function() collection
@@ -15,7 +18,7 @@ function __Fuzzy_highlight(buf, hl_group, line)
   if #vim.api.nvim_buf_get_lines(buf, 0, -1, false) < 2 then
     return
   end
-  vim.api.nvim_buf_add_highlight(buf, hl_group , 'Error', line, 0, -1)
+  vim.api.nvim_buf_add_highlight(buf, hl_group , FUZZY_DRAWER_HIGHLIGHT_GROUP, line, 0, -1)
 end
 
 
