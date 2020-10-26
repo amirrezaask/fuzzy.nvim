@@ -76,7 +76,7 @@ function M.new()
   vim.api.nvim_buf_set_keymap(buf, 'i', '<esc>',  '<cmd> lua __Fuzzy_close()<CR>', {})
   vim.api.nvim_buf_set_keymap(buf, 'i', '<C-c>',  '<cmd> lua __Fuzzy_close()<CR>', {})
 
-  vim.fn.prompt_setprompt(buf, '> ')
+  vim.fn.prompt_setprompt(buf, '>> ')
   
   vim.cmd([[ autocmd TextChangedI <buffer> lua __Fuzzy_updater() ]])
   
@@ -112,7 +112,7 @@ function M.new()
         return
       end
       local height = vim.api.nvim_win_get_height(self.win)
-      local start_point = #collection - (height - 1)
+      local start_point = #collection - (height - 2)
       collection = table.slice(collection, start_point, #collection)
       self._start_of_data = height - #collection
       if collection[#collection] ~= '' then
