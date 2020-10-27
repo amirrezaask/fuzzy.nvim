@@ -41,12 +41,12 @@ return {
     end
   end,
   file_finder = function(opts)
-    if vim.fn.executable('fdfind') ~= 0 or vim.fn.executable('fd') ~= 0 then
+    if not vim.g.fuzzy_options.no_luv_finder then
+      return require'fuzzy'.luv_finder(opts)
+    elseif vim.fn.executable('fdfind') ~= 0 or vim.fn.executable('fd') ~= 0 then
       return require'fuzzy'.fd(opts)
     elseif vim.fn.executable('find') ~= 0 then
       return require'fuzzy'.find(opts)
-    else
-      return require'fuzzy'.luv_finder(opts)
     end
   end,
 
