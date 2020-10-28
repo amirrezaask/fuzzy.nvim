@@ -179,7 +179,7 @@ return {
     end
   end,
   rg = function(opts)
-    local cmd = 'rg --column --line-number --no-heading --smart-case '
+    local cmd = 'rg --column --line-number --no-heading --ignore-case '
     if use_default() then
       Fuzzy.new {
         source = source.NewBinSource(string.format(cmd .. '""')),
