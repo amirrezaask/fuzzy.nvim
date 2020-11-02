@@ -114,7 +114,7 @@ function M.new()
       local height = vim.api.nvim_win_get_height(self.win)
       local start_point = #collection - (height - 2)
       collection = table.slice(collection, start_point, #collection)
-      self._start_of_data = height - #collection
+      self._start_of_data = height - #collection - 1
       if collection[#collection] ~= '' then
         table.insert(collection, '')
       end
