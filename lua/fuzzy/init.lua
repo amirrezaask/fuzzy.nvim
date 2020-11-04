@@ -77,12 +77,12 @@ return {
   end,
   luv_finder = function(opts)
     opts = opts or {}
-    opts.cwd = '.'
+    opts.path = opts.path or '.'
     opts.hidden = opts.hidden or false
     Fuzzy.new {
       source = function()
         return file_finder.find({
-        path = opts.cwd,
+        path = opts.path,
         depth = opts.depth,
         hidden = opts.hidden
       })
