@@ -11,14 +11,14 @@ local terminal_fuzzy = require'fuzzy.lib.terminal'
 vim.cmd [[ command! Files lua require('fuzzy').file_finder{} ]]
 vim.cmd [[ command! Grep lua require('fuzzy').grep{} ]]
 vim.cmd [[ command! Commands lua require('fuzzy').commands{} ]]
-
+vim.cmd [[ command! Recents lua require('fuzzy').recents{} ]]
+vim.cmd [[ command! BLines lua require('fuzzy').buffer_lines{} ]]
+vim.cmd [[ command! Cd lua require('fuzzy').cd{} ]]
 vim.cmd [[ command! GFiles lua require('fuzzy').git_files{} ]]
 vim.cmd [[ command! GGrep lua require('fuzzy').git_grep{} ]]
-vim.cmd [[ command! BLines lua require('fuzzy').buffer_lines{} ]]
 vim.cmd [[ command! Buffers lua require('fuzzy').buffers{} ]]
 vim.cmd [[ command! Rg lua require('fuzzy').rg{} ]]
 vim.cmd [[ command! Colors lua require('fuzzy').colors{} ]]
-vim.cmd [[ command! Cd lua require('fuzzy').cd{} ]]
 vim.cmd [[ command! LspReferences lua require('fuzzy').lsp_references{} ]]
 vim.cmd [[ command! LspDocumentSymbols lua require('fuzzy').lsp_document_symbols{} ]]
 vim.cmd [[ command! LspWorkspaceSymbols lua require('fuzzy').lsp_workspace_symbols{} ]]
@@ -202,11 +202,18 @@ return {
       end)
   end
   end,
-  buffers = function(opts)
+  buffers = function()
     local _buffers = {}
+    local function buffer_state(buf)
+      if vim.api.nvim_buf_is_loaded(buf) then
+        return 'L'
+      else
+        return 'U'
+      end
+    end
     for _,b in ipairs(vim.api.nvim_list_bufs()) do
       if 1 == vim.fn.buflisted(b) then
-        table.insert(_buffers, string.format("%s: %s", b, vim.api.nvim_buf_get_name(b)))
+        table.insert(_buffers, string.format("[%s] %s:%s", buffer_state(b), b, vim.api.nvim_buf_get_name(b)))
       end
     end
     if use_default() then
@@ -393,18 +400,27 @@ return {
       end)
     end
   end,
-  commands = function(opts)
+  commands = function()
     Fuzzy.new {
       collection = vim.fn.getcompletion('', 'command'),
       handler = function(command)
-        print(command)
         vim.cmd(command)
       end,
       sorter = FUZZY_DEFAULT_SORTER,
       drawer = drawer.new()
     }
   end,
-  history = function(opts)
+  recents = function()
+    Fuzzy.new {
+      collection = vim.split(vim.fn.execute('oldfiles'), '\n'),
+      handler = function(file)
+        vim.cmd (string.format('e %s', vim.split(file, ':')[2]))
+      end,
+      sorter = FUZZY_DEFAULT_SORTER,
+      drawer = drawer.new(),
+    }
+  end,
+  history = function()
      Fuzzy.new {
       collection = vim.split(vim.fn.execute('history cmd'), '\n'),
       handler = function(command)

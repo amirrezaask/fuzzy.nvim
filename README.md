@@ -12,6 +12,15 @@ require('fuzzy').grep{}
 -- Search current buffer
 require('fuzzy').buffer_lines{}
 
+-- Search in recent files (file history)
+require('fuzzy').recents{}
+
+-- Search in commands
+require('fuzzy').commands{}
+
+-- Search in command history
+require('fuzzy').history{}
+
 -- Switch to any open buffer
 require('fuzzy').buffers{}
 
@@ -33,6 +42,9 @@ require('fuzzy').lsp_workspace_symbols{}
 # Commands
 - Files
 - Grep
+- Commands
+- Recents
+- Cd
 - GFiles
 - GGrep
 - BLines
