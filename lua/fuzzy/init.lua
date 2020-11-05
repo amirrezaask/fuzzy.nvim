@@ -10,6 +10,7 @@ local terminal_fuzzy = require'fuzzy.lib.terminal'
 -- Register execute commands
 vim.cmd [[ command! Files lua require('fuzzy').file_finder{} ]]
 vim.cmd [[ command! Grep lua require('fuzzy').grep{} ]]
+vim.cmd [[ command! Commands lua require('fuzzy').commands{} ]]
 
 vim.cmd [[ command! GFiles lua require('fuzzy').git_files{} ]]
 vim.cmd [[ command! GGrep lua require('fuzzy').git_grep{} ]]
@@ -391,5 +392,26 @@ return {
         helpers.open_file_at(segments[1], segments[2])
       end)
     end
+  end,
+  commands = function(opts)
+    Fuzzy.new {
+      collection = vim.fn.getcompletion('', 'command'),
+      handler = function(command)
+        print(command)
+        vim.cmd(command)
+      end,
+      sorter = FUZZY_DEFAULT_SORTER,
+      drawer = drawer.new()
+    }
+  end,
+  history = function(opts)
+     Fuzzy.new {
+      collection = vim.split(vim.fn.execute('history cmd'), '\n'),
+      handler = function(command)
+        vim.cmd(command) 
+      end,
+      sorter = FUZZY_DEFAULT_SORTER,
+      drawer = drawer.new()
+     } 
   end
 }

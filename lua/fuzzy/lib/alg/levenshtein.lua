@@ -77,8 +77,8 @@ local function match(query, collection)
     if query == nil or collection[i] == nil then
       goto continue
     end
-    local ngrams_data = ngrams_of(collection[i], 3)
-    local ngrams_query = ngrams_of(query, 3)
+    local ngrams_data = ngrams_of(string.gsub(collection[i], ' ', ''), 3)
+    local ngrams_query = ngrams_of(query:gsub(' ', ''), 3)
     local total = 0
     for _, nq in ipairs(ngrams_query) do
       local min_distance_of_ngrams = 100000
