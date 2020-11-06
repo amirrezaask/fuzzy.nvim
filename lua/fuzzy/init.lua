@@ -124,14 +124,14 @@ return {
       hidden = ''
     end
     local cmd = string.format('find %s %s -type s,f', opts.cwd, hidden)
+    local function handler(line)
+      helpers.open_file(line)
+    end
     if use_default() then
       Fuzzy.new {
-        source = source.NewBinSource(cmd),
-        sorter = FUZZY_DEFAULT_SORTER,
-        drawer = drawer.new(),
-        handler = function(line)
-          helpers.open_file(line)
-        end,
+        -- source = source.NewBinSource(cmd),
+        -- sorter = FUZZY_DEFAULT_SORTER,
+        drawer = terminal_fuzzy.fzf(cmd, handler),
       }
     else
       terminal_fuzzy.fzf(cmd, function(line)

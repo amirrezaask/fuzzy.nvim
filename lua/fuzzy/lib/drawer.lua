@@ -104,6 +104,10 @@ function M.new()
       vim.api.nvim_buf_clear_namespace(self.buf, FuzzyDrawerHighlight, 0, -1)
       __Fuzzy_highlight(self.buf,FuzzyDrawerHighlight, self.selected_line) 
     end,
+    get_output = function()
+      local line = vim.api.nvim_buf_get_lines(CURRENT_FUZZY.buf, CURRENT_FUZZY.drawer.selected_line, CURRENT_FUZZY.drawer.selected_line+1, false)[1]
+      return line
+    end,
     draw = function(self, collection)
       if not vim.api.nvim_buf_is_valid(buf) then
         return
