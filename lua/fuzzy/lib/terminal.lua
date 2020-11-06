@@ -11,7 +11,6 @@ local function fzf_command()
   if vim.fn.executable('bat') or vim.fn.executable('batcat') then
     base = base .. ' --preview="bat {}"'
   end
-  print(base)
   return base
 end
 
@@ -23,9 +22,9 @@ end
 
 
 -- Handler should be table  containing lines.
-function TerminalFuzzy.new(stdin, fuzzy_finder, handler)
+function TerminalFuzzy.new(stdin, fuzzy_finder)
   local wrapped_handler = function(lines)
-    handler(lines[1]) 
+    CURRENT_FUZZY.drawer.handler(lines[1]) 
   end
   if type(stdin) == 'table' then
     stdin = string.format('printf "%s"', table.concat(stdin, '\n'))
