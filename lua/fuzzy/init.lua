@@ -23,7 +23,8 @@ vim.cmd [[ command! LspReferences lua require('fuzzy').lsp_references{} ]]
 vim.cmd [[ command! LspDocumentSymbols lua require('fuzzy').lsp_document_symbols{} ]]
 vim.cmd [[ command! LspWorkspaceSymbols lua require('fuzzy').lsp_workspace_symbols{} ]]
 
-FUZZY_DEFAULT_SORTER = sorter.Levenshtein 
+FUZZY_DEFAULT_SORTER = sorter.string_distance 
+
 local function use_default()
   if vim.g.fuzzy_use_fzf then
     return false 
@@ -242,7 +243,7 @@ return {
         sorter = FUZZY_DEFAULT_SORTER,
         drawer = drawer.new(),
         handler = function(line)
-          local number = vim.split(line, '  ')[3]
+          local number = vim.split(line, '  ')[2]
           helpers.open_file_at(filename, number)
         end,
       }
@@ -424,7 +425,7 @@ return {
      Fuzzy.new {
       collection = vim.split(vim.fn.execute('history cmd'), '\n'),
       handler = function(command)
-        vim.cmd(command) 
+        vim.cmd(vim.split(command, ' ')[2])
       end,
       sorter = FUZZY_DEFAULT_SORTER,
       drawer = drawer.new()
