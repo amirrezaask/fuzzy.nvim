@@ -6,7 +6,15 @@ local TerminalFuzzy = {}
 
 CURRENT_TERMINAL_FUZZY = nil
 
-local FUZZY_FZF_CMD = 'fzf'
+local function fzf_command()
+  local base = 'fzf'
+  if vim.fn.executable('bat') or vim.fn.executable('batcat') then
+    base = base .. ' --preview="bat {}"'
+  end
+  print(base)
+  return base
+end
+
 local FUZZY_FZY_CMD = 'fzy -p '
 
 function __FUZZY_TERMINAL_CLOSER()
@@ -22,14 +30,16 @@ function TerminalFuzzy.new(stdin, fuzzy_finder, handler)
   -- Check for options
   -- should be set as vim.g.fuzzy_options = {location = "center", width = 50, height = 50}
   local options = vim.g.fuzzy_options or {}
-  if options.location then
-    -- loc can be "center", "bottom" or a function
-    if options.location == 'center' then
-      loc = location.center
-    elseif options.location == 'bottom' then
-      loc = location.bottom_center
-    end
-  end
+  -- if options.location then
+  --   -- loc can be "center", "bottom" or a function
+  --   if options.location == 'center' then
+  --     loc = location.center
+  --   elseif options.location == 'bottom' then
+  --     loc = location.bottom_center
+  --   end
+  -- else
+  local loc = location.bottom_center
+  -- end
   -- Width and height should be proportions (percentages) of the main window
   local win_width = math.ceil(vim.api.nvim_get_option('columns')/2)
   local win_height = math.ceil(vim.api.nvim_get_option('lines'))
@@ -55,7 +65,7 @@ function TerminalFuzzy.new(stdin, fuzzy_finder, handler)
 end
 
 function TerminalFuzzy.fzf(stdin, handler)
-  TerminalFuzzy.new(stdin, FUZZY_FZF_CMD, function(lines)
+  TerminalFuzzy.new(stdin, fzf_command(), function(lines)
     handler(lines[1])
   end)
 end
