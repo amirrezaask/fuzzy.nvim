@@ -199,14 +199,16 @@ return {
     end,
   buffer_lines = function(opts)
     local filename = vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf())
-    local cmd = string.format('cat --number %s', filename)
+    local source = vim.split(grep.read_file(filename), '\n')
+    for i=1,#source do
+      source[i] = string.format('%s:%s', i, source[i])
+    end
     Fuzzy.new {
-      source = source.NewBinSource(cmd),
+      collection = source,
       sorter = FUZZY_DEFAULT_SORTER,
       drawer = drawer.new(),
       handler = function(line)
-        local number = vim.split(line, '  ')[2]
-        helpers.open_file_at(filename, number)
+        helpers.open_file_at(filename, vim.split(line, ':')[1])
       end,
     }
   end,

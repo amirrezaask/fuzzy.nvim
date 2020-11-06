@@ -3,7 +3,7 @@ local uv = vim.loop
 
 local G = {}
 
-local function read_file(file)
+function G.read_file(file)
   local fd = uv.fs_open(file, 'r', 438)  
   if fd == nil then
     print(string.format('can\'t read the file: %s', file))
@@ -29,7 +29,7 @@ local function grep_file(file, pattern, output)
   CURRENT_FUZZY.__grep_cache = CURRENT_FUZZY.__grep_cache or {}
   local text = CURRENT_FUZZY.__grep_cache[file]
   if not text then
-    text = read_file(file)
+    text = G.read_file(file)
     CURRENT_FUZZY.__grep_cache[file] = text
   end
   for i, t in ipairs(vim.split(text, '\n')) do
