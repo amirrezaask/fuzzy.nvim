@@ -33,9 +33,9 @@ local function fill_buffer(lines)
   return lines
 end
 
-function M.new()
-  local opts = {}
- 
+function M.new(opts)
+  opts = opts or {}
+
   opts.current_win = vim.api.nvim_get_current_win()
  
   vim.cmd [[ startinsert! ]]
@@ -76,7 +76,8 @@ function M.new()
   vim.api.nvim_buf_set_keymap(buf, 'i', '<esc>',  '<cmd> lua __Fuzzy_close()<CR>', {})
   vim.api.nvim_buf_set_keymap(buf, 'i', '<C-c>',  '<cmd> lua __Fuzzy_close()<CR>', {})
 
-  vim.fn.prompt_setprompt(buf, '>> ')
+  opts.prompt = opts.prompt or 'Query> '
+  vim.fn.prompt_setprompt(buf, opts.prompt)
   
   vim.cmd([[ autocmd TextChangedI <buffer> lua __Fuzzy_updater() ]])
   
