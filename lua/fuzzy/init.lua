@@ -5,7 +5,6 @@ local sorter = require('fuzzy.lib.sorter')
 local drawer = require('fuzzy.lib.drawer')
 local file_finder = require'fuzzy.lib.file_finder'
 local grep = require'fuzzy.lib.grep'
-local terminal_fuzzy = require'fuzzy.lib.terminal'
 
 -- Register execute commands
 vim.cmd [[ command! Files lua require('fuzzy').file_finder{} ]]
@@ -23,14 +22,11 @@ vim.cmd [[ command! LspReferences lua require('fuzzy').lsp_references{} ]]
 vim.cmd [[ command! LspDocumentSymbols lua require('fuzzy').lsp_document_symbols{} ]]
 vim.cmd [[ command! LspWorkspaceSymbols lua require('fuzzy').lsp_workspace_symbols{} ]]
 
-FUZZY_DEFAULT_SORTER = sorter.fzy
-FUZZY_DEFAULT_DRAWER = drawer.new
+local options = vim.g.fuzzy_options or {}
 
-if vim.g.fuzzy_use_fzf then
-  FUZZY_DEFAULT_SORTER = nil
-  FUZZY_DEFAULT_DRAWER = terminal_fuzzy.fzf
-end
-
+-- Defaults
+FUZZY_DEFAULT_SORTER = options.sorter or sorter.fzy
+FUZZY_DEFAULT_DRAWER = options.drawer or drawer.new
 
 return {
   grep = function(opts)

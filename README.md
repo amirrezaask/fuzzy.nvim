@@ -37,7 +37,6 @@ require('fuzzy').lsp_workspace_symbols{}
 - Drawer: Drawer handles the floating window and displaying of the data.
 - Sorter: Sorter is a function that gets our input and sorts the source data based on that.
 - Handler: handler varies for each function and handles final user choice.
-- TerminalFuzzy: If you want pure terminal interface like FZF itself use TerminalFuzzy.
 
 # Commands
 - Files
@@ -58,6 +57,7 @@ require('fuzzy').lsp_workspace_symbols{}
 - You can set window location and geometry using the `g:fuzzy_options` variable :
   - location can be `center`, `bottom` or a function with `win_width`(width of the floating window) and`win_height`(height of the floating window) as arguments returning the location of the NE corner of the floating window
   - Width and height are in percent of the main window
+
 ```lua
 lua << EOF
   vim.g.fuzzy_options = {
