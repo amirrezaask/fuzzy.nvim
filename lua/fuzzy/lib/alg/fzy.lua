@@ -237,9 +237,6 @@ function fzy.sort(query, collection)
   for i=1,#word_scores do
     table.insert(output, word_scores[#word_scores - i+1].word)
   end
-  for _, w in ipairs(word_scores) do
-  end
-  print(output[1])
   return output
 end
 

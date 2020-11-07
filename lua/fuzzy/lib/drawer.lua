@@ -84,6 +84,7 @@ function M.new(opts)
   return {
     buf = buf,
     win = win,
+    prompt = opts.prompt,
     closer = closer,
     _start_of_data = 1,
     selected_line = -1,

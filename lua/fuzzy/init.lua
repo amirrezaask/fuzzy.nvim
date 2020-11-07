@@ -23,7 +23,7 @@ vim.cmd [[ command! LspReferences lua require('fuzzy').lsp_references{} ]]
 vim.cmd [[ command! LspDocumentSymbols lua require('fuzzy').lsp_document_symbols{} ]]
 vim.cmd [[ command! LspWorkspaceSymbols lua require('fuzzy').lsp_workspace_symbols{} ]]
 
-FUZZY_DEFAULT_SORTER = sorter.string_distance
+FUZZY_DEFAULT_SORTER = sorter.fzy
 FUZZY_DEFAULT_DRAWER = drawer.new
 
 if vim.g.fuzzy_use_fzf then
