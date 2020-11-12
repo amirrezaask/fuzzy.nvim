@@ -3,7 +3,10 @@ Fuzzy.nvim provides a simple mechanism and pipeline to create fuzzy matching in 
 
 # Example Usage
 ```lua
--- Find files ( using Libuv )
+-- Find files interactively ( using Libuv )
+require('fuzzy').interactive_finder{}
+
+-- Find files recursively ( using Libuv )
 require('fuzzy').file_finder{}
 
 -- Search for text ( using Libuv )
