@@ -7,6 +7,7 @@ local file_finder = require'fuzzy.lib.file_finder'
 local grep = require'fuzzy.lib.grep'
 
 -- Register execute commands
+vim.cmd [[ command! IFiles lua require('fuzzy').interactive_finder{} ]]
 vim.cmd [[ command! Files lua require('fuzzy').file_finder{} ]]
 vim.cmd [[ command! Grep lua require('fuzzy').grep{} ]]
 vim.cmd [[ command! Commands lua require('fuzzy').commands{} ]]
@@ -25,7 +26,7 @@ vim.cmd [[ command! LspWorkspaceSymbols lua require('fuzzy').lsp_workspace_symbo
 local options = vim.g.fuzzy_options or {}
 
 -- Defaults
-FUZZY_DEFAULT_SORTER = options.sorter or sorter.fzy
+FUZZY_DEFAULT_SORTER = options.sorter or sorter.string_distance
 FUZZY_DEFAULT_DRAWER = options.drawer or drawer.new
 
 return {
@@ -45,7 +46,6 @@ return {
       return require'fuzzy'.find(opts)
     end
   end,
-
   luv_grep = function(opts)
     opts = opts or {}
     opts.cwd = '.'
@@ -71,23 +71,49 @@ return {
       end
     }
   end,
+  interactive_finder = function(opts)
+    opts = opts or {}
+    opts.path = opts.path or '.'
+    opts.prompt = 'Open> '
+    opts.hidden = opts.hidden or false
+    opts.depth = 1
+    opts.include_dirs = true
+    opts.include_previous_link = true
+    opts.handler = function(line)
+      if file_finder.file_type(line) == 'directory' then
+        vim.cmd(string.format('cd %s', line))
+        vim.schedule(function() require'fuzzy'.interactive_finder({path = '.'}) end)
+      else
+        helpers.open_file(line)
+      end
+    end
+    require'fuzzy'.luv_finder(opts)
+  end,
   luv_finder = function(opts)
     opts = opts or {}
     opts.path = opts.path or '.'
     opts.hidden = opts.hidden or false
+    opts.depth = opts.depth or FILE_FINDER_DEFAULT_DEPTH
+    opts.include_dirs = opts.include_dirs or false
+    opts.include_previous_link = opts.include_previous_link or false
+    opts.handler = opts.handler or function(line)
+      helpers.open_file(line)
+    end
     Fuzzy.new {
       source = function()
         return file_finder.find({
         path = opts.path,
         depth = opts.depth,
-        hidden = opts.hidden
+        hidden = opts.hidden,
+        include_dirs = opts.include_dirs,
+        include_previous_link = opts.include_previous_link
       })
       end,
       sorter = FUZZY_DEFAULT_SORTER,
-      drawer = drawer.new(),
-      handler = function(line)
-        helpers.open_file(line)
-      end,
+      drawer = drawer.new({
+        prompt = opts.prompt or 'Files> '
+      }),
+      handler = opts.handler 
     }
   end,
   fd = function(opts)
@@ -345,6 +371,7 @@ return {
      Fuzzy.new {
       collection = vim.split(vim.fn.execute('history cmd'), '\n'),
       handler = function(command)
+        print(vim.split(command, ' ')[2])
         vim.cmd(vim.split(command, ' ')[2])
       end,
       sorter = FUZZY_DEFAULT_SORTER,

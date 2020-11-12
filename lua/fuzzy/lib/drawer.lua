@@ -66,6 +66,7 @@ function M.new(opts)
     local height = options.height
     win_height = math.ceil(vim.api.nvim_get_option('lines')*height/100)
   end
+
   local buf, win, closer = floating.floating_buffer(win_width, win_height, loc)
 
   vim.api.nvim_buf_set_keymap(buf, 'i', '<C-p>', '<cmd> lua CURRENT_FUZZY.drawer:selection_up()<CR>', {})
