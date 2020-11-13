@@ -16,7 +16,7 @@ require('fuzzy').grep{}
 require('fuzzy').buffer_lines{}
 
 -- Search in recent files (file history)
-require('fuzzy').recents{}
+require('fuzzy').mru{}
 
 -- Search in commands
 require('fuzzy').commands{}

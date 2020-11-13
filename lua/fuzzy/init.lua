@@ -14,8 +14,8 @@ vim.cmd [[ command! Commands lua require('fuzzy').commands{} ]]
 vim.cmd [[ command! MRU lua require('fuzzy').mru{} ]]
 vim.cmd [[ command! BLines lua require('fuzzy').buffer_lines{} ]]
 vim.cmd [[ command! Cd lua require('fuzzy').cd{} ]]
-vim.cmd [[ command! GFiles lua require('fuzzy').git_files{} ]]
-vim.cmd [[ command! GGrep lua require('fuzzy').git_grep{} ]]
+vim.cmd [[ command! GitFiles lua require('fuzzy').git_files{} ]]
+vim.cmd [[ command! GitGrep lua require('fuzzy').git_grep{} ]]
 vim.cmd [[ command! Buffers lua require('fuzzy').buffers{} ]]
 vim.cmd [[ command! Rg lua require('fuzzy').rg{} ]]
 vim.cmd [[ command! Colors lua require('fuzzy').colors{} ]]
@@ -25,7 +25,7 @@ vim.cmd [[ command! LspWorkspaceSymbols lua require('fuzzy').lsp_workspace_symbo
 
 local options = vim.g.fuzzy_options or {}
 -- Defaults
-local FUZZY_DEFAULT_SORTER = options.sorter or sorter.string_distance
+local FUZZY_DEFAULT_SORTER = options.sorter or sorter.fzy
 local FUZZY_DEFAULT_DRAWER = options.drawer or drawer.new
 
 local M = {}
@@ -172,7 +172,9 @@ function M.git_grep(opts)
   local cmd = 'git grep -n ""'
   Fuzzy.new {
     source = source.NewBinSource(cmd),
-    sorter = FUZZY_DEFAULT_SORTER,
+    sorter = function(query, coll)
+      return source.NewBinSource(string.format(cmd .. '"%s"', query))()
+    end,
     drawer = drawer.new(),
     handler = function(line)
       local filename = vim.split(line, ':')[1]
