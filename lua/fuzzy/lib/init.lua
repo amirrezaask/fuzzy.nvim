@@ -1,26 +1,8 @@
-local uv = vim.loop
-local floating = require'fuzzy.lib.floating'
-local lev = require'fuzzy.lib.alg.levenshtein'
-local location = require'fuzzy.lib.location'
-local helpers = require('fuzzy.lib.helpers')
 local Fuzzy = {}
+
 FUZZY_OPTS = vim.g.fuzzy_options or {}
 
 FUZZY_DRAWER_HIGHLIGHT_GROUP = FUZZY_OPTS.hl_group or 'StatusLine'
-
---[[
-  Source function() collection
-  Drawer function(collection) Draw on display
-  Sorter function(query, collection) sorts the collection
-  Handler function(line) handles user choice
---]]
-function __Fuzzy_highlight(buf, hl_group, line)
-  if #vim.api.nvim_buf_get_lines(buf, 0, -1, false) < 2 then
-    return
-  end
-  vim.api.nvim_buf_add_highlight(buf, hl_group , FUZZY_DRAWER_HIGHLIGHT_GROUP, line, 0, -1)
-end
-
 
 function __Fuzzy_handler()
   -- gets output, closes drawer, runs the handler
@@ -36,12 +18,12 @@ function __Fuzzy_close()
   CURRENT_FUZZY.drawer:closer()
 end
 
-
 CURRENT_FUZZY = nil
 
 function __Fuzzy_updater()
   if CURRENT_FUZZY.sorter then
     local new_input = vim.api.nvim_buf_get_lines(CURRENT_FUZZY.buf, -2, -1, false)[1]
+    print(new_input)
     new_input = string.sub(new_input, #CURRENT_FUZZY.drawer.prompt+1, #new_input)
     if new_input == CURRENT_FUZZY.input then
       return
