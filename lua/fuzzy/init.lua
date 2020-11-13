@@ -153,8 +153,8 @@ function M.find(opts)
   end
   Fuzzy.new {
     source = source.NewBinSource(cmd),
-    -- sorter = FUZZY_DEFAULT_SORTER,
-    drawer = terminal_fuzzy.fzf(cmd, handler),
+    sorter = FUZZY_DEFAULT_SORTER,
+    drawer = FUZZY_DEFAULT_DRAWER,
   }
 end
 function M.git_files(opts) 
@@ -172,7 +172,7 @@ function M.git_grep(opts)
   local cmd = 'git grep -n ""'
   Fuzzy.new {
     source = source.NewBinSource(cmd),
-    sorter = sorter.FZF,
+    sorter = FUZZY_DEFAULT_SORTER,
     drawer = drawer.new(),
     handler = function(line)
       local filename = vim.split(line, ':')[1]
