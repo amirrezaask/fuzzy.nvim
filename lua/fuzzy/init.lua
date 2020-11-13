@@ -257,7 +257,7 @@ function M.cd(opts)
   local cmd = string.format('find %s', table.concat(opts.args, ' '))
   Fuzzy.new {
     source = source.NewBinSource(cmd),
-    sorter = sorter.FZF,
+    sorter = FUZZY_DEFAULT_SORTER,
     drawer = drawer.new(),
     handler = function(line)
       vim.cmd(string.format('cd %s', line))
@@ -295,7 +295,7 @@ function M.lsp_document_symbols(opts)
   local cmd = table.concat(lines, '\n')
   Fuzzy.new {
     collection = lines,
-    sorter = sorter.FZF,
+    sorter = FUZZY_DEFAULT_SORTER,
     drawer = drawer.new(),
     handler = function(line)
       local segments = split(line, ":")
@@ -326,7 +326,7 @@ function M.lsp_workspace_symbols(opts)
       local segments = split(line, ":")
       helpers.open_file_at(segments[1], segments[2])
     end,
-    sorter = sorter.FZF,
+    sorter = FUZZY_DEFAULT_SORTER,
     drawer = drawer.new(),
   }
 end
