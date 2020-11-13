@@ -33,6 +33,8 @@ local M = {}
 function M.grep(opts)
   if vim.fn.executable('rg') ~= 0 then
     return require'fuzzy'.rg(opts)
+  elseif vim.fn.executable('git') and vim.fn.isdirectory('.git') then
+    return require'fuzzy'.git_grep(opts)
   else
     return require'fuzzy'.luv_grep(opts)
   end
