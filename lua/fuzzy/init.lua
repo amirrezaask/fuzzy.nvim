@@ -79,7 +79,7 @@ end
 function M.interactive_finder(opts)
   opts = opts or {}
   opts.path = opts.path or '.'
-  opts.hidden = opts.hidden or false
+  opts.hidden = opts.hidden or true
   opts.depth = 1
   opts.include_dirs = true
   opts.include_previous_link = true
@@ -101,6 +101,7 @@ function M.luv_finder(opts)
   opts.depth = opts.depth or FILE_FINDER_DEFAULT_DEPTH
   opts.include_dirs = opts.include_dirs or false
   opts.include_previous_link = opts.include_previous_link or false
+  opts.blacklist = opts.blacklist or FUZZY_OPTS.blacklist or {}
   opts.handler = opts.handler or function(line)
     helpers.open_file(line)
   end
@@ -111,7 +112,8 @@ function M.luv_finder(opts)
       depth = opts.depth,
       hidden = opts.hidden,
       include_dirs = opts.include_dirs,
-      include_previous_link = opts.include_previous_link
+      include_previous_link = opts.include_previous_link,
+      blacklist = opts.blacklist,
     })
     end,
     sorter = FUZZY_DEFAULT_SORTER,

@@ -42,9 +42,7 @@ end
 
 function Fuzzy.new(opts)
   CURRENT_FUZZY = opts
-  if opts.source and opts.sorter then
-    CURRENT_FUZZY.collection = opts.source()
-  end
+  CURRENT_FUZZY.collection = opts.source()
   __Fuzzy_updater()
 end
 
