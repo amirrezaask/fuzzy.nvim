@@ -25,7 +25,7 @@ vim.cmd [[ command! LspWorkspaceSymbols lua require('fuzzy').lsp_workspace_symbo
 
 local options = vim.g.fuzzy_options or {}
 -- Defaults
-local FUZZY_DEFAULT_SORTER = options.sorter or sorter.fzy
+local FUZZY_DEFAULT_SORTER = options.sorter or sorter.string_distance
 local FUZZY_DEFAULT_DRAWER = options.drawer or drawer.new
 
 local M = {}
