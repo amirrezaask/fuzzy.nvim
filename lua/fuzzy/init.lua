@@ -77,7 +77,6 @@ end
 function M.interactive_finder(opts)
   opts = opts or {}
   opts.path = opts.path or '.'
-  opts.prompt = 'Open> '
   opts.hidden = opts.hidden or false
   opts.depth = 1
   opts.include_dirs = true
@@ -115,7 +114,6 @@ function M.luv_finder(opts)
     end,
     sorter = FUZZY_DEFAULT_SORTER,
     drawer = drawer.new({
-      prompt = opts.prompt or 'Files> '
     }),
     handler = opts.handler 
   }

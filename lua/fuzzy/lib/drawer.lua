@@ -21,6 +21,11 @@ function __Fuzzy_highlight(buf, hl_group, line)
 end
 
 local function fill(collection)
+  for i = 1, #collection do
+    if not collection[i] or collection[i] == '' then
+      table.remove(collection, i)
+    end
+  end
   local height = vim.api.nvim_win_get_height(CURRENT_FUZZY.drawer.win)
   local to_add = height - (#collection-1)
   local new_collection = {}
@@ -74,7 +79,7 @@ function M.new(opts)
     _start_of_data = 1,
     selected_line = 1,
     selection_down = function(self)
-      if self.selected_line >= vim.api.nvim_win_get_height(self.win) then
+      if self.selected_line >= win_height then
         self.selected_line = self._start_of_data
       else
         self.selected_line = self.selected_line + 1
@@ -83,7 +88,7 @@ function M.new(opts)
     end,
     selection_up = function(self)
       if self.selected_line <= self._start_of_data then
-        self.selected_line = vim.api.nvim_win_get_height(self.win)
+        self.selected_line = win_height
       else
         self.selected_line = self.selected_line - 1
       end
@@ -100,21 +105,20 @@ function M.new(opts)
       return line
     end,
     draw = function(self, collection)
+      vim.api.nvim_buf_set_lines(buf, 0, -2, false, {})
       if not vim.api.nvim_buf_is_valid(buf) then
         return
       end
       if #collection == 0 then
         return
       end
-      local height = vim.api.nvim_win_get_height(self.win)
-      if #collection > height - 1 then
-        collection = table.slice(collection, #collection - height, #collection)
+      if #collection > win_height then
+        collection = table.slice(collection, #collection - win_height, #collection)
       end
-      self._start_of_data = (height - #collection) + 1
+      self._start_of_data = (win_height - #collection) + 1
       collection = fill(collection)
-      vim.api.nvim_buf_set_lines(buf, 0, -2, false, collection)
-
-      self.selected_line = height
+      vim.schedule(function() vim.api.nvim_buf_set_lines(buf, 0, -2, false, collection) end)
+      self.selected_line = win_height
       self:update_selection()
     end
   }

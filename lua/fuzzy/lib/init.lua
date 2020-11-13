@@ -23,7 +23,6 @@ CURRENT_FUZZY = nil
 function __Fuzzy_updater()
   if CURRENT_FUZZY.sorter then
     local new_input = vim.api.nvim_buf_get_lines(CURRENT_FUZZY.buf, -2, -1, false)[1]
-    print(new_input)
     new_input = string.sub(new_input, #CURRENT_FUZZY.drawer.prompt+1, #new_input)
     if new_input == CURRENT_FUZZY.input then
       return
