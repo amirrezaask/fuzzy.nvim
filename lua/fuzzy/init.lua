@@ -226,7 +226,7 @@ function M.buffers(opts)
       local buffer_name = vim.split(line, ':')[2]
       vim.cmd(string.format('buffer %s', buffer_name))
     end,
-    collection = _buffers,
+    source = _buffers,
   }
 end
 
@@ -237,7 +237,7 @@ function M.buffer_lines(opts)
     source[i] = string.format('%s:%s', i, source[i])
   end
   Fuzzy.new {
-    collection = source,
+    source = source,
     sorter = FUZZY_DEFAULT_SORTER,
     drawer = drawer.new(),
     handler = function(line)
@@ -274,7 +274,7 @@ function M.colors(opts)
     handler = function(color)
       vim.cmd(string.format('colorscheme %s', color))
     end,
-    collection = vim.fn.getcompletion('', 'color'),
+    source = vim.fn.getcompletion('', 'color'),
   }
 end
 
@@ -296,7 +296,7 @@ function M.lsp_document_symbols(opts)
   end
   local cmd = table.concat(lines, '\n')
   Fuzzy.new {
-    collection = lines,
+    source = lines,
     sorter = FUZZY_DEFAULT_SORTER,
     drawer = drawer.new(),
     handler = function(line)
@@ -323,7 +323,7 @@ function M.lsp_workspace_symbols(opts)
     table.insert(lines, string.format('%s:%s:%s', loc.filename, loc.lnum, loc.text))
   end
   Fuzzy.new {
-    collection = lines,
+    source = lines,
     handler = function(line)
       local segments = split(line, ":")
       helpers.open_file_at(segments[1], segments[2])
@@ -354,7 +354,7 @@ function M.lsp_references(opts)
     table.insert(lines, string.format('%s:%s:%s', loc.filename, loc.lnum, loc.text))
   end
   Fuzzy.new {
-    collection = lines,
+    source = lines,
     handler = function(line)
       local segments = split(line, ":")
       helpers.open_file_at(segments[1], segments[2])
@@ -366,7 +366,7 @@ end
 
 function M.commands(opts)
   Fuzzy.new {
-    collection = vim.fn.getcompletion('', 'command'),
+    source = vim.fn.getcompletion('', 'command'),
     handler = function(command)
       vim.cmd(command)
     end,
@@ -377,7 +377,7 @@ end
 
 function M.mru()
   Fuzzy.new {
-    collection = vim.split(vim.fn.execute('oldfiles'), '\n'),
+    source = vim.split(vim.fn.execute('oldfiles'), '\n'),
     handler = function(file)
       vim.cmd (string.format('e %s', vim.split(file, ':')[2]))
     end,
@@ -388,7 +388,7 @@ end
 
 function M.history()
   Fuzzy.new {
-    collection = vim.split(vim.fn.execute('history cmd'), '\n'),
+    source = vim.split(vim.fn.execute('history cmd'), '\n'),
     handler = function(command)
       print(vim.split(command, ' ')[2])
       vim.cmd(vim.split(command, ' ')[2])

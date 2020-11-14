@@ -13,7 +13,7 @@ local function has_value(tab, val)
 end
 
 FILE_FINDER_DEFAULT_DEPTH = 5 
-FILE_FINDER_THRESHOLD = 2000 
+FILE_FINDER_THRESHOLD = 2000
 -- list of files and directories recursively with optional depth.
 local function _scandir(output, path, depth, hidden, show_dirs, include_previous_link, blacklist)
   output = output or {}

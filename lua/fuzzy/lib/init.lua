@@ -42,7 +42,11 @@ end
 
 function Fuzzy.new(opts)
   CURRENT_FUZZY = opts
-  CURRENT_FUZZY.collection = opts.source()
+  if type(opts.source) == 'function' then
+    CURRENT_FUZZY.collection = opts.source()
+  elseif type(opts.source) == 'table' then
+    CURRENT_FUZZY.collection = opts.source
+  end
   __Fuzzy_updater()
 end
 
