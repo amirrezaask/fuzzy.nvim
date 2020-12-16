@@ -1,3 +1,5 @@
+# Disclaimer
+I'm not currently using this plugin anymore since I don't have enough free time to maintain and improve it. I will accept any pull requests but no fixes or features going to be added from me.
 # Fuzzy.nvim
 Fuzzy.nvim provides a simple mechanism and pipeline to create fuzzy matching in neovim.
 
