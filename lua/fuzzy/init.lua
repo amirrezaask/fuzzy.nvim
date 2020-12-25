@@ -31,17 +31,19 @@ local FUZZY_DEFAULT_DRAWER = options.drawer or drawer.new
 local M = {}
 
 function M.grep(opts)
-  if vim.fn.executable('rg') ~= 0 then
-    return require'fuzzy'.rg(opts)
-  elseif vim.fn.executable('git') and vim.fn.isdirectory('.git') then
+ if vim.fn.executable('git') and vim.fn.isdirectory('.git') then
     return require'fuzzy'.git_grep(opts)
+  elseif vim.fn.executable('rg') ~= 0 then
+    return require'fuzzy'.rg(opts)
   else
     return require'fuzzy'.luv_grep(opts)
   end
 end
 
 function M.file_finder(opts)
-  if not vim.g.fuzzy_options.no_luv_finder then
+  if vim.fn.executable('git') and vim.fn.isdirectory('.git') then
+    return require'fuzzy'.git_files(opts)
+  elseif not vim.g.fuzzy_options.no_luv_finder then
     return require'fuzzy'.luv_finder(opts)
   elseif vim.fn.executable('fdfind') ~= 0 or vim.fn.executable('fd') ~= 0 then
     return require'fuzzy'.fd(opts)
