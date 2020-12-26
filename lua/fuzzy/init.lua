@@ -1,10 +1,11 @@
-local Fuzzy = require('fuzzy.lib')
+local fuzzy = require('fuzzy.lib')
 local helpers = require('fuzzy.lib.helpers')
 local source = require('fuzzy.lib.source')
 local sorter = require('fuzzy.lib.sorter')
 local drawer = require('fuzzy.lib.drawer')
 local file_finder = require'fuzzy.lib.file_finder'
 local grep = require'fuzzy.lib.grep'
+local projects = require'fuzzy.lib.projects'
 
 -- Register execute commands
 vim.cmd [[ command! IFiles lua require('fuzzy').interactive_finder{} ]]
@@ -41,10 +42,10 @@ function M.grep(opts)
 end
 
 function M.file_finder(opts)
-  if vim.fn.executable('git') and vim.fn.isdirectory('.git') then
-    return require'fuzzy'.git_files(opts)
-  elseif not vim.g.fuzzy_options.no_luv_finder then
+  if not vim.g.fuzzy_options.no_luv_finder then
     return require'fuzzy'.luv_finder(opts)
+  elseif vim.fn.executable('git') and vim.fn.isdirectory('.git') then
+    return require'fuzzy'.git_files(opts)
   elseif vim.fn.executable('fdfind') ~= 0 or vim.fn.executable('fd') ~= 0 then
     return require'fuzzy'.fd(opts)
   elseif vim.fn.executable('find') ~= 0 then
@@ -65,7 +66,7 @@ function M.luv_grep(opts)
     local lines = grep.grep(files, CURRENT_FUZZY.input or '')
     return lines
   end
-  Fuzzy.new {
+  fuzzy.new {
     source = source_and_sorter,
     sorter = source_and_sorter,
     drawer = drawer.new(),
@@ -107,7 +108,7 @@ function M.luv_finder(opts)
   opts.handler = opts.handler or function(line)
     helpers.open_file(line)
   end
-  Fuzzy.new {
+  fuzzy.new {
     source = function()
       return file_finder.find({
       path = opts.path,
@@ -134,7 +135,7 @@ function M.fd(opts)
     opts.hidden = ''
   end
   local cmd = string.format('fdfind %s --type f --type s', opts.hidden)
-  Fuzzy.new {
+  fuzzy.new {
     source = source.NewBinSource(cmd),
     sorter = FUZZY_DEFAULT_SORTER,
     drawer = drawer.new(),
@@ -157,14 +158,14 @@ function M.find(opts)
   local function handler(line)
     helpers.open_file(line)
   end
-  Fuzzy.new {
+  fuzzy.new {
     source = source.NewBinSource(cmd),
     sorter = FUZZY_DEFAULT_SORTER,
     drawer = FUZZY_DEFAULT_DRAWER,
   }
 end
 function M.git_files(opts) 
-  Fuzzy.new {
+  fuzzy.new {
     source = source.NewBinSource('git ls-files'),
     sorter = FUZZY_DEFAULT_SORTER,
     drawer = drawer.new(),
@@ -176,7 +177,7 @@ end
 
 function M.git_grep(opts)
   local cmd = 'git grep -n ""'
-  Fuzzy.new {
+  fuzzy.new {
     source = source.NewBinSource(cmd),
     sorter = function(query, coll)
       return source.NewBinSource(string.format(cmd .. '"%s"', query))()
@@ -192,7 +193,7 @@ end
 
 function M.rg(opts)
   local cmd = 'rg --column --line-number --no-heading --ignore-case '
-  Fuzzy.new {
+  fuzzy.new {
     source = source.NewBinSource(string.format(cmd .. '""')),
     sorter = function(query, coll)
       return source.NewBinSource(string.format(cmd .. '"%s"', query))()
@@ -221,7 +222,7 @@ function M.buffers(opts)
       table.insert(_buffers, string.format("[%s] %s:%s", buffer_state(b), b, vim.api.nvim_buf_get_name(b)))
     end
   end
-  Fuzzy.new {
+  fuzzy.new {
     sorter = FUZZY_DEFAULT_SORTER,
     drawer = drawer.new(),
     handler = function(line)
@@ -238,7 +239,7 @@ function M.buffer_lines(opts)
   for i=1,#source do
     source[i] = string.format('%s:%s', i, source[i])
   end
-  Fuzzy.new {
+  fuzzy.new {
     source = source,
     sorter = FUZZY_DEFAULT_SORTER,
     drawer = drawer.new(),
@@ -259,7 +260,7 @@ function M.cd(opts)
   end
   table.insert(opts.args, '-type s,d')
   local cmd = string.format('find %s', table.concat(opts.args, ' '))
-  Fuzzy.new {
+  fuzzy.new {
     source = source.NewBinSource(cmd),
     sorter = FUZZY_DEFAULT_SORTER,
     drawer = drawer.new(),
@@ -270,7 +271,7 @@ function M.cd(opts)
 end
 
 function M.colors(opts)
-  Fuzzy.new {
+  fuzzy.new {
     sorter = FUZZY_DEFAULT_SORTER,
     drawer = drawer.new(),
     handler = function(color)
@@ -297,7 +298,7 @@ function M.lsp_document_symbols(opts)
     table.insert(lines, string.format('%s:%s:%s', loc.filename, loc.lnum, loc.text))
   end
   local cmd = table.concat(lines, '\n')
-  Fuzzy.new {
+  fuzzy.new {
     source = lines,
     sorter = FUZZY_DEFAULT_SORTER,
     drawer = drawer.new(),
@@ -324,7 +325,7 @@ function M.lsp_workspace_symbols(opts)
   for _, loc in ipairs(locations) do
     table.insert(lines, string.format('%s:%s:%s', loc.filename, loc.lnum, loc.text))
   end
-  Fuzzy.new {
+  fuzzy.new {
     source = lines,
     handler = function(line)
       local segments = split(line, ":")
@@ -355,7 +356,7 @@ function M.lsp_references(opts)
   for _, loc in ipairs(locations) do
     table.insert(lines, string.format('%s:%s:%s', loc.filename, loc.lnum, loc.text))
   end
-  Fuzzy.new {
+  fuzzy.new {
     source = lines,
     handler = function(line)
       local segments = split(line, ":")
@@ -367,7 +368,7 @@ function M.lsp_references(opts)
 end
 
 function M.commands(opts)
-  Fuzzy.new {
+  fuzzy.new {
     source = vim.fn.getcompletion('', 'command'),
     handler = function(command)
       vim.cmd(command)
@@ -378,7 +379,7 @@ function M.commands(opts)
 end
 
 function M.mru()
-  Fuzzy.new {
+  fuzzy.new {
     source = vim.split(vim.fn.execute('oldfiles'), '\n'),
     handler = function(file)
       vim.cmd (string.format('e %s', vim.split(file, ':')[2]))
@@ -389,7 +390,7 @@ function M.mru()
 end
 
 function M.history()
-  Fuzzy.new {
+  fuzzy.new {
     source = vim.split(vim.fn.execute('history cmd'), '\n'),
     handler = function(command)
       print(vim.split(command, ' ')[2])
@@ -399,5 +400,20 @@ function M.history()
     drawer = drawer.new()
   }
 end
+
+function M.projects(opts)
+  local project_list = projects.list()
+  fuzzy.new {
+    source = function()
+      return project_list 
+    end,
+    sorter = FUZZY_DEFAULT_SORTER,
+    drawer = drawer.new(),
+    handler = function (path)
+      vim.fn.cd(path)
+    end
+  }
+end
+
 return M
  

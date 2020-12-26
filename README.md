@@ -1,5 +1,5 @@
-# Fuzzy.nvim
-Fuzzy.nvim provides a simple mechanism and pipeline to create fuzzy matching in neovim.
+# fuzzy.nvim
+fuzzy.nvim provides a simple mechanism and pipeline to create fuzzy matching in neovim.
 
 # Example Usage
 ```lua
