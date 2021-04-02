@@ -17,6 +17,9 @@ vim.cmd [[ command! BLines lua require('fuzzy').buffer_lines{} ]]
 vim.cmd [[ command! Cd lua require('fuzzy').cd{} ]]
 vim.cmd [[ command! GitFiles lua require('fuzzy').git_files{} ]]
 vim.cmd [[ command! GitGrep lua require('fuzzy').git_grep{} ]]
+vim.cmd [[ command! GitCommits lua require('fuzzy').git_commits{} ]]
+vim.cmd [[ command! GitBCommits lua require('fuzzy').git_bcommits{} ]]
+vim.cmd [[ command! GitCheckout lua require('fuzzy').git_checkout{} ]]
 vim.cmd [[ command! Buffers lua require('fuzzy').buffers{} ]]
 vim.cmd [[ command! Rg lua require('fuzzy').rg{} ]]
 vim.cmd [[ command! Colors lua require('fuzzy').colors{} ]]
@@ -415,5 +418,65 @@ function M.projects(opts)
   }
 end
 
+local function preview_win(data)
+  local buf = vim.api.nvim_create_buf(true, true)
+  vim.api.nvim_buf_set_option(buf, 'bufhidden', 'wipe')
+  vim.api.nvim_buf_set_option(buf, 'buftype','nowrite')
+  vim.api.nvim_buf_set_lines(buf, 0, -1, false, data)
+  vim.api.nvim_buf_set_option(buf, 'modifiable', false) 
+  vim.cmd [[ vnew ]]
+  vim.api.nvim_win_set_buf(vim.api.nvim_get_current_win, buf)
+end
+function M.git_commits(opts)
+  local commits = source.NewBinSource('git log --pretty=oneline --abbrev-commit')()
+  vim.inspect(commits)
+  fuzzy.new {
+    source = commits,
+    sorter = FUZZY_DEFAULT_SORTER,
+    drawer = drawer.new(),
+    handler = function(line)
+      local commit_hash = vim.split(line, ' ')[1]
+      local diff_command = 'git --no-pager diff ' .. commit_hash
+      if vim.fn.executable('bat') then
+        diff_command = diff_command .. ' | bat --style plain'
+      end
+      local diff = source.NewBinSource(diff_command)()
+      preview_win(diff)
+      -- vim.cmd(string.format('! git checkout %s', vim.split(line, ' ')[1]))
+    end
+  }
+
+end
+
+function M.git_bcommits(opts)
+  local filename = vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf())
+  local commits = source.NewBinSource('git log --pretty=oneline --abbrev-commit ' .. filename)()
+  fuzzy.new {
+    source = commits,
+    sorter = FUZZY_DEFAULT_SORTER,
+    drawer = drawer.new(),
+    handler = function(line)
+      local commit_hash = vim.split(line, ' ')[1]
+      local diff_command = 'git --no-pager diff ' .. commit_hash
+      if vim.fn.executable('bat') then
+        diff_command = diff_command .. ' | bat --style plain'
+      end
+      local diff = source.NewBinSource(diff_command)()
+      preview_win(diff)
+    end
+  }
+end
+
+function M.git_checkout(opts)
+  local branches = source.NewBinSource('git --no-pager branch')()
+  fuzzy.new {
+    source = branches,
+    sorter = FUZZY_DEFAULT_SORTER,
+    drawer = drawer.new(),
+    handler = function(line)
+      vim.cmd(string.format('! git checkout %s', vim.split(line, ' ')[2]))
+    end
+  }
+end
 return M
  
