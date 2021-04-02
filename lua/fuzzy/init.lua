@@ -15,6 +15,7 @@ vim.cmd [[ command! Commands lua require('fuzzy').commands{} ]]
 vim.cmd [[ command! MRU lua require('fuzzy').mru{} ]]
 vim.cmd [[ command! BLines lua require('fuzzy').buffer_lines{} ]]
 vim.cmd [[ command! Cd lua require('fuzzy').cd{} ]]
+vim.cmd [[ command! Help lua require('fuzzy').help{} ]]
 vim.cmd [[ command! GitFiles lua require('fuzzy').git_files{} ]]
 vim.cmd [[ command! GitGrep lua require('fuzzy').git_grep{} ]]
 vim.cmd [[ command! GitCommits lua require('fuzzy').git_commits{} ]]
@@ -478,5 +479,22 @@ function M.git_checkout(opts)
     end
   }
 end
+
+function M.help()
+  fuzzy.new {
+    source = function()
+      return vim.fn.getcompletion('', 'help')
+    end,
+    sorter = function(query, collection)
+      return vim.fn.getcompletion(query, 'help')
+    end,
+    drawer = drawer.new(),
+    handler = function(line)
+      vim.cmd ([[ h ]] .. line)
+    end
+  }
+end
+
+
 return M
  
