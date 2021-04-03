@@ -137,11 +137,12 @@ function M.fd(opts)
   else
     opts.hidden = ''
   end
+  opts.path = opts.path or '.'
   local program_name = 'fd'
   if vim.fn.executable('fdfind') ~= 0 then
     program_name = 'fdfind'
   end
-  local cmd = string.format('%s %s --type f --type s', program_name, opts.hidden)
+  local cmd = string.format('%s %s --type f --type s "" %s', program_name, opts.hidden, opts.path)
   print(cmd)
   fuzzy.new {
     source = source.NewBinSource(cmd),
