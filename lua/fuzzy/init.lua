@@ -6,7 +6,6 @@ local drawer = require('fuzzy.lib.drawer')
 local file_finder = require'fuzzy.lib.file_finder'
 local grep = require'fuzzy.lib.grep'
 local projects = require'fuzzy.lib.projects'
-
 -- Register execute commands
 vim.cmd [[ command! IFiles lua require('fuzzy').interactive_finder{} ]]
 vim.cmd [[ command! Files lua require('fuzzy').file_finder{} ]]
@@ -198,7 +197,7 @@ end
 function M.rg(opts)
   local cmd = 'rg --column --line-number --no-heading --ignore-case '
   fuzzy.new {
-    source = source.NewBinSource(string.format(cmd .. '""')),
+    source = {},
     sorter = function(query, coll)
       return source.NewBinSource(string.format(cmd .. '"%s"', query))()
     end,

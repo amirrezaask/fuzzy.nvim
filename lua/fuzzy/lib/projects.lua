@@ -1,30 +1,39 @@
 local grep = require'fuzzy.lib.grep'
+local uv = vim.loop
 local M = {}
-local projects_file_path = '/home/amirreza/.config/nvim/.projects'
 
-vim.cmd(string.format([[ command! AddProject lua require'fuzzy.lib.projects'.add(vim.fn.execute('pwd'))]]))
-vim.cmd(string.format([[ command! Projects lua require'fuzzy.lib.projects'.]]))
-function M.add(path)
-  local file = io.open(projects_file_path, "a")
-  if file == nil then
-    print('error no file')
-    return
-  end
-  file:write(path, "\n")
-  file:close()
-  return
+local function is_repo(path)
+  return vim.fn.isdirectory(path .. '/.git')
 end
 
-function M.list()
-  if vim.fn.exists(projects_file_path) == 0 then
-    vim.cmd(string.format([[! touch %s ]], projects_file_path))
+local function list_projects(output, path)
+  output = output or {}
+  local fs_t = uv.fs_scandir(path)
+  while true do
+    local name, type = uv.fs_scandir_next(fs_t)
+    if name == nil and type == nil then
+      break
+    end
+    if type ~= 'directory' then
+      goto continue
+    end
+    if vim.fn.isdirectory(path .. '/.git') then
+      table.insert(output, path)
+    else
+      list_projects(output, path .. '/' .. name)
+    end
+    ::continue::
   end
-  local content = grep.read_file(projects_file_path)
-  if content == '' or content == nil then
-    print('try adding project first!')
-    return
+  return output
+end
+
+function M.list_projects(locations)
+  local list = {}
+  for location in pairs(locations) do
+    list_projects(list, location)
   end
-  return vim.split(content, '\n')
+  return list
 end
 
 return M
+
