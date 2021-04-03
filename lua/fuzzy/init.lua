@@ -45,12 +45,12 @@ function M.grep(opts)
 end
 
 function M.file_finder(opts)
-  if not vim.g.fuzzy_options.no_luv_finder then
+  if vim.fn.executable('fdfind') ~= 0 or vim.fn.executable('fd') ~= 0 then
+    return require'fuzzy'.fd(opts)
+  elseif not vim.g.fuzzy_options.no_luv_finder then
     return require'fuzzy'.luv_finder(opts)
   elseif vim.fn.executable('git') and vim.fn.isdirectory('.git') then
     return require'fuzzy'.git_files(opts)
-  elseif vim.fn.executable('fdfind') ~= 0 or vim.fn.executable('fd') ~= 0 then
-    return require'fuzzy'.fd(opts)
   elseif vim.fn.executable('find') ~= 0 then
     return require'fuzzy'.find(opts)
   end
@@ -137,7 +137,12 @@ function M.fd(opts)
   else
     opts.hidden = ''
   end
-  local cmd = string.format('fdfind %s --type f --type s', opts.hidden)
+  local program_name = 'fd'
+  if vim.fn.executable('fdfind') ~= 0 then
+    program_name = 'fdfind'
+  end
+  local cmd = string.format('%s %s --type f --type s', program_name, opts.hidden)
+  print(cmd)
   fuzzy.new {
     source = source.NewBinSource(cmd),
     sorter = FUZZY_DEFAULT_SORTER,
