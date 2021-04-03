@@ -29,7 +29,7 @@ vim.cmd [[ command! LspWorkspaceSymbols lua require('fuzzy').lsp_workspace_symbo
 
 local options = vim.g.fuzzy_options or {}
 -- Defaults
-local FUZZY_DEFAULT_SORTER = options.sorter or sorter.string_distance
+local FUZZY_DEFAULT_SORTER = options.sorter or sorter.fzy
 local FUZZY_DEFAULT_DRAWER = options.drawer or drawer.new
 
 local M = {}
@@ -145,7 +145,7 @@ function M.fd(opts)
   local cmd = string.format('%s %s --type f --type s "" %s', program_name, opts.hidden, opts.path)
   print(cmd)
   fuzzy.new {
-    source = source.NewBinSource(cmd),
+    source = source.bin_source(cmd),
     sorter = FUZZY_DEFAULT_SORTER,
     drawer = drawer.new(),
     handler = function(line)
@@ -168,14 +168,14 @@ function M.find(opts)
     helpers.open_file(line)
   end
   fuzzy.new {
-    source = source.NewBinSource(cmd),
+    source = source.bin_source(cmd),
     sorter = FUZZY_DEFAULT_SORTER,
     drawer = FUZZY_DEFAULT_DRAWER,
   }
 end
 function M.git_files(opts) 
   fuzzy.new {
-    source = source.NewBinSource('git ls-files'),
+    source = source.bin_source('git ls-files'),
     sorter = FUZZY_DEFAULT_SORTER,
     drawer = drawer.new(),
     handler = function(line)
@@ -187,9 +187,9 @@ end
 function M.git_grep(opts)
   local cmd = 'git grep -n ""'
   fuzzy.new {
-    source = source.NewBinSource(cmd),
+    source = source.bin_source(cmd),
     sorter = function(query, coll)
-      return source.NewBinSource(string.format(cmd .. '"%s"', query))()
+      return source.bin_source(string.format(cmd .. '"%s"', query))()
     end,
     drawer = drawer.new(),
     handler = function(line)
@@ -205,7 +205,7 @@ function M.rg(opts)
   fuzzy.new {
     source = {},
     sorter = function(query, coll)
-      return source.NewBinSource(string.format(cmd .. '"%s"', query))()
+      return source.bin_source(string.format(cmd .. '"%s"', query))()
     end,
     drawer = drawer.new(),
     handler = function(line)
@@ -270,7 +270,7 @@ function M.cd(opts)
   table.insert(opts.args, '-type s,d')
   local cmd = string.format('find %s', table.concat(opts.args, ' '))
   fuzzy.new {
-    source = source.NewBinSource(cmd),
+    source = source.bin_source(cmd),
     sorter = FUZZY_DEFAULT_SORTER,
     drawer = drawer.new(),
     handler = function(line)
@@ -434,7 +434,7 @@ local function preview_win(data)
   vim.api.nvim_win_set_buf(vim.api.nvim_get_current_win, buf)
 end
 function M.git_commits(opts)
-  local commits = source.NewBinSource('git log --pretty=oneline --abbrev-commit')()
+  local commits = source.bin_source('git log --pretty=oneline --abbrev-commit')()
   vim.inspect(commits)
   fuzzy.new {
     source = commits,
@@ -446,7 +446,7 @@ function M.git_commits(opts)
       if vim.fn.executable('bat') then
         diff_command = diff_command .. ' | bat --style plain'
       end
-      local diff = source.NewBinSource(diff_command)()
+      local diff = source.bin_source(diff_command)()
       preview_win(diff)
       -- vim.cmd(string.format('! git checkout %s', vim.split(line, ' ')[1]))
     end
@@ -456,7 +456,7 @@ end
 
 function M.git_bcommits(opts)
   local filename = vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf())
-  local commits = source.NewBinSource('git log --pretty=oneline --abbrev-commit ' .. filename)()
+  local commits = source.bin_source('git log --pretty=oneline --abbrev-commit ' .. filename)()
   fuzzy.new {
     source = commits,
     sorter = FUZZY_DEFAULT_SORTER,
@@ -467,14 +467,14 @@ function M.git_bcommits(opts)
       if vim.fn.executable('bat') then
         diff_command = diff_command .. ' | bat --style plain'
       end
-      local diff = source.NewBinSource(diff_command)()
+      local diff = source.bin_source(diff_command)()
       preview_win(diff)
     end
   }
 end
 
 function M.git_checkout(opts)
-  local branches = source.NewBinSource('git --no-pager branch')()
+  local branches = source.bin_source('git --no-pager branch')()
   fuzzy.new {
     source = branches,
     sorter = FUZZY_DEFAULT_SORTER,

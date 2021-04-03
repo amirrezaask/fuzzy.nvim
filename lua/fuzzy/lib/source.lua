@@ -1,5 +1,5 @@
 local M = {}
-function M.NewBinSource(cmd)
+function M.bin_source(cmd)
   return function()
     local file =io.popen(cmd)
     local output = file:read('*all')
