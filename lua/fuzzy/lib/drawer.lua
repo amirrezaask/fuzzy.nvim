@@ -66,7 +66,7 @@ function M.new(opts)
   vim.api.nvim_buf_set_keymap(buf, 'i', '<esc>',  '<cmd> lua __Fuzzy_close()<CR>', {})
   vim.api.nvim_buf_set_keymap(buf, 'i', '<C-c>',  '<cmd> lua __Fuzzy_close()<CR>', {})
 
-  opts.prompt = opts.prompt or '> '
+  opts.prompt = opts.prompt or '$ '
   vim.fn.prompt_setprompt(buf, opts.prompt)
   
   vim.cmd([[ autocmd TextChangedI <buffer> lua __Fuzzy_updater() ]])

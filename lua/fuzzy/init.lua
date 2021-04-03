@@ -15,6 +15,7 @@ vim.cmd [[ command! MRU lua require('fuzzy').mru{} ]]
 vim.cmd [[ command! BLines lua require('fuzzy').buffer_lines{} ]]
 vim.cmd [[ command! Cd lua require('fuzzy').cd{} ]]
 vim.cmd [[ command! Help lua require('fuzzy').help{} ]]
+vim.cmd [[ command! Maps lua require('fuzzy').mappings{} ]]
 vim.cmd [[ command! GitFiles lua require('fuzzy').git_files{} ]]
 vim.cmd [[ command! GitGrep lua require('fuzzy').git_grep{} ]]
 vim.cmd [[ command! GitCommits lua require('fuzzy').git_commits{} ]]
@@ -29,7 +30,7 @@ vim.cmd [[ command! LspWorkspaceSymbols lua require('fuzzy').lsp_workspace_symbo
 
 local options = vim.g.fuzzy_options or {}
 -- Defaults
-local FUZZY_DEFAULT_SORTER = options.sorter or sorter.fzy
+local FUZZY_DEFAULT_SORTER = options.sorter or sorter.string_distance
 local FUZZY_DEFAULT_DRAWER = options.drawer or drawer.new
 
 local M = {}
@@ -125,7 +126,7 @@ function M.luv_finder(opts)
     sorter = FUZZY_DEFAULT_SORTER,
     drawer = drawer.new({
     }),
-    handler = opts.handler 
+    handler = opts.handler
   }
 end
 
@@ -143,7 +144,6 @@ function M.fd(opts)
     program_name = 'fdfind'
   end
   local cmd = string.format('%s %s --type f --type s "" %s', program_name, opts.hidden, opts.path)
-  print(cmd)
   fuzzy.new {
     source = source.bin_source(cmd),
     sorter = FUZZY_DEFAULT_SORTER,
@@ -500,6 +500,17 @@ function M.help()
   }
 end
 
+function M.mappings()
+  local mappings = vim.split(vim.fn.execute('map'), '\n')
+  fuzzy.new {
+    source = mappings,
+    sorter = FUZZY_DEFAULT_SORTER,
+    drawer = drawer.new(),
+    handler = function(line)
+      local command = vim.split(line, ' ')[3]
+      vim.fn.execute(command)
+    end
+  }
+end
 
 return M
- 
