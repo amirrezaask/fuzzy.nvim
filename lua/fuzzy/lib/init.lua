@@ -42,6 +42,9 @@ end
 
 function Fuzzy.new(opts)
   CURRENT_FUZZY = opts
+  CURRENT_FUZZY.current_win = vim.api.nvim_get_current_win()
+  CURRENT_FUZZY.current_buf = vim.api.nvim_get_current_buf()
+  CURRENT_FUZZY.drawer = CURRENT_FUZZY.drawer()
   if type(opts.source) == 'function' then
     CURRENT_FUZZY.collection = opts.source()
   elseif type(opts.source) == 'table' then
