@@ -411,7 +411,7 @@ function M.history()
 end
 
 function M.projects(opts)
-  local project_list = projects.list()
+  local project_list = projects.list_projects(opts.locations)
   fuzzy.new {
     source = function()
       return project_list 
@@ -419,7 +419,7 @@ function M.projects(opts)
     sorter = FUZZY_DEFAULT_SORTER,
     drawer = drawer.new(),
     handler = function (path)
-      vim.fn.cd(path)
+      vim.cmd(string.format([[ cd %s ]], path))
     end
   }
 end

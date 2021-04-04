@@ -54,7 +54,7 @@ function M.new(opts)
   
   local win_width = math.ceil(vim.api.nvim_get_option('columns')*width/100)
   local win_height = math.ceil(vim.api.nvim_get_option('lines')*height/100)
-  local loc = FUZZY_OPTS.location or location.bottom_center
+  local loc = FUZZY_OPTS.location or location.center
 
   local buf, win, closer = floating.floating_buffer(win_width, win_height, loc)
 
