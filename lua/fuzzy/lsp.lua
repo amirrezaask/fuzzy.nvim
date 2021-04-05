@@ -85,6 +85,10 @@ function M.lsp_references(opts)
   for _, loc in ipairs(locations) do
     table.insert(lines, string.format('%s:%s:%s', loc.filename, loc.lnum, loc.text))
   end
+  if #lines == 1 then
+    opts.callback(lines[1])
+    return
+  end
   fuzzy.new {
     source = lines,
     handler = function(line)
@@ -94,6 +98,20 @@ function M.lsp_references(opts)
     sorter = FUZZY_DEFAULT_SORTER,
     drawer = drawer.new(),
   }
+end
+
+
+local function do_lsp_code_action(code_action)
+  if code_action.edit or type(code_action.command) == "table" then
+    if code_action.edit then
+      vim.lsp.util.apply_workspace_edit(code_action.edit)
+    end
+    if type(code_action.command) == "table" then
+      vim.lsp.buf.execute_command(code_action.command)
+    end
+  else
+    vim.lsp.buf.execute_command(code_action)
+  end
 end
 function M.code_actions(opts)
   opts = opts or {}
@@ -126,6 +144,10 @@ function M.code_actions(opts)
     print("No code actions available")
     return
   end
+  if #results == 1 then
+    do_lsp_code_action(results[1])
+    return
+  end
   local results_titles = {}
 
   for i,a in ipairs(results) do
@@ -137,16 +159,7 @@ function M.code_actions(opts)
     drawer = drawer.new(),
     handler = function(code_action)
       code_action = results[tonumber(vim.split(code_action, '%.')[1])]
-      if code_action.edit or type(code_action.command) == "table" then
-        if code_action.edit then
-          vim.lsp.util.apply_workspace_edit(code_action.edit)
-        end
-        if type(code_action.command) == "table" then
-          vim.lsp.buf.execute_command(code_action.command)
-        end
-      else
-        vim.lsp.buf.execute_command(code_action)
-      end
+      do_lsp_code_action(code_action)
     end
   }
 end
@@ -171,6 +184,10 @@ function M.definitions(opts)
   local lines = {}
   for _, loc in ipairs(locations) do
     table.insert(lines, string.format('%s:%s:%s', loc.filename, loc.lnum, loc.text))
+  end
+  if #lines == 1 then
+    opts.callback(lines[1])
+    return
   end
   fuzzy.new {
     source = lines,
