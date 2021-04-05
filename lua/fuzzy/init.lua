@@ -26,6 +26,8 @@ vim.cmd [[ command! Buffers lua require('fuzzy').buffers{} ]]
 vim.cmd [[ command! Rg lua require('fuzzy').rg{} ]]
 vim.cmd [[ command! Colors lua require('fuzzy').colors{} ]]
 vim.cmd [[ command! LspReferences lua require('fuzzy.lsp').lsp_references{} ]]
+vim.cmd [[ command! LspDefinitions lua require('fuzzy.lsp').definitions{} ]]
+vim.cmd [[ command! LspCodeActions lua require('fuzzy.lsp').code_actions{} ]]
 vim.cmd [[ command! LspDocumentSymbols lua require('fuzzy.lsp').lsp_document_symbols{} ]]
 vim.cmd [[ command! LspWorkspaceSymbols lua require('fuzzy.lsp').lsp_workspace_symbols{} ]]
 
