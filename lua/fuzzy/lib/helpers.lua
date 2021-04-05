@@ -1,12 +1,3 @@
-function split(s, sep)
-  local fields = {}
-
-  local sep = sep or " "
-  local pattern = string.format("([^%s]+)", sep)
-  string.gsub(s, pattern, function(c) fields[#fields + 1] = c end)
-
-  return fields
-end
 local function tprint (tbl, indent)
   if not indent then indent = 0 end
   for k, v in pairs(tbl) do
@@ -29,7 +20,6 @@ return {
   open_file_at = function(filename, line)
     vim.api.nvim_command(string.format('e +%s %s', line, filename))
   end,
-  split = split, 
   split_string_by_char = split,
   tprint = tprint,
 }

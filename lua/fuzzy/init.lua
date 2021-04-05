@@ -6,6 +6,7 @@ local drawer = require('fuzzy.lib.drawer')
 local file_finder = require'fuzzy.lib.file_finder'
 local grep = require'fuzzy.lib.grep'
 local projects = require'fuzzy.lib.projects'
+
 -- Register execute commands
 vim.cmd [[ command! IFiles lua require('fuzzy').interactive_finder{} ]]
 vim.cmd [[ command! Files lua require('fuzzy').file_finder{} ]]
@@ -16,28 +17,28 @@ vim.cmd [[ command! BLines lua require('fuzzy').buffer_lines{} ]]
 vim.cmd [[ command! Cd lua require('fuzzy').cd{} ]]
 vim.cmd [[ command! Help lua require('fuzzy').help{} ]]
 vim.cmd [[ command! Maps lua require('fuzzy').mappings{} ]]
-vim.cmd [[ command! GitFiles lua require('fuzzy').git_files{} ]]
-vim.cmd [[ command! GitGrep lua require('fuzzy').git_grep{} ]]
-vim.cmd [[ command! GitCommits lua require('fuzzy').git_commits{} ]]
-vim.cmd [[ command! GitBCommits lua require('fuzzy').git_bcommits{} ]]
-vim.cmd [[ command! GitCheckout lua require('fuzzy').git_checkout{} ]]
+vim.cmd [[ command! GitFiles lua require('fuzzy.git').git_files{} ]]
+vim.cmd [[ command! GitGrep lua require('fuzzy.git').git_grep{} ]]
+vim.cmd [[ command! GitCommits lua require('fuzzy.git').git_commits{} ]]
+vim.cmd [[ command! GitBCommits lua require('fuzzy.git').git_bcommits{} ]]
+vim.cmd [[ command! GitCheckout lua require('fuzzy.git').git_checkout{} ]]
 vim.cmd [[ command! Buffers lua require('fuzzy').buffers{} ]]
 vim.cmd [[ command! Rg lua require('fuzzy').rg{} ]]
 vim.cmd [[ command! Colors lua require('fuzzy').colors{} ]]
-vim.cmd [[ command! LspReferences lua require('fuzzy').lsp_references{} ]]
-vim.cmd [[ command! LspDocumentSymbols lua require('fuzzy').lsp_document_symbols{} ]]
-vim.cmd [[ command! LspWorkspaceSymbols lua require('fuzzy').lsp_workspace_symbols{} ]]
+vim.cmd [[ command! LspReferences lua require('fuzzy.lsp').lsp_references{} ]]
+vim.cmd [[ command! LspDocumentSymbols lua require('fuzzy.lsp').lsp_document_symbols{} ]]
+vim.cmd [[ command! LspWorkspaceSymbols lua require('fuzzy.lsp').lsp_workspace_symbols{} ]]
 
 local options = vim.g.fuzzy_options or {}
 -- Defaults
 local FUZZY_DEFAULT_SORTER = options.sorter or sorter.string_distance
 local FUZZY_DEFAULT_DRAWER = options.drawer or drawer.new
 
-local M = {}
+M = {}
 
 function M.grep(opts)
- if vim.fn.executable('git') and vim.fn.isdirectory('.git') then
-    return require'fuzzy'.git_grep(opts)
+  if vim.fn.executable('git') and vim.fn.isdirectory('.git') then
+    return require'fuzzy.git'.git_grep(opts)
   elseif vim.fn.executable('rg') ~= 0 then
     return require'fuzzy'.rg(opts)
   else
@@ -51,7 +52,7 @@ function M.file_finder(opts)
   elseif not vim.g.fuzzy_options.no_luv_finder then
     return require'fuzzy'.luv_finder(opts)
   elseif vim.fn.executable('git') and vim.fn.isdirectory('.git') then
-    return require'fuzzy'.git_files(opts)
+    return require'fuzzy.git'.git_files(opts)
   elseif vim.fn.executable('find') ~= 0 then
     return require'fuzzy'.find(opts)
   end
@@ -173,32 +174,7 @@ function M.find(opts)
     drawer = FUZZY_DEFAULT_DRAWER,
   }
 end
-function M.git_files(opts) 
-  fuzzy.new {
-    source = source.bin_source('git ls-files'),
-    sorter = FUZZY_DEFAULT_SORTER,
-    drawer = drawer.new(),
-    handler = function(line)
-      helpers.open_file(line)
-    end,
-  }
-end
 
-function M.git_grep(opts)
-  local cmd = 'git grep -n ""'
-  fuzzy.new {
-    source = source.bin_source(cmd),
-    sorter = function(query, coll)
-      return source.bin_source(string.format(cmd .. '"%s"', query))()
-    end,
-    drawer = drawer.new(),
-    handler = function(line)
-      local filename = vim.split(line, ':')[1]
-      local linum = vim.split(line, ':')[2]
-      helpers.open_file_at(filename, linum)
-    end,
-  }
-end
 
 function M.rg(opts)
   local cmd = 'rg --column --line-number --no-heading --ignore-case '
@@ -290,92 +266,6 @@ function M.colors(opts)
   }
 end
 
-function M.lsp_document_symbols(opts)
-  opts = opts or {}
-  local params = vim.lsp.util.make_position_params()
-  params.context = { includeDeclaration = true }
-  params.query = '' 
-  local results_lsp = vim.lsp.buf_request_sync(0, "textDocument/documentSymbol", params, opts.timeout or 10000)
-  local locations = {}
-  for _, server_results in pairs(results_lsp) do
-    if server_results.result then
-      vim.list_extend(locations, vim.lsp.util.symbols_to_items(server_results.result) or {})
-    end
-  end
-  local lines = {}
-  for _, loc in ipairs(locations) do
-    table.insert(lines, string.format('%s:%s:%s', loc.filename, loc.lnum, loc.text))
-  end
-  local cmd = table.concat(lines, '\n')
-  fuzzy.new {
-    source = lines,
-    sorter = FUZZY_DEFAULT_SORTER,
-    drawer = drawer.new(),
-    handler = function(line)
-      local segments = split(line, ":")
-      helpers.open_file_at(segments[1], segments[2])
-    end
-  }
-end
-
-function M.lsp_workspace_symbols(opts)
-  opts = opts or {}
-  local params = vim.lsp.util.make_position_params()
-  params.context = { includeDeclaration = true }
-  params.query = ''
-  local results_lsp = vim.lsp.buf_request_sync(0, "workspace/symbol", params, opts.timeout or 10000)
-  local locations = {}
-  for _, server_results in pairs(results_lsp) do
-    if server_results.result then
-      vim.list_extend(locations, vim.lsp.util.symbols_to_items(server_results.result) or {})
-    end
-  end
-  local lines = {}
-  for _, loc in ipairs(locations) do
-    table.insert(lines, string.format('%s:%s:%s', loc.filename, loc.lnum, loc.text))
-  end
-  fuzzy.new {
-    source = lines,
-    handler = function(line)
-      local segments = split(line, ":")
-      helpers.open_file_at(segments[1], segments[2])
-    end,
-    sorter = FUZZY_DEFAULT_SORTER,
-    drawer = drawer.new(),
-  }
-end
-
-function M.lsp_references(opts)
-  opts = opts or {}
-  local params = vim.lsp.util.make_position_params()
-  params.context = { includeDeclaration = true }
-  local results_lsp = vim.lsp.buf_request_sync(0, "textDocument/references", params, opts.timeout or 10000)
-  local locations = {}
-  for _, server_results in pairs(results_lsp) do
-    if server_results.result then
-      vim.list_extend(locations, vim.lsp.util.locations_to_items(server_results.result) or {})
-    end
-  end
-  local callback = function(line)
-    local segments = split(line, ":")
-    helpers.open_file_at(segments[1], segments[2])
-  end
-  opts.callback = callback
-  local lines = {}
-  for _, loc in ipairs(locations) do
-    table.insert(lines, string.format('%s:%s:%s', loc.filename, loc.lnum, loc.text))
-  end
-  fuzzy.new {
-    source = lines,
-    handler = function(line)
-      local segments = split(line, ":")
-      helpers.open_file_at(segments[1], segments[2])
-    end,
-    sorter = FUZZY_DEFAULT_SORTER,
-    drawer = drawer.new(),
-  }
-end
-
 function M.commands(opts)
   fuzzy.new {
     source = vim.fn.getcompletion('', 'command'),
@@ -423,68 +313,6 @@ function M.projects(opts)
     end
   }
 end
-
-local function preview_win(data)
-  local buf = vim.api.nvim_create_buf(true, true)
-  vim.api.nvim_buf_set_option(buf, 'bufhidden', 'wipe')
-  vim.api.nvim_buf_set_option(buf, 'buftype','nowrite')
-  vim.api.nvim_buf_set_lines(buf, 0, -1, false, data)
-  vim.api.nvim_buf_set_option(buf, 'modifiable', false) 
-  vim.cmd [[ vnew ]]
-  vim.api.nvim_win_set_buf(vim.api.nvim_get_current_win, buf)
-end
-function M.git_commits(opts)
-  local commits = source.bin_source('git log --pretty=oneline --abbrev-commit')()
-  vim.inspect(commits)
-  fuzzy.new {
-    source = commits,
-    sorter = FUZZY_DEFAULT_SORTER,
-    drawer = drawer.new(),
-    handler = function(line)
-      local commit_hash = vim.split(line, ' ')[1]
-      local diff_command = 'git --no-pager diff ' .. commit_hash
-      if vim.fn.executable('bat') then
-        diff_command = diff_command .. ' | bat --style plain'
-      end
-      local diff = source.bin_source(diff_command)()
-      preview_win(diff)
-      -- vim.cmd(string.format('! git checkout %s', vim.split(line, ' ')[1]))
-    end
-  }
-
-end
-
-function M.git_bcommits(opts)
-  local filename = vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf())
-  local commits = source.bin_source('git log --pretty=oneline --abbrev-commit ' .. filename)()
-  fuzzy.new {
-    source = commits,
-    sorter = FUZZY_DEFAULT_SORTER,
-    drawer = drawer.new(),
-    handler = function(line)
-      local commit_hash = vim.split(line, ' ')[1]
-      local diff_command = 'git --no-pager diff ' .. commit_hash
-      if vim.fn.executable('bat') then
-        diff_command = diff_command .. ' | bat --style plain'
-      end
-      local diff = source.bin_source(diff_command)()
-      preview_win(diff)
-    end
-  }
-end
-
-function M.git_checkout(opts)
-  local branches = source.bin_source('git --no-pager branch')()
-  fuzzy.new {
-    source = branches,
-    sorter = FUZZY_DEFAULT_SORTER,
-    drawer = drawer.new(),
-    handler = function(line)
-      vim.cmd(string.format('! git checkout %s', vim.split(line, ' ')[2]))
-    end
-  }
-end
-
 function M.help()
   fuzzy.new {
     source = function()
