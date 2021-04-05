@@ -26,7 +26,9 @@ fuzzy.nvim provides a simple mechanism and pipeline to create fuzzy matching in 
 - Colors 
 - LspReferences 
 - LspDocumentSymbols 
-- LspWorkspaceSymbols 
+- LspWorkspaceSymbols
+- LspCodeActions
+- LspDefinitions
 
 
 # Customization 
