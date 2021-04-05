@@ -4,14 +4,14 @@ FUZZY_OPTS = vim.g.fuzzy_options or {}
 
 FUZZY_DRAWER_HIGHLIGHT_GROUP = FUZZY_OPTS.hl_group or 'StatusLine'
 
-function __Fuzzy_handler()
+local function __Fuzzy_handler()
   -- gets output, closes drawer, runs the handler
   local line = CURRENT_FUZZY.drawer.get_output()
-  __Fuzzy_close()
+  CURRENT_FUZZY.__Fuzzy_close()
   CURRENT_FUZZY.handler(line)
 end
 
-function __Fuzzy_close()
+local function __Fuzzy_close()
   vim.cmd [[ call feedkeys("\<C-c>") ]]
   -- CURRENT_FUZZY.on_exit()
   vim.api.nvim_set_current_win(CURRENT_FUZZY.current_win)
@@ -20,7 +20,7 @@ end
 
 CURRENT_FUZZY = nil
 
-function __Fuzzy_updater()
+local function __Fuzzy_updater()
   if CURRENT_FUZZY.sorter then
     local new_input = vim.api.nvim_buf_get_lines(CURRENT_FUZZY.buf, -2, -1, false)[1]
     new_input = string.sub(new_input, #CURRENT_FUZZY.drawer.prompt+1, #new_input)
@@ -45,12 +45,15 @@ function Fuzzy.new(opts)
   CURRENT_FUZZY.current_win = vim.api.nvim_get_current_win()
   CURRENT_FUZZY.current_buf = vim.api.nvim_get_current_buf()
   CURRENT_FUZZY.drawer = CURRENT_FUZZY.drawer()
+  CURRENT_FUZZY.__Fuzzy_handler = __Fuzzy_handler
+  CURRENT_FUZZY.__Fuzzy_close = __Fuzzy_close
+  CURRENT_FUZZY.__Fuzzy_updater = __Fuzzy_updater
   if type(opts.source) == 'function' then
     CURRENT_FUZZY.collection = opts.source()
   elseif type(opts.source) == 'table' then
     CURRENT_FUZZY.collection = opts.source
   end
-  __Fuzzy_updater()
+  CURRENT_FUZZY.__Fuzzy_updater()
 end
 
 return Fuzzy
