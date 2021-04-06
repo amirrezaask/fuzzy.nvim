@@ -55,7 +55,7 @@ function M.new(opts)
     
     local win_width = math.ceil(vim.api.nvim_get_option('columns')*width/100)
     local win_height = math.ceil(vim.api.nvim_get_option('lines')*height/100)
-    local loc = FUZZY_OPTS.location or location.center
+    local loc = FUZZY_OPTS.location or location.bottom_center
 
     local buf, win, closer = floating.floating_buffer(win_width, win_height, loc)
 
@@ -67,9 +67,12 @@ function M.new(opts)
     vim.api.nvim_buf_set_keymap(buf, 'i', '<esc>',  '<cmd> lua CURRENT_FUZZY.__Fuzzy_close()<CR>', {})
     vim.api.nvim_buf_set_keymap(buf, 'i', '<C-c>',  '<cmd> lua CURRENT_FUZZY.__Fuzzy_close()<CR>', {})
 
-    opts.prompt = opts.prompt or '$ '
+    opts.prompt = opts.prompt or '> '
     vim.fn.prompt_setprompt(buf, opts.prompt)
-    
+   
+    vim.cmd [[ highlight default link FuzzyNormal Normal ]]
+    vim.cmd [[ highlight default link FuzzyBorderNormal Normal ]]
+
     vim.cmd([[ autocmd TextChangedI <buffer> lua CURRENT_FUZZY.__Fuzzy_updater() ]])
     
     return {

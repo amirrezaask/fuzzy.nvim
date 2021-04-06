@@ -7,25 +7,6 @@ local file_finder = require'fuzzy.lib.source.file_finder'
 local grep = require'fuzzy.lib.source.grep'
 local projects = require'fuzzy.lib.source.projects'
 
--- Register execute commands
-vim.cmd [[ command! IFiles lua require('fuzzy').interactive_finder{} ]]
-vim.cmd [[ command! Files lua require('fuzzy').file_finder{} ]]
-vim.cmd [[ command! Grep lua require('fuzzy').grep{} ]]
-vim.cmd [[ command! Commands lua require('fuzzy').commands{} ]]
-vim.cmd [[ command! MRU lua require('fuzzy').mru{} ]]
-vim.cmd [[ command! BLines lua require('fuzzy').buffer_lines{} ]]
-vim.cmd [[ command! Cd lua require('fuzzy').cd{} ]]
-vim.cmd [[ command! Help lua require('fuzzy').help{} ]]
-vim.cmd [[ command! Maps lua require('fuzzy').mappings{} ]]
-vim.cmd [[ command! GitFiles lua require('fuzzy.git').git_files{} ]]
-vim.cmd [[ command! GitGrep lua require('fuzzy.git').git_grep{} ]]
-vim.cmd [[ command! GitCommits lua require('fuzzy.git').git_commits{} ]]
-vim.cmd [[ command! GitBCommits lua require('fuzzy.git').git_bcommits{} ]]
-vim.cmd [[ command! GitCheckout lua require('fuzzy.git').git_checkout{} ]]
-vim.cmd [[ command! Buffers lua require('fuzzy').buffers{} ]]
-vim.cmd [[ command! Rg lua require('fuzzy').rg{} ]]
-vim.cmd [[ command! Colors lua require('fuzzy').colors{} ]]
-
 local options = vim.g.fuzzy_options or {}
 -- Defaults
 local FUZZY_DEFAULT_SORTER = options.sorter or sorter.string_distance
@@ -43,7 +24,7 @@ function M.grep(opts)
   end
 end
 
-function M.file_finder(opts)
+function M.find_files(opts)
   if vim.fn.executable('fdfind') ~= 0 or vim.fn.executable('fd') ~= 0 then
     return require'fuzzy'.fd(opts)
   elseif not vim.g.fuzzy_options.no_luv_finder then

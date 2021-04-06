@@ -2,16 +2,8 @@ local fuzzy = require('fuzzy.lib')
 local sorter = require('fuzzy.lib.sorter')
 local helpers = require('fuzzy.lib.helpers')
 local drawer = require('fuzzy.lib.drawer')
-
-vim.cmd [[ command! LspReferences lua require('fuzzy.lsp').lsp_references{} ]]
-vim.cmd [[ command! LspDefinitions lua require('fuzzy.lsp').definitions{} ]]
-vim.cmd [[ command! LspCodeActions lua require('fuzzy.lsp').code_actions{} ]]
-vim.cmd [[ command! LspDocumentSymbols lua require('fuzzy.lsp').lsp_document_symbols{} ]]
-vim.cmd [[ command! LspWorkspaceSymbols lua require('fuzzy.lsp').lsp_workspace_symbols{} ]]
-
 local options = vim.g.fuzzy_options or {}
 local FUZZY_DEFAULT_SORTER = options.sorter or sorter.string_distance
-
 
 local M = {}
 
