@@ -24,7 +24,6 @@ local function tprint (tbl, indent)
     local formatting = string.rep("  ", indent) .. k .. ": "
     if type(v) == "table" then
       print(formatting)
-      tprint(v, indent+1)
     elseif type(v) == 'boolean' then
       print(formatting .. tostring(v))      
     else
@@ -136,12 +135,9 @@ local function traceback(H, b, b_, old_i)
   b_ = b_ or ''
   old_i = old_i or 0
   local h_flip = flip_matrix(flip_matrix(H, 0), 1)
-  tprint(h_flip)
   local i_, j_ = matrix_unravel_index(matrix_argmax(h_flip), h_flip)
-  -- print(i_, j_)
   local sh1, sh2 = matrix_shape(h_flip)
   local i, j = sh1-i_, sh2-j_ 
-  -- print(i,j)
   if H[i][j] == 0 then
     return b_, j
   end

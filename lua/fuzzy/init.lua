@@ -1,11 +1,11 @@
 local fuzzy = require('fuzzy.lib')
 local helpers = require('fuzzy.lib.helpers')
-local source = require('fuzzy.lib.source')
+local bin = require('fuzzy.lib.source.binary')
 local sorter = require('fuzzy.lib.sorter')
 local drawer = require('fuzzy.lib.drawer')
-local file_finder = require'fuzzy.lib.file_finder'
-local grep = require'fuzzy.lib.grep'
-local projects = require'fuzzy.lib.projects'
+local file_finder = require'fuzzy.lib.source.file_finder'
+local grep = require'fuzzy.lib.source.grep'
+local projects = require'fuzzy.lib.source.projects'
 
 -- Register execute commands
 vim.cmd [[ command! IFiles lua require('fuzzy').interactive_finder{} ]]
@@ -143,7 +143,7 @@ function M.fd(opts)
   end
   local cmd = string.format('%s %s --type f --type s "" %s', program_name, opts.hidden, opts.path)
   fuzzy.new {
-    source = source.bin_source(cmd),
+    source = bin.bin_source(cmd),
     sorter = FUZZY_DEFAULT_SORTER,
     drawer = drawer.new(),
     handler = function(line)

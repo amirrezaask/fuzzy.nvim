@@ -1,4 +1,3 @@
-local grep = require'fuzzy.lib.grep'
 local uv = vim.loop
 local M = {}
 

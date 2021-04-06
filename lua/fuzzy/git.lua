@@ -1,6 +1,6 @@
 local fuzzy = require('fuzzy.lib')
 local helpers = require('fuzzy.lib.helpers')
-local source = require('fuzzy.lib.source')
+local bin_source = require('fuzzy.lib.source.binary').bin_source
 local sorter = require('fuzzy.lib.sorter')
 local drawer = require('fuzzy.lib.drawer')
 local options = vim.g.fuzzy_options or {}
@@ -10,7 +10,7 @@ local M = {}
 
 function M.git_files(opts) 
   fuzzy.new {
-    source = source.bin_source('git ls-files'),
+    source = bin_source('git ls-files'),
     sorter = FUZZY_DEFAULT_SORTER,
     drawer = drawer.new(),
     handler = function(line)
@@ -22,9 +22,9 @@ end
 function M.git_grep(opts)
   local cmd = 'git grep -n ""'
   fuzzy.new {
-    source = source.bin_source(cmd),
+    source = bin_source(cmd),
     sorter = function(query, coll)
-      return source.bin_source(string.format(cmd .. '"%s"', query))()
+      return bin_source(string.format(cmd .. '"%s"', query))()
     end,
     drawer = drawer.new(),
     handler = function(line)
@@ -45,7 +45,7 @@ local function preview_win(data)
   vim.api.nvim_win_set_buf(vim.api.nvim_get_current_win, buf)
 end
 function M.git_commits(opts)
-  local commits = source.bin_source('git log --pretty=oneline --abbrev-commit')()
+  local commits = bin_source('git log --pretty=oneline --abbrev-commit')()
   vim.inspect(commits)
   fuzzy.new {
     source = commits,
@@ -57,7 +57,7 @@ function M.git_commits(opts)
       if vim.fn.executable('bat') then
         diff_command = diff_command .. ' | bat --style plain'
       end
-      local diff = source.bin_source(diff_command)()
+      local diff = bin_source(diff_command)()
       preview_win(diff)
       -- vim.cmd(string.format('! git checkout %s', vim.split(line, ' ')[1]))
     end
@@ -68,7 +68,7 @@ end
 
 function M.git_bcommits(opts)
   local filename = vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf())
-  local commits = source.bin_source('git log --pretty=oneline --abbrev-commit ' .. filename)()
+  local commits = bin_source('git log --pretty=oneline --abbrev-commit ' .. filename)()
   fuzzy.new {
     source = commits,
     sorter = FUZZY_DEFAULT_SORTER,
@@ -79,14 +79,14 @@ function M.git_bcommits(opts)
       if vim.fn.executable('bat') then
         diff_command = diff_command .. ' | bat --style plain'
       end
-      local diff = source.bin_source(diff_command)()
+      local diff = bin_source(diff_command)()
       preview_win(diff)
     end
   }
 end
 
 function M.git_checkout(opts)
-  local branches = source.bin_source('git --no-pager branch')()
+  local branches = bin_source('git --no-pager branch')()
   fuzzy.new {
     source = branches,
     sorter = FUZZY_DEFAULT_SORTER,
