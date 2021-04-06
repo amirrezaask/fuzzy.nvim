@@ -12,7 +12,6 @@ function table.slice(tbl, first, last, step)
   end
   return sliced
 end
-
 function __Fuzzy_highlight(buf, hl_group, line)
   if #vim.api.nvim_buf_get_lines(buf, 0, -1, false) < 2 then
     return
@@ -50,12 +49,13 @@ function M.new(opts)
     opts.current_win = vim.api.nvim_get_current_win()
     CURRENT_FUZZY.current_win = vim.api.nvim_get_current_win()
     vim.cmd [[ startinsert! ]]
-    local width = FUZZY_OPTS.width or 40
-    local height = FUZZY_OPTS.height or 60
+  
+    local width = opts.width or FUZZY_OPTS.width or 40
+    local height = opts.height or FUZZY_OPTS.height or 60
     
     local win_width = math.ceil(vim.api.nvim_get_option('columns')*width/100)
     local win_height = math.ceil(vim.api.nvim_get_option('lines')*height/100)
-    local loc = FUZZY_OPTS.location or location.bottom_center
+    local loc = opts.location or FUZZY_OPTS.location or location.bottom_center
 
     local buf, win, closer = floating.floating_buffer(win_width, win_height, loc)
 
@@ -67,7 +67,7 @@ function M.new(opts)
     vim.api.nvim_buf_set_keymap(buf, 'i', '<esc>',  '<cmd> lua CURRENT_FUZZY.__Fuzzy_close()<CR>', {})
     vim.api.nvim_buf_set_keymap(buf, 'i', '<C-c>',  '<cmd> lua CURRENT_FUZZY.__Fuzzy_close()<CR>', {})
 
-    opts.prompt = opts.prompt or '> '
+    opts.prompt = opts.prompt or FUZZY_OPTS.prompt or '> '
     vim.fn.prompt_setprompt(buf, opts.prompt)
    
     vim.cmd [[ highlight default link FuzzyNormal Normal ]]
@@ -83,7 +83,7 @@ function M.new(opts)
       _start_of_data = 1,
       selected_line = 1,
       selection_down = function(self)
-        if self.selected_line >= win_height then
+        if self.selected_line >= win_height-1 then
           self.selected_line = self._start_of_data
         else
           self.selected_line = self.selected_line + 1
@@ -92,10 +92,11 @@ function M.new(opts)
       end,
       selection_up = function(self)
         if self.selected_line <= self._start_of_data then
-          self.selected_line = win_height
+          self.selected_line = win_height-1
         else
           self.selected_line = self.selected_line - 1
         end
+            
         self:update_selection()
       end,
       update_selection = function(self)
@@ -117,12 +118,12 @@ function M.new(opts)
           return
         end
         if #collection > win_height then
-          collection = table.slice(collection, #collection - win_height, #collection)
+          collection = table.slice(collection, #collection - win_height+1, #collection)
         end
         self._start_of_data = (win_height - #collection) + 1
         collection = fill(collection)
         vim.schedule(function() vim.api.nvim_buf_set_lines(buf, 0, -2, false, collection) end)
-        self.selected_line = win_height
+        self.selected_line = win_height-1
         self:update_selection()
       end
     }

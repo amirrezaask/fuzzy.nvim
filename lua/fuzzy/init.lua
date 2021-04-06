@@ -52,7 +52,7 @@ function M.luv_grep(opts)
   fuzzy.new {
     source = source_and_sorter,
     sorter = source_and_sorter,
-    drawer = drawer.new(),
+    drawer = drawer.new(opts),
     handler = function(line)
       local filename = vim.split(line, ':')[1]
       local linum = vim.split(line, ':')[2]
@@ -126,7 +126,7 @@ function M.fd(opts)
   fuzzy.new {
     source = bin.bin_source(cmd),
     sorter = FUZZY_DEFAULT_SORTER,
-    drawer = drawer.new(),
+    drawer = drawer.new(opts),
     handler = function(line)
       helpers.open_file(line)
     end,
@@ -147,7 +147,7 @@ function M.find(opts)
     helpers.open_file(line)
   end
   fuzzy.new {
-    source = source.bin_source(cmd),
+    source = bin.bin_source(cmd),
     sorter = FUZZY_DEFAULT_SORTER,
     drawer = FUZZY_DEFAULT_DRAWER,
   }
@@ -158,10 +158,10 @@ function M.rg(opts)
   local cmd = 'rg --column --line-number --no-heading --ignore-case '
   fuzzy.new {
     source = {},
-    sorter = function(query, coll)
-      return source.bin_source(string.format(cmd .. '"%s"', query))()
+    sorter = function(query, _)
+      return bin.bin_source(string.format(cmd .. '"%s"', query))()
     end,
-    drawer = drawer.new(),
+    drawer = drawer.new(opts),
     handler = function(line)
       local filename = vim.split(line, ':')[1]
       local linum = vim.split(line, ':')[2]
@@ -187,7 +187,7 @@ function M.buffers(opts)
   end
   fuzzy.new {
     sorter = FUZZY_DEFAULT_SORTER,
-    drawer = drawer.new(),
+    drawer = drawer.new(opts),
     handler = function(line)
       local buffer_name = vim.split(line, ':')[2]
       vim.cmd(string.format('buffer %s', buffer_name))
@@ -205,7 +205,7 @@ function M.buffer_lines(opts)
   fuzzy.new {
     source = source,
     sorter = FUZZY_DEFAULT_SORTER,
-    drawer = drawer.new(),
+    drawer = drawer.new(opts),
     handler = function(line)
       helpers.open_file_at(filename, vim.split(line, ':')[1])
     end,
@@ -224,9 +224,9 @@ function M.cd(opts)
   table.insert(opts.args, '-type s,d')
   local cmd = string.format('find %s', table.concat(opts.args, ' '))
   fuzzy.new {
-    source = source.bin_source(cmd),
+    source = bin.bin_source(cmd),
     sorter = FUZZY_DEFAULT_SORTER,
-    drawer = drawer.new(),
+    drawer = drawer.new(opts),
     handler = function(line)
       vim.cmd(string.format('cd %s', line))
     end,
@@ -236,7 +236,7 @@ end
 function M.colors(opts)
   fuzzy.new {
     sorter = FUZZY_DEFAULT_SORTER,
-    drawer = drawer.new(),
+    drawer = drawer.new(opts),
     handler = function(color)
       vim.cmd(string.format('colorscheme %s', color))
     end,
@@ -251,22 +251,23 @@ function M.commands(opts)
       vim.cmd(command)
     end,
     sorter = FUZZY_DEFAULT_SORTER,
-    drawer = drawer.new()
+    drawer = drawer.new(opts)
   }
 end
 
-function M.mru()
+function M.mru(opts)
   fuzzy.new {
     source = vim.split(vim.fn.execute('oldfiles'), '\n'),
     handler = function(file)
       vim.cmd (string.format('e %s', vim.split(file, ':')[2]))
     end,
     sorter = FUZZY_DEFAULT_SORTER,
-    drawer = drawer.new(),
+    drawer = drawer.new(opts),
   }
 end
 
-function M.history()
+function M.history(opts)
+  opts = opts or {}
   fuzzy.new {
     source = vim.split(vim.fn.execute('history cmd'), '\n'),
     handler = function(command)
@@ -274,24 +275,26 @@ function M.history()
       vim.cmd(vim.split(command, ' ')[2])
     end,
     sorter = FUZZY_DEFAULT_SORTER,
-    drawer = drawer.new()
+    drawer = drawer.new(opts)
   }
 end
 
 function M.projects(opts)
+  opts = opts or {}
   local project_list = projects.list_projects(opts.locations)
   fuzzy.new {
     source = function()
       return project_list 
     end,
     sorter = FUZZY_DEFAULT_SORTER,
-    drawer = drawer.new(),
+    drawer = drawer.new(opts),
     handler = function (path)
       vim.cmd(string.format([[ cd %s ]], path))
     end
   }
 end
-function M.help()
+function M.help(opts)
+  opts = opts or {}
   fuzzy.new {
     source = function()
       return vim.fn.getcompletion('', 'help')
@@ -299,19 +302,20 @@ function M.help()
     sorter = function(query, collection)
       return vim.fn.getcompletion(query, 'help')
     end,
-    drawer = drawer.new(),
+    drawer = drawer.new(opts),
     handler = function(line)
       vim.cmd ([[ h ]] .. line)
     end
   }
 end
 
-function M.mappings()
+function M.mappings(opts)
+  opts = opts or {}
   local mappings = vim.split(vim.fn.execute('map'), '\n')
   fuzzy.new {
     source = mappings,
     sorter = FUZZY_DEFAULT_SORTER,
-    drawer = drawer.new(),
+    drawer = drawer.new(opts),
     handler = function(line)
       local command = vim.split(line, ' ')[3]
       vim.fn.execute(command)
