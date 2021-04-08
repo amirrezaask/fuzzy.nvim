@@ -19,13 +19,12 @@ function __Fuzzy_highlight(buf, hl_group, line)
   vim.api.nvim_buf_add_highlight(buf, hl_group , FUZZY_DRAWER_HIGHLIGHT_GROUP, line, 0, -1)
 end
 
-local function fill(collection)
+local function fill(collection, height)
   for i = 1, #collection do
     if not collection[i] or collection[i] == '' then
       table.remove(collection, i)
     end
   end
-  local height = vim.api.nvim_win_get_height(CURRENT_FUZZY.drawer.win)
   local to_add = height - (#collection-1)
   local new_collection = {}
   if to_add > 0 then
@@ -56,7 +55,7 @@ function M.new(opts)
     local win_width = math.ceil(vim.api.nvim_get_option('columns')*width/100)
     local win_height = math.ceil(vim.api.nvim_get_option('lines')*height/100)
     local loc = opts.location or FUZZY_OPTS.location or location.bottom_center
-
+    
     local buf, win, closer = floating.floating_buffer(win_width, win_height, loc)
 
     vim.api.nvim_buf_set_keymap(buf, 'i', '<C-p>', '<cmd> lua CURRENT_FUZZY.drawer:selection_up()<CR>', {})
@@ -115,14 +114,14 @@ function M.new(opts)
           return
         end
         if #collection == 0 then
-          return
+            return
         end
         if #collection > win_height then
-          collection = table.slice(collection, #collection - win_height+1, #collection)
+          collection = table.slice(collection, #collection - win_height+2, #collection)
         end
-        self._start_of_data = (win_height - #collection) + 1
-        collection = fill(collection)
         vim.schedule(function() vim.api.nvim_buf_set_lines(buf, 0, -2, false, collection) end)
+        self._start_of_data = (win_height - 1) - #collection 
+        collection = fill(collection, win_height-1)
         self.selected_line = win_height-1
         self:update_selection()
       end

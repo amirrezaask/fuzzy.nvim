@@ -1,6 +1,8 @@
 local Fuzzy = {}
 
-FUZZY_OPTS = vim.g.fuzzy_options or {}
+local options = require'fuzzy.lib.options'
+
+FUZZY_OPTS = options.set_defaults(FUZZY_OPTS or {})
 
 FUZZY_DRAWER_HIGHLIGHT_GROUP = FUZZY_OPTS.hl_group or 'StatusLine'
 

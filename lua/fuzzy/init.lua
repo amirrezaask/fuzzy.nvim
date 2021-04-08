@@ -14,6 +14,11 @@ local FUZZY_DEFAULT_DRAWER = options.drawer or drawer.new
 
 M = {}
 
+function __in_repo()
+  local out = bin.bin_source("git rev-parse --is-inside-work-tree")()
+  P(#out)
+end
+
 function M.grep(opts)
   if vim.fn.executable('git') and vim.fn.isdirectory('.git') then
     return require'fuzzy.git'.git_grep(opts)
