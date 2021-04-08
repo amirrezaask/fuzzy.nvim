@@ -10,7 +10,7 @@ local M = {}
 
 function M.git_files(opts) 
   fuzzy.new {
-    source = bin_source('git ls-files'),
+    source = bin_source('git ls-files --full-name $(git rev-parse --show-toplevel)'),
     sorter = FUZZY_DEFAULT_SORTER,
     drawer = drawer.new(opts),
     handler = function(line)
