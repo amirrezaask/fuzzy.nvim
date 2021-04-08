@@ -2,12 +2,11 @@ local Fuzzy = {}
 
 local options = require'fuzzy.lib.options'
 
-FUZZY_OPTS = options.set_defaults(FUZZY_OPTS or {})
+FUZZY_OPTS = FUZZY_OPTS or {}
 
 FUZZY_DRAWER_HIGHLIGHT_GROUP = FUZZY_OPTS.hl_group or 'StatusLine'
 
 local function __Fuzzy_handler()
-  -- gets output, closes drawer, runs the handler
   local line = CURRENT_FUZZY.drawer.get_output()
   CURRENT_FUZZY.__Fuzzy_close()
   CURRENT_FUZZY.handler(line)
@@ -15,7 +14,6 @@ end
 
 local function __Fuzzy_close()
   vim.cmd [[ call feedkeys("\<C-c>") ]]
-  -- CURRENT_FUZZY.on_exit()
   vim.api.nvim_set_current_win(CURRENT_FUZZY.current_win)
   CURRENT_FUZZY.drawer:closer()
 end
@@ -44,12 +42,15 @@ end
 
 function Fuzzy.new(opts)
   CURRENT_FUZZY = opts
+  CURRENT_FUZZY.sorter = options.get_value(opts, 'sorter')
   CURRENT_FUZZY.current_win = vim.api.nvim_get_current_win()
   CURRENT_FUZZY.current_buf = vim.api.nvim_get_current_buf()
-  CURRENT_FUZZY.drawer = CURRENT_FUZZY.drawer()
+  CURRENT_FUZZY.drawer = options.get_value(opts, 'drawer')()
+
   CURRENT_FUZZY.__Fuzzy_handler = __Fuzzy_handler
   CURRENT_FUZZY.__Fuzzy_close = __Fuzzy_close
   CURRENT_FUZZY.__Fuzzy_updater = __Fuzzy_updater
+
   if type(opts.source) == 'function' then
     CURRENT_FUZZY.collection = opts.source()
   elseif type(opts.source) == 'table' then

@@ -1,20 +1,24 @@
 local M = {}
 local loc = require'fuzzy.lib.location'
 
-function M.set_defaults(opts)
-  opts.width = opts.width or 40
-  opts.height = opts.height or 100
-  opts.blacklist = opts.blacklist or {
-    "vendor"
-  }
-  opts.location = opts.location or loc.center
-  opts.prompt = opts.prompt or '❯ '
-  return opts
+local defaults = {
+  location = loc.bottom_center,
+  width = 40,
+  height = 100,
+  blacklist = {
+
+  },
+  prompt = '> ',
+  sorter = require'fuzzy.lib.sorter'.string_distance,
+  drawer = require'fuzzy.lib.drawer'.new,
+}
+
+function M.get_value(opts, key)
+  return opts[key] or FUZZY_OPTS[key] or defaults[key]
 end
 
 function M.setup(opts)
   FUZZY_OPTS = opts 
 end
-
 
 return M

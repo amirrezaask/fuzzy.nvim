@@ -3,7 +3,6 @@ local sorter = require('fuzzy.lib.sorter')
 local helpers = require('fuzzy.lib.helpers')
 local drawer = require('fuzzy.lib.drawer')
 local options = vim.g.fuzzy_options or {}
-local FUZZY_DEFAULT_SORTER = options.sorter or sorter.string_distance
 
 local M = {}
 
@@ -26,8 +25,6 @@ function M.lsp_document_symbols(opts)
   local cmd = table.concat(lines, '\n')
   fuzzy.new {
     source = lines,
-    sorter = FUZZY_DEFAULT_SORTER,
-    drawer = drawer.new(),
     handler = function(line)
       local segments = vim.split(line, ":")
       helpers.open_file_at(segments[1], segments[2])
@@ -57,8 +54,6 @@ function M.lsp_workspace_symbols(opts)
       local segments = vim.split(line, ":")
       helpers.open_file_at(segments[1], segments[2])
     end,
-    sorter = FUZZY_DEFAULT_SORTER,
-    drawer = drawer.new(),
   }
 end
 
@@ -92,8 +87,6 @@ function M.lsp_references(opts)
       local segments = vim.split(line, ":")
       helpers.open_file_at(segments[1], segments[2])
     end,
-    sorter = FUZZY_DEFAULT_SORTER,
-    drawer = drawer.new(),
   }
 end
 
@@ -156,8 +149,6 @@ function M.code_actions(opts)
   end
   fuzzy.new {
     source = results_titles,
-    sorter = FUZZY_DEFAULT_SORTER,
-    drawer = drawer.new(),
     handler = function(code_action)
       code_action = results[tonumber(vim.split(code_action, '%.')[1])]
       do_lsp_code_action(code_action)
@@ -196,8 +187,6 @@ function M.definitions(opts)
       local segments = vim.split(line, ":")
       helpers.open_file_at(segments[1], segments[2])
     end,
-    sorter = FUZZY_DEFAULT_SORTER,
-    drawer = drawer.new(),
   }
 
 
