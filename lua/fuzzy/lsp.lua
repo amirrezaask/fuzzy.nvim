@@ -91,6 +91,36 @@ function M.lsp_references(opts)
 end
 
 function M.implementation(opts)
+  opts = opts or {}
+  local params = vim.lsp.util.make_position_params()
+  params.context = { includeDeclaration = true }
+  local results_lsp = vim.lsp.buf_request_sync(0, "textDocument/implementations", params, opts.timeout or 10000)
+  local locations = {}
+  for _, server_results in pairs(results_lsp) do
+    if server_results.result then
+      vim.list_extend(locations, vim.lsp.util.locations_to_items(server_results.result) or {})
+    end
+  end
+  local callback = function(line)
+    local segments = vim.split(line, ":")
+    helpers.open_file_at(segments[1], segments[2])
+  end
+  opts.callback = callback
+  local lines = {}
+  for _, loc in ipairs(locations) do
+    table.insert(lines, string.format('%s:%s:%s', loc.filename, loc.lnum, loc.text))
+  end
+  if #lines == 1 then
+    opts.callback(lines[1])
+    return
+  end
+  fuzzy.new {
+    source = lines,
+    handler = function(line)
+      local segments = vim.split(line, ":")
+      helpers.open_file_at(segments[1], segments[2])
+    end,
+  }
 
 
 end
