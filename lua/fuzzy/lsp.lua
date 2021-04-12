@@ -6,7 +6,7 @@ local options = vim.g.fuzzy_options or {}
 
 local M = {}
 
-function M.lsp_document_symbols(opts)
+function M.document_symbols(opts)
   opts = opts or {}
   local params = vim.lsp.util.make_position_params()
   params.context = { includeDeclaration = true }
@@ -32,7 +32,7 @@ function M.lsp_document_symbols(opts)
   }
 end
 
-function M.lsp_workspace_symbols(opts)
+function M.workspace_symbols(opts)
   opts = opts or {}
   local params = vim.lsp.util.make_position_params()
   params.context = { includeDeclaration = true }
@@ -57,7 +57,7 @@ function M.lsp_workspace_symbols(opts)
   }
 end
 
-function M.lsp_references(opts)
+function M.references(opts)
   opts = opts or {}
   local params = vim.lsp.util.make_position_params()
   params.context = { includeDeclaration = true }
@@ -218,7 +218,6 @@ function M.definitions(opts)
       helpers.open_file_at(segments[1], segments[2])
     end,
   }
-
 
 end
 

@@ -32,6 +32,9 @@ local function __Fuzzy_updater()
   if not vim.api.nvim_buf_is_valid(CURRENT_FUZZY.buf) then
     return
   end
+  if #CURRENT_FUZZY.collection > 1000 then
+    print("I am choking, too much data to digest")
+  end
   if CURRENT_FUZZY.sorter then
     CURRENT_FUZZY.collection = CURRENT_FUZZY.sorter(CURRENT_FUZZY.input, CURRENT_FUZZY.collection)
   end

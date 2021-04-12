@@ -46,24 +46,37 @@ local function levenshtein_distance(str1, str2)
   if __cache_score[str1..str2] ~= nil then
     return __cache_score[str1..str2]
   end
-  local len1, len2 = #str1, #str2
-  local char1, char2, distance = {}, {}, {}
-  str1:gsub('.', function (c) table.insert(char1, c) end)
-  str2:gsub('.', function (c) table.insert(char2, c) end)
-  for i = 0, len1 do distance[i] = {} end
-  for i = 0, len1 do distance[i][0] = i end
-  for i = 0, len2 do distance[0][i] = i end
-  for i = 1, len1 do
-      for j = 1, len2 do
-          distance[i][j] = math.min(
-              distance[i-1][j  ] + 1,
-              distance[i  ][j-1] + 1,
-              distance[i-1][j-1] + (char1[i] == char2[j] and 0 or 1)
-              )
-      end
+  if str1 == str2 then return 0 end
+  if str1:len() == 0 then return str2:len() end
+  if str2:len() == 0 then return str1:len() end
+  if str1:len() < str2:len() then str1, str2 = str2, str1 end
+
+  local t = {}
+  for i=1, #str1+1 do
+    t[i] = {i-1}
   end
-  __cache_score[str1..str2] = distance[len1][len2]
-  return distance[len1][len2]
+
+  for i=1, #str2+1 do
+    t[1][i] = i-1
+  end
+  local function min(a, b, c)
+    local min_val = a
+    if b < min_val then min_val = b end
+    if c < min_val then min_val = c end
+    return min_val
+  end
+  local cost
+  for i=2, #str1+1 do
+    for j=2, #str2+1 do
+      cost = (str1:sub(i-1,i-1) == str2:sub(j-1,j-1) and 0) or 1
+      t[i][j] = min(
+      t[i-1][j] + 1,
+      t[i][j-1] + 1,
+      t[i-1][j-1] + cost)
+    end
+  end
+  __cache_score[str1..str2] = t[#str1+1][#str2+1]
+  return t[#str1+1][#str2+1] 
 end
 
 local function sort(list)
