@@ -78,7 +78,7 @@ local function levenshtein_distance(str1, str2)
 end
 
 local function sort(list)
-  list = require'helpers'.quicksort(list, 1, #list)
+  list = require'fuzzy.lib.helpers'.quicksort(list, 1, #list)
   return list
 end
 
