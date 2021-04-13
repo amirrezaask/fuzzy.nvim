@@ -63,9 +63,9 @@ function M.new(opts)
   vim.api.nvim_buf_set_keymap(buf, 'i', '<C-k>', '<cmd> lua CURRENT_FUZZY.drawer:selection_up()<CR>', {})
   vim.api.nvim_buf_set_keymap(buf, 'i', '<C-n>', '<cmd> lua CURRENT_FUZZY.drawer:selection_down()<CR>', {})
   vim.api.nvim_buf_set_keymap(buf, 'i', '<C-j>', '<cmd> lua CURRENT_FUZZY.drawer:selection_down()<CR>', {})
-  vim.api.nvim_buf_set_keymap(buf, 'i', '<CR>',  '<cmd> lua CURRENT_FUZZY.__Fuzzy_handler()<CR>', {})
-  vim.api.nvim_buf_set_keymap(buf, 'i', '<esc>',  '<cmd> lua CURRENT_FUZZY.__Fuzzy_close()<CR>', {})
-  vim.api.nvim_buf_set_keymap(buf, 'i', '<C-c>',  '<cmd> lua CURRENT_FUZZY.__Fuzzy_close()<CR>', {})
+  vim.api.nvim_buf_set_keymap(buf, 'i', '<CR>',  '<cmd> lua CURRENT_FUZZY:__handler()<CR>', {})
+  vim.api.nvim_buf_set_keymap(buf, 'i', '<esc>',  '<cmd> lua CURRENT_FUZZY:__close()<CR>', {})
+  vim.api.nvim_buf_set_keymap(buf, 'i', '<C-c>',  '<cmd> lua CURRENT_FUZZY:__close()<CR>', {})
 
   opts.prompt = opts.prompt or FUZZY_OPTS.prompt or '> '
   vim.fn.prompt_setprompt(buf, opts.prompt)
@@ -73,7 +73,7 @@ function M.new(opts)
   vim.cmd [[ highlight default link FuzzyNormal Normal ]]
   vim.cmd [[ highlight default link FuzzyBorderNormal Normal ]]
 
-  vim.cmd([[ autocmd TextChangedI <buffer> lua CURRENT_FUZZY.__Fuzzy_updater() ]])
+  vim.cmd([[ autocmd TextChangedI <buffer> lua CURRENT_FUZZY:__updater() ]])
   
   return {
     buf = buf,
