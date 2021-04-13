@@ -11,6 +11,7 @@ local defaults = {
   prompt = '> ',
   sorter = require'fuzzy.lib.sorter'.string_distance,
   drawer = require'fuzzy.lib.drawer'.new,
+  no_luv_finder = false,
 }
 
 function M.get_value(opts, key)

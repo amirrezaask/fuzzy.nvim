@@ -19,10 +19,10 @@ function M.grep(opts)
 end
 
 function M.find_files(opts)
-  if vim.fn.executable('fdfind') ~= 0 or vim.fn.executable('fd') ~= 0 then
-    return require'fuzzy'.fd(opts)
-  elseif not vim.g.fuzzy_options.no_luv_finder then
+  if not FUZZY_OPTS.no_luv_finder then
     return require'fuzzy'.luv_finder(opts)
+  elseif vim.fn.executable('fdfind') ~= 0 or vim.fn.executable('fd') ~= 0 then
+    return require'fuzzy'.fd(opts)
   elseif vim.fn.executable('git') and vim.fn.isdirectory('.git') then
     return require'fuzzy.git'.git_files(opts)
   elseif vim.fn.executable('find') ~= 0 then
@@ -77,7 +77,7 @@ end
 function M.luv_finder(opts)
   opts = opts or {}
   opts.path = opts.path or '.'
-  opts.hidden = opts.hidden or false
+  opts.hidden = opts.hidden or true
   opts.depth = opts.depth or FILE_FINDER_DEFAULT_DEPTH
   opts.include_dirs = opts.include_dirs or false
   opts.include_previous_link = opts.include_previous_link or false
