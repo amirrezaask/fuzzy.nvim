@@ -1,7 +1,3 @@
-# Disclaimer
-I am not using this plugin any more and moved to a faster and simpler alternative with FZF.
-[look at here](https://github.com/amirrezaask/dotfiles/blob/master/nvim/lua/fzf.lua)
-
 # fuzzy.nvim
 fuzzy.nvim provides a simple mechanism and pipeline to create fuzzy matching in neovim.
 

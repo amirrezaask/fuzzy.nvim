@@ -94,7 +94,6 @@ function M.new(opts)
       else
         self.selected_line = self.selected_line - 1
       end
-          
       self:update_selection()
     end,
     update_selection = function(self)
