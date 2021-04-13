@@ -3,7 +3,7 @@ local loc = require'fuzzy.lib.location'
 
 local defaults = {
   location = loc.bottom_center,
-  width = 40,
+  width = 60,
   height = 100,
   title = 'Fuzzy',
   blacklist = {

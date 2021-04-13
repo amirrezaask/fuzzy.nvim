@@ -1,7 +1,6 @@
 -- Fzy sorting algorithm
 -- credits to: https://github.com/swarn/fzy-lua
 
-local helpers = require'fuzzy.lib.helpers'
 local SCORE_GAP_LEADING = -0.005
 local SCORE_GAP_TRAILING = -0.005
 local SCORE_GAP_INNER = -0.01
@@ -232,7 +231,7 @@ function fzy.sort(query, collection)
     local word_score = {score=fzy.score(query, c), word=c}
     table.insert(word_scores, word_score)
   end
-  word_scores = require'fuzzy.lib.alg.quicksort'(word_scores, 1, #word_scores)
+  word_scores = require'fuzzy.lib.helpers'.quicksort(word_scores, 1, #word_scores)
   local output = {}
   for i=1,#word_scores do
     table.insert(output, word_scores[#word_scores - i+1].word)
