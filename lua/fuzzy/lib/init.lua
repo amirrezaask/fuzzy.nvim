@@ -4,8 +4,6 @@ local options = require'fuzzy.lib.options'
 
 FUZZY_OPTS = FUZZY_OPTS or {}
 
-FUZZY_DRAWER_HIGHLIGHT_GROUP = FUZZY_OPTS.hl_group or 'StatusLine'
-
 local function __Fuzzy_handler()
   local line = CURRENT_FUZZY.drawer.get_output()
   CURRENT_FUZZY.__Fuzzy_close()

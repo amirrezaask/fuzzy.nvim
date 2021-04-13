@@ -16,7 +16,8 @@ function __Fuzzy_highlight(buf, hl_group, line)
   if #vim.api.nvim_buf_get_lines(buf, 0, -1, false) < 2 then
     return
   end
-  vim.api.nvim_buf_add_highlight(buf, hl_group , FUZZY_DRAWER_HIGHLIGHT_GROUP, line, 0, -1)
+  vim.api.nvim_buf_add_highlight(buf, hl_group , 'Visual', line, 0, -1)
+  vim.api.nvim_buf_add_highlight(buf, hl_group , 'Question', line, 0, -1)
 end
 
 local function fill(collection, height)
@@ -57,6 +58,7 @@ function M.new(opts)
   
   local buf, win, closer = floating.floating_buffer(win_width, win_height, loc)
 
+  vim.api.nvim_win_set_option(win, 'concealcursor', 'nc')
   vim.api.nvim_buf_set_keymap(buf, 'i', '<C-p>', '<cmd> lua CURRENT_FUZZY.drawer:selection_up()<CR>', {})
   vim.api.nvim_buf_set_keymap(buf, 'i', '<C-k>', '<cmd> lua CURRENT_FUZZY.drawer:selection_up()<CR>', {})
   vim.api.nvim_buf_set_keymap(buf, 'i', '<C-n>', '<cmd> lua CURRENT_FUZZY.drawer:selection_down()<CR>', {})

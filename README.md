@@ -37,11 +37,13 @@ fuzzy.nvim provides a simple mechanism and pipeline to create fuzzy matching in 
   - Width and height are in percent of the main window
 
 ```lua
-lua << EOF
-  vim.g.fuzzy_options = {
-    location = "center",
-    width = 50,
-    height = 50
-  }
-EOF
+require'fuzzy.lib.options'.setup {
+  width = 30,
+  height = 100,
+  blacklist = {
+    "vendor"
+  },
+  location = loc.bottom_center, 
+  prompt = '> '
+}
 ```
