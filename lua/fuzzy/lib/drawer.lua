@@ -2,7 +2,7 @@
 local location = require'fuzzy.lib.location'
 local floating = require'fuzzy.lib.floating'
 local helpers = require'fuzzy.lib.helpers'
-
+local options = require'fuzzy.lib.options'
 local M = {}
 
 function table.slice(tbl, first, last, step)
@@ -48,16 +48,10 @@ function M.new(opts)
   opts.current_win = vim.api.nvim_get_current_win()
   CURRENT_FUZZY.current_win = vim.api.nvim_get_current_win()
   vim.cmd [[ startinsert! ]]
-
-  local width = opts.width or FUZZY_OPTS.width or 40
-  local height = opts.height or FUZZY_OPTS.height or 60
-  
-  local win_width = math.ceil(vim.api.nvim_get_option('columns')*width/100)
+  local buf, win, closer = floating.floating_buffer(opts)
+  local height = options.get_value(opts, 'height') 
   local win_height = math.ceil(vim.api.nvim_get_option('lines')*height/100)
-  local loc = opts.location or FUZZY_OPTS.location or location.bottom_center
-  
-  local buf, win, closer = floating.floating_buffer(win_width, win_height, loc)
-
+ 
   vim.api.nvim_win_set_option(win, 'concealcursor', 'nc')
   vim.api.nvim_buf_set_keymap(buf, 'i', '<C-p>', '<cmd> lua CURRENT_FUZZY.drawer:selection_up()<CR>', {})
   vim.api.nvim_buf_set_keymap(buf, 'i', '<C-k>', '<cmd> lua CURRENT_FUZZY.drawer:selection_up()<CR>', {})
@@ -83,17 +77,13 @@ function M.new(opts)
     _start_of_data = 1,
     selected_line = 1,
     selection_down = function(self)
-      if self.selected_line >= win_height-1 then
-        self.selected_line = self._start_of_data
-      else
+      if self.selected_line < win_height-1 then
         self.selected_line = self.selected_line + 1
       end
       self:update_selection()
     end,
     selection_up = function(self)
-      if self.selected_line <= self._start_of_data then
-        self.selected_line = win_height-1
-      else
+      if self.selected_line > self._start_of_data then
         self.selected_line = self.selected_line - 1
       end
       self:update_selection()

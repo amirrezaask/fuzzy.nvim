@@ -5,12 +5,12 @@ local defaults = {
   location = loc.bottom_center,
   width = 40,
   height = 100,
+  title = 'Fuzzy',
   blacklist = {
 
   },
   prompt = '> ',
   sorter = require'fuzzy.lib.sorter'.string_distance,
-  drawer = require'fuzzy.lib.drawer'.new,
   no_luv_finder = false,
 }
 

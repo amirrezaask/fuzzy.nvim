@@ -45,7 +45,7 @@ function Fuzzy.new(opts)
   CURRENT_FUZZY.sorter = options.get_value(opts, 'sorter')
   CURRENT_FUZZY.current_win = vim.api.nvim_get_current_win()
   CURRENT_FUZZY.current_buf = vim.api.nvim_get_current_buf()
-  CURRENT_FUZZY.drawer = options.get_value(opts, 'drawer')()
+  CURRENT_FUZZY.drawer = require'fuzzy.lib.drawer'.new(opts)
 
   if type(opts.source) == 'function' then
     CURRENT_FUZZY.collection = opts.source()
