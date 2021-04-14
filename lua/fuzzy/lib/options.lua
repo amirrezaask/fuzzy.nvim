@@ -3,15 +3,16 @@ local loc = require'fuzzy.lib.location'
 
 local defaults = {
   location = loc.bottom_center,
-  width = 60,
-  height = 100,
+  width = 90,
+  height = 25,
   title = 'Fuzzy',
   blacklist = {
-
+    '.git'
   },
   prompt = '> ',
   sorter = require'fuzzy.lib.sorter'.string_distance,
   no_luv_finder = false,
+  border = true,
 }
 
 function M.get_value(opts, key)

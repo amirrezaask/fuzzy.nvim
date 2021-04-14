@@ -9,11 +9,10 @@ return {
     local height = options.get_value(opts, 'height') 
     local loc = options.get_value(opts, 'location') 
     
-    
     local win_width = math.ceil(vim.api.nvim_get_option('columns')*width/100)
     local win_height = math.ceil(vim.api.nvim_get_option('lines')*height/100)
-    opts.win_height = win_width 
-    opts.win_width = win_height 
+    opts.win_height = win_height 
+    opts.win_width = win_width 
     local row, col = loc(opts.win_height, opts.win_width)
     local main_win_opts = {
       style = "minimal",
@@ -27,7 +26,8 @@ return {
     api.nvim_buf_set_option(buf, 'bufhidden', 'wipe')
     api.nvim_buf_set_option(buf, 'buftype','prompt')
     local border_win
-    if opts.border then
+    local border = options.get_value(opts, 'border')
+    if border then
       local border_opts = {
         style = "minimal",
         relative = "editor",
@@ -65,7 +65,7 @@ return {
     local win = api.nvim_open_win(buf, true, main_win_opts)
     api.nvim_win_set_option(win,'winhl', 'Normal:FuzzyNormal')
     return buf, win, function()
-      if opts.border then
+      if border then
         vim.api.nvim_win_close(border_win, true)
       end
       vim.api.nvim_win_close(win, true)
