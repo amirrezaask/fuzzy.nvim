@@ -19,9 +19,7 @@ function Fuzzy.new(opts)
     if not vim.api.nvim_buf_is_valid(self.buf) then
       return
     end
-    -- if #self.collection > 1000 then
-    --   print("I am choking, too much data to digest")
-    -- end
+    self.collection = self.original_collection
     if self.sorter then
       self.collection = self.sorter(self.input, self.collection)
     end
@@ -54,6 +52,7 @@ function Fuzzy.new(opts)
   elseif type(opts.source) == 'string' then
     CURRENT_FUZZY.collection = require'fuzzy.lib.source'.bin_source(opts.source)
   end
+  CURRENT_FUZZY.original_collection = CURRENT_FUZZY.collection
   CURRENT_FUZZY:__updater()
 end
 
