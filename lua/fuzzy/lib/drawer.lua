@@ -83,8 +83,7 @@ function M.new(opts)
         if #vim.api.nvim_buf_get_lines(buf, 0, -1, false) < 2 then
           return
         end
-        vim.api.nvim_buf_add_highlight(buf, FuzzyDrawerHighlight , 'Visual', self.selected_line, 0, -1)
-        vim.api.nvim_buf_add_highlight(buf, FuzzyDrawerHighlight , 'Question', self.selected_line, 0, -1)
+        vim.api.nvim_buf_add_highlight(buf, FuzzyDrawerHighlight , 'Statusline', self.selected_line, 0, -1)
       end)
     end,
     get_output = function()
