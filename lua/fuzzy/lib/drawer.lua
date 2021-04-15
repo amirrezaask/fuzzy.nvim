@@ -99,10 +99,11 @@ function M.new(opts)
           return
       end
       if #collection > win_height then
-        collection = table.slice(collection, #collection - win_height+2, #collection)
+        collection = table.slice(collection, #collection - win_height + 2, #collection)
       end
       vim.schedule(function() vim.api.nvim_buf_set_lines(buf, 0, -2, false, collection) end)
-      self._start_of_data = (win_height - 1) - #collection 
+      self._start_of_data = (win_height) - #collection
+      if self._start_of_data < 1 then self._start_of_data = 1 end
       collection = fill(collection, win_height-1)
       self.selected_line = win_height-1
       self:update_selection()

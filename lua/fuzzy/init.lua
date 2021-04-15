@@ -7,10 +7,10 @@ local grep = require'fuzzy.lib.source.grep'
 M = {}
 
 function M.grep(opts)
-  if vim.fn.executable('git') and vim.fn.isdirectory('.git') then
-    return require'fuzzy.git'.git_grep(opts)
-  elseif vim.fn.executable('rg') ~= 0 then
+  if vim.fn.executable('rg') ~= 0 then
     return require'fuzzy'.rg(opts)
+  elseif vim.fn.executable('git') and vim.fn.isdirectory('.git') then
+    return require'fuzzy.git'.git_grep(opts)
   else
     return require'fuzzy'.luv_grep(opts)
   end
