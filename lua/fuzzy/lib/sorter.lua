@@ -3,7 +3,7 @@
 local lev = require'fuzzy.lib.alg.levenshtein'
 local fzy = require'fuzzy.lib.alg.fzy'
 local tbl_reverse = require'fuzzy.lib.helpers'.tbl_reverse
-FUZZY_INPUT_FILE=string.format('%s/.fuzzy.input', os.getenv("HOME"))
+local Job = require'plenary.job'
 local Sorter = {}
 
 function Sorter.string_distance(query, collection)
@@ -15,30 +15,29 @@ function Sorter.fzy(query, collection)
 end
 
 function Sorter.fzy_native(query, collection)
-  local input = assert(io.open(FUZZY_INPUT_FILE, 'w'), 'cannot open input file')
-  input:write(table.concat(collection, '\n'))
-
-  local cmd = string.format('cat %s | fzy --show-matches="%s"', FUZZY_INPUT_FILE, query)
-  local file = assert(io.popen(cmd, 'r'), 'cannot open process')
-  local output = file:read('*all') 
-  file:close()
-  output = vim.split(output, '\n')
-  output[#output] = nil
-  output = tbl_reverse(output)
-  return output
+  Job:new({
+    command = 'fzy',
+    args = {'--show-matches', query},
+    on_exit = function(j, _)
+      collection = j:result()
+    end,
+    writer = collection 
+  }):sync(1000) 
+  collection = tbl_reverse(collection)
+  return collection
 end
 
-function Sorter.fzf(query, collection)
-  local input = io.open(FUZZY_INPUT_FILE, 'w') 
-  input:write(table.concat(collection, '\n'))
-  local cmd = string.format('cat %s | fzf -f "%s"', FUZZY_INPUT_FILE, query)
-  local file = assert(io.popen(cmd, 'r'), 'cannot open process')
-  local output = file:read('*all') 
-  file:close()
-  output = vim.split(output, '\n')
-  output[#output] = nil
-  output = tbl_reverse(output)
-  return output
+function Sorter.fzf_native(query, collection)
+  Job:new({
+    command = 'fzf',
+    args = {'-f', query},
+    on_exit = function(j, _)
+      collection = j:result()
+    end,
+    writer = collection 
+  }):sync(1000) 
+  collection = tbl_reverse(collection)
+  return collection
 end
 
 return Sorter
