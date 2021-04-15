@@ -8,6 +8,7 @@ local options = vim.g.fuzzy_options or {}
 local M = {}
 
 function M.git_files(opts) 
+  opts = opts or {}
   opts.source = bin_source('git ls-files $(git rev-parse --show-toplevel)')
   opts.handler = function(line)
     helpers.open_file(line)
@@ -16,6 +17,7 @@ function M.git_files(opts)
 end
 
 function M.git_grep(opts)
+  opts = opts or {}
   local cmd = 'git grep -n ""'
   opts.source = bin_source(cmd)
   opts.sorter = function(query, coll)
@@ -30,6 +32,7 @@ function M.git_grep(opts)
 end
 
 function M.git_commits(opts)
+  opts = opts or {}
   local commits = bin_source('git log --pretty=oneline --abbrev-commit')()
   vim.inspect(commits)
   opts.source = commits
@@ -39,6 +42,7 @@ end
 
 
 function M.git_bcommits(opts)
+  opts = opts or {}
   local filename = vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf())
   local commits = bin_source('git log --pretty=oneline --abbrev-commit ' .. filename)()
   opts.source = commits
@@ -53,6 +57,7 @@ function M.git_bcommits(opts)
 end
 
 function M.git_checkout(opts)
+  opts = opts or {}
   local branches = bin_source('git --no-pager branch')()
   opts.source = branches
   opts.handler = function(line)

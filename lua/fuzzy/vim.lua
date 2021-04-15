@@ -2,6 +2,7 @@ local M = {}
 local fuzzy = require'fuzzy.lib'
 
 function M.colors(opts)
+  opts = opts or {}
   opts.handler = function(color)
     vim.cmd(string.format('colorscheme %s', color))
   end
@@ -10,6 +11,7 @@ function M.colors(opts)
 end
 
 function M.buffers(opts)
+  opts = opts or {}
   local _buffers = {}
   local function buffer_state(buf)
     if vim.api.nvim_buf_is_loaded(buf) then
@@ -33,6 +35,7 @@ end
 
 
 function M.commands(opts)
+  opts = opts or {}
   opts.source =  vim.fn.getcompletion('', 'command')
   opts.handler = function(command)
     vim.cmd(command)
@@ -41,6 +44,7 @@ function M.commands(opts)
 end
 
 function M.mru(opts)
+  opts = opts or {}
   opts.source = vim.split(vim.fn.execute('oldfiles'), '\n')
   opts.handler = function(file)
     vim.cmd (string.format('e %s', vim.split(file, ':')[2]))
