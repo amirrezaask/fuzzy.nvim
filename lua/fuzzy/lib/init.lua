@@ -23,9 +23,11 @@ function Fuzzy.new(opts)
     if self.sorter then
       self.collection = self.sorter(self.input, self.collection)
     end
-    if self.sorter then
-      self.drawer:draw(self.collection)
-    end
+    -- if #self.collection == 0 then
+    --   error('data collection is empty') 
+    --   self.__close()
+    -- end
+    self.drawer:draw(self.collection)
   end
 
   CURRENT_FUZZY.__close = function (self)

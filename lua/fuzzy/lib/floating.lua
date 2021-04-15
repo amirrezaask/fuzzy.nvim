@@ -37,8 +37,12 @@ return {
         col = col - 1
       }
       local border_buf = api.nvim_create_buf(false, true)
-
-      local top_line ='╭' .. string.rep('─', opts.win_width) .. '╮'
+      local top_line
+      if opts.title then
+        top_line ='╭' .. string.rep('─', (opts.win_width - #opts.title)/2).. opts.title ..  string.rep('─', (opts.win_width - #opts.title)/2).. '╮'
+      else
+        top_line ='╭' .. string.rep('─', opts.win_width) .. '╮'
+      end
       local middle_line = '│' .. string.rep(' ', opts.win_width) .. '│'
       local bottom_line =  '╰' .. string.rep('─', opts.win_width) .. '╯'
 

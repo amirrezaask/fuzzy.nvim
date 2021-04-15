@@ -16,6 +16,9 @@ function M.new(opts)
   opts.current_win = vim.api.nvim_get_current_win()
   CURRENT_FUZZY.current_win = vim.api.nvim_get_current_win()
   vim.cmd [[ startinsert! ]]
+  if options.get_value(opts, 'title') then
+    opts.title = options.get_value(opts, 'title')
+  end
   local buf, win, closer = floating.floating_buffer(opts)
   local height = options.get_value(opts, 'height') 
   local win_height = math.ceil(vim.api.nvim_get_option('lines')*height/100)

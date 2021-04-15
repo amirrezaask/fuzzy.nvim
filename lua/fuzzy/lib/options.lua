@@ -5,7 +5,6 @@ local defaults = {
   location = loc.bottom_center,
   width = 90,
   height = 25,
-  title = 'Fuzzy',
   blacklist = {
     '.git'
   },

@@ -1,11 +1,8 @@
 local uv = vim.loop
 local M = {}
 
-local function is_repo(path)
-  return vim.fn.isdirectory(path .. '/.git')
-end
-
 local function list_projects(output, path)
+  path = vim.fn.expand(path)
   output = output or {}
   local fs_t = uv.fs_scandir(path)
   if fs_t == nil then
@@ -33,7 +30,7 @@ end
 
 function M.list_projects(locations)
   local list = {}
-  for idx, location in ipairs(locations) do
+  for _, location in ipairs(locations) do
     list_projects(list, location)
   end
   return list

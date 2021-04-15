@@ -17,6 +17,9 @@ function M.grep(opts)
 end
 
 function M.find_files(opts)
+  if opts.path then
+    opts.path = vim.fn.expand(opts.path)
+  end
   if not FUZZY_OPTS.no_luv_finder then
     return require'fuzzy'.luv_finder(opts)
   elseif vim.fn.executable('fdfind') ~= 0 or vim.fn.executable('fd') ~= 0 then
