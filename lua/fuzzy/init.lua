@@ -83,8 +83,7 @@ function M.luv_finder(opts)
   opts.handler = opts.handler or function(line)
     helpers.open_file(line)
   end
-  fuzzy.new {
-    source = function()
+  opts.source = function()
       return file_finder.find({
       path = opts.path,
       depth = opts.depth,
@@ -93,9 +92,8 @@ function M.luv_finder(opts)
       include_previous_link = opts.include_previous_link,
       blacklist = opts.blacklist,
     })
-    end,
-    handler = opts.handler
-  }
+    end
+  fuzzy.new(opts)
 end
 
 function M.fd(opts)

@@ -58,6 +58,15 @@ return {
   open_file_at = function(filename, line)
     vim.api.nvim_command(string.format('e +%s %s', line, filename))
   end,
+  tbl_reverse = function(t)
+    local new_t = {}
+    local i = #t
+    while i > 0 do
+      table.insert(new_t, t[i])
+      i = i-1
+    end
+    return new_t
+end
 }
 
 
