@@ -4,20 +4,22 @@ Fast, Simple, Powerfull fuzzy finder all in lua.
 ## Why another fuzzy finder ?
 When I started this project the only alternative was fzf.vim which was in vimscript but I needed my fuzzy finder to be completely in Lua, this projects started as fzf.nvim
 and then when I started implementing sorting algorithm in lua changed it to fuzzy.nvim.
+[Demo](https://www.youtube.com/watch?v=YCUSN59FBSY)
 
-# Demo
-<div align="center">
-    <a href="https://www.youtube.com/watch?v=YCUSN59FBSY">
-    <img 
-    src="https://img.youtube.com/vi/YCUSN59FBSY/0.jpg" 
-    alt="Fuzzy.nvim demo" 
-    style="width:100%;">
-    </a>
-</div>
 # Terminology:
-- Source: source is either a function that returns a list of data that we are going to search or is simply just a lua table or a string which is a command that it's output will be used as a source.
-- Sorter: Sorter is a function that gets our input and sorts the source data based on that.
-- Handler: handler varies for each function and handles final user choice.
+## Source: 
+source is either a function that returns a list of data that we are going to search or is simply just a lua table or a string which is a command that it's output will be used as a source.
+- table 
+- function
+- string ( system command )
+## Sorter 
+Sorter is a function that gets our query and sorts the source data based on that.
+- string_distance: ( levenshtein string distance ), needs no dependency
+- fzy: uses fzy sorting algorith
+- fzy_native: uses fzy binary
+- fzf: uses fzf binary
+## Handler
+handlers gets selected item and handles it, varies for each functionality.
 
 # Commands
 - IFiles 
@@ -44,7 +46,6 @@ and then when I started implementing sorting algorithm in lua changed it to fuzz
 
 
 # Customization 
-
 ```lua
 require'fuzzy.lib.options'.setup {
   width = 30,
@@ -53,7 +54,7 @@ require'fuzzy.lib.options'.setup {
     "vendor"
   },
   location = loc.bottom_center, 
-  sorter = require'fuzzy.lib.sorter'.fzy_native
+  sorter = require'fuzzy.lib.sorter'.fzf -- Also fzy, fzy_native, string_distance are supported
   prompt = '> '
 }
 ```
