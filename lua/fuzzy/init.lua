@@ -44,16 +44,15 @@ function M.luv_grep(opts)
     local lines = grep.grep(files, CURRENT_FUZZY.input or '')
     return lines
   end
-  fuzzy.new {
-    source = source_and_sorter,
-    sorter = source_and_sorter,
-    handler = function(line)
+  opts.source = source_and_sorter
+  opts.sorter = source_and_sorter
+  opts.handler = function(line)
       local filename = vim.split(line, ':')[1]
       local linum = vim.split(line, ':')[2]
       CURRENT_FUZZY.__grep_cache= {}
       helpers.open_file_at(filename, linum)
     end
-  }
+  fuzzy.new(opts)
 end
 
 --TODO: improve
@@ -130,28 +129,26 @@ function M.find(opts)
     hidden = ''
   end
   local cmd = string.format('find %s %s -type s,f', opts.cwd, hidden)
-  local function handler(line)
+  opts.handler= function(line)
     helpers.open_file(line)
   end
-  fuzzy.new {
-    source = bin.bin_source(cmd),
-  }
+  opts.source = bin.bin_source(cmd)
+  fuzzy.new (opts)
 end
 
 
 function M.rg(opts)
   local cmd = 'rg --column --line-number --no-heading --ignore-case '
-  fuzzy.new {
-    source = {},
-    sorter = function(query, _)
+  opts.source = {}
+  opts.sorter = function(query, _)
       return bin.bin_source(string.format(cmd .. '"%s"', query))()
-    end,
-    handler = function(line)
-      local filename = vim.split(line, ':')[1]
-      local linum = vim.split(line, ':')[2]
-      helpers.open_file_at(filename, linum)
-    end,
-  }
+    end
+  opts.handler = function(line)
+    local filename = vim.split(line, ':')[1]
+    local linum = vim.split(line, ':')[2]
+    helpers.open_file_at(filename, linum)
+  end
+  fuzzy.new(opts)
 end
 
 
@@ -161,12 +158,11 @@ function M.buffer_lines(opts)
   for i=1,#source do
     source[i] = string.format('%s:%s', i, source[i])
   end
-  fuzzy.new {
-    source = source,
-    handler = function(line)
-      helpers.open_file_at(filename, vim.split(line, ':')[1])
-    end,
-  }
+  opts.source = source
+  opts.handler = function(line)
+    helpers.open_file_at(filename, vim.split(line, ':')[1])
+  end
+  fuzzy.new(opts)
 end
 
 function M.cd(opts)
@@ -180,12 +176,11 @@ function M.cd(opts)
   end
   table.insert(opts.args, '-type s,d')
   local cmd = string.format('find %s', table.concat(opts.args, ' '))
-  fuzzy.new {
-    source = bin.bin_source(cmd),
-    handler = function(line)
-      vim.cmd(string.format('cd %s', line))
-    end,
-  }
+  opts.source = bin.bin_source(cmd)
+  opts.handler = function(line)
+    vim.cmd(string.format('cd %s', line))
+  end
+  fuzzy.new(opts)
 end
 
 return M

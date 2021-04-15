@@ -23,13 +23,12 @@ function M.document_symbols(opts)
     table.insert(lines, string.format('%s:%s:%s', loc.filename, loc.lnum, loc.text))
   end
   local cmd = table.concat(lines, '\n')
-  fuzzy.new {
-    source = lines,
-    handler = function(line)
-      local segments = vim.split(line, ":")
-      helpers.open_file_at(segments[1], segments[2])
-    end
-  }
+  opts.source = lines
+  opts.handler = function(line)
+    local segments = vim.split(line, ":")
+    helpers.open_file_at(segments[1], segments[2])
+  end
+  fuzzy.new(opts)
 end
 
 function M.workspace_symbols(opts)
@@ -48,13 +47,12 @@ function M.workspace_symbols(opts)
   for _, loc in ipairs(locations) do
     table.insert(lines, string.format('%s:%s:%s', loc.filename, loc.lnum, loc.text))
   end
-  fuzzy.new {
-    source = lines,
-    handler = function(line)
-      local segments = vim.split(line, ":")
-      helpers.open_file_at(segments[1], segments[2])
-    end,
-  }
+  opts.source = lines
+  opts.handler = function(line)
+    local segments = vim.split(line, ":")
+    helpers.open_file_at(segments[1], segments[2])
+  end
+  fuzzy.new(opts)
 end
 
 function M.references(opts)
@@ -81,13 +79,12 @@ function M.references(opts)
     opts.callback(lines[1])
     return
   end
-  fuzzy.new {
-    source = lines,
-    handler = function(line)
-      local segments = vim.split(line, ":")
-      helpers.open_file_at(segments[1], segments[2])
-    end,
-  }
+  opts.source = lines
+  opts.handler = function(line)
+    local segments = vim.split(line, ":")
+    helpers.open_file_at(segments[1], segments[2])
+  end
+  fuzzy.new(opts)
 end
 
 function M.implementation(opts)
@@ -114,14 +111,13 @@ function M.implementation(opts)
     opts.callback(lines[1])
     return
   end
-  fuzzy.new {
-    source = lines,
-    handler = function(line)
-      local segments = vim.split(line, ":")
-      helpers.open_file_at(segments[1], segments[2])
-    end,
-  }
 
+  opts.source = lines
+  opts.handler = function(line)
+    local segments = vim.split(line, ":")
+    helpers.open_file_at(segments[1], segments[2])
+  end
+  fuzzy.new(opts)
 
 end
 
@@ -177,13 +173,12 @@ function M.code_actions(opts)
   for i,a in ipairs(results) do
     table.insert(results_titles, string.format('%d.%s', i, a.title))
   end
-  fuzzy.new {
-    source = results_titles,
-    handler = function(code_action)
-      code_action = results[tonumber(vim.split(code_action, '%.')[1])]
-      do_lsp_code_action(code_action)
-    end
-  }
+  opts.source = results_titles
+  opts.handler = function(code_action)
+    code_action = results[tonumber(vim.split(code_action, '%.')[1])]
+    do_lsp_code_action(code_action)
+  end
+  fuzzy.new(opts)
 end
 
 
@@ -211,13 +206,13 @@ function M.definitions(opts)
     opts.callback(lines[1])
     return
   end
-  fuzzy.new {
-    source = lines,
-    handler = function(line)
-      local segments = vim.split(line, ":")
-      helpers.open_file_at(segments[1], segments[2])
-    end,
-  }
+
+  opts.source = lines
+  opts.handler = function(line)
+    local segments = vim.split(line, ":")
+    helpers.open_file_at(segments[1], segments[2])
+  end
+  fuzzy.new(opts)
 
 end
 
