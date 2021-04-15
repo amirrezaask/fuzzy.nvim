@@ -20,6 +20,7 @@ function Sorter.fzy_native(query, collection)
   file:close()
   output = vim.split(output, '\n')
   output[#output] = nil
+  output = table.reverse(output)
   return output
 end
 
