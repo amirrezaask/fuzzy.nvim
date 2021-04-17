@@ -38,6 +38,8 @@ function M.new(opts)
  
   vim.cmd [[ highlight default link FuzzyNormal Normal ]]
   vim.cmd [[ highlight default link FuzzyBorderNormal Normal ]]
+  vim.cmd [[ highlight default link FuzzySelection Visual ]]
+  vim.cmd [[ highlight default link FuzzyMatching Special ]]
 
   vim.cmd([[ autocmd TextChangedI <buffer> lua CURRENT_FUZZY:__updater() ]])
 

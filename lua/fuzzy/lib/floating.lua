@@ -8,7 +8,7 @@ return {
     local width = options.get_value(opts, 'width') 
     local height = options.get_value(opts, 'height') 
     local loc = options.get_value(opts, 'location') 
-    
+
     local win_width = math.ceil(vim.api.nvim_get_option('columns')*width/100)
     local win_height = math.ceil(vim.api.nvim_get_option('lines')*height/100)
     opts.win_height = win_height 
@@ -67,7 +67,7 @@ return {
       api.nvim_win_set_option(border_win, 'winhl', 'Normal:FuzzyBorderNormal')
     end
     local win = api.nvim_open_win(buf, true, main_win_opts)
-    api.nvim_win_set_option(win,'winhl', 'Normal:FuzzyNormal')
+    api.nvim_win_set_option(win, 'winhl', 'Normal:FuzzyNormal')
     return buf, win, function()
       if border then
         vim.api.nvim_win_close(border_win, true)
