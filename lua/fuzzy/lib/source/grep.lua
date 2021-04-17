@@ -4,21 +4,21 @@ local uv = vim.loop
 local G = {}
 
 function G.read_file(file)
-  local fd = uv.fs_open(file, 'r', 438)  
+  local fd = uv.fs_open(file, 'r', 438)
   if fd == nil then
-    print(string.format('can\'t read the file: %s', file))
+    print(string.format("can't read the file: %s", file))
     return
   end
 
   local stat = uv.fs_fstat(fd)
   if stat == nil then
-    print(string.format('can\'t stat the file: %s', file))
+    print(string.format("can't stat the file: %s", file))
     return
   end
 
   local data = uv.fs_read(fd, stat.size, 0)
   if data == nil then
-    print(string.format('can\'t get data of the file: %s', file))
+    print(string.format("can't get data of the file: %s", file))
     return
   end
   uv.fs_close(fd)
@@ -34,17 +34,16 @@ local function grep_file(file, pattern, output)
   end
   for i, t in ipairs(vim.split(text, '\n')) do
     if #output == GREP_FILE_THRESHOLD then
-      return 
+      return
     end
     if pattern == '' then
-      table.insert(output, string.format('%s:%s:%s',file, i, t))
-      goto continue
+      table.insert(output, string.format('%s:%s:%s', file, i, t))
+    else
+      local res = t:find(pattern)
+      if res ~= nil then
+        table.insert(output, string.format('%s:%s:%s', file, i, t))
+      end
     end
-    local res = t:find(pattern)
-    if res ~= nil then
-      table.insert(output, string.format('%s:%s:%s',file, i, t)) 
-    end
-    ::continue::
   end
 end
 
@@ -57,4 +56,3 @@ function G.grep(files, pattern)
 end
 
 return G
-
