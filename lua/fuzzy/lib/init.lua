@@ -16,9 +16,11 @@ function Fuzzy.new(opts)
       end
     self.input = new_input
     end
+
     if not vim.api.nvim_buf_is_valid(self.buf) then
       return
     end
+    vim.fn.matchadd('FuzzyMatching', self.input)
     self.collection = self.original_collection
     if self.sorter then
       self.collection = self.sorter(self.input, self.collection)
