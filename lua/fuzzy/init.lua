@@ -1,8 +1,8 @@
-local files = require("fuzzy.files")
-local search = require("fuzzy.search")
-local lsp = require("fuzzy.lsp")
-local vim = require("fuzzy.vim")
-local git = require("fuzzy.git")
+local files = require('fuzzy.files')
+local search = require('fuzzy.search')
+local lsp = require('fuzzy.lsp')
+local vim = require('fuzzy.vim')
+local git = require('fuzzy.git')
 
 local Fuzzy = {}
 
