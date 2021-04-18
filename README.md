@@ -31,17 +31,36 @@ Sorter is a function that gets our query and sorts the source data based on that
 handlers gets selected item and do smth with it, varies for each functionality.
 
 # Customization
+## Settings
 ```lua
-require'fuzzy.lib.options'.setup {
-  width = 30,
-  height = 100,
+require'fuzzy'.setup {
+  width = 60,
+  height = 40,
   blacklist = {
     "vendor"
   },
   location = loc.bottom_center,
   sorter = require'fuzzy.lib.sorter'.fzy -- Also fzf_native, fzy_native, string_distance are supported
-  prompt = '> '
+  prompt = '> ',
+  custom_functions = {
+    some_custom_function = function() -- This function appears in complete menu when using :Fuzzy command.
+    end
+  }
 }
+```
+## Custom Fuzzy usage
+let's say you want to define a simple fuzzy search on a simple lua table.
+```lua
+  require'fuzzy.lib'.new {
+    source = {
+      'data1', ...
+    },
+    handler = function(data)
+      print(data)
+    end,
+    -- Almost all the keys that are supported in setup function are valid here and will override the default one set by user.
+  }
+
 ```
 # Builtin functions
 - find_files: find files in recursively
