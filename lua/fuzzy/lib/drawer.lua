@@ -118,10 +118,12 @@ function M.new(opts)
       end
       local i = 1
       while i < #collection+1 do
-        local filename = extract_filename(collection[i])
-        local icon, icon_highlight = require'nvim-web-devicons'.get_icon(filename, string.match(filename, '%a+$'), {default = true})
-        if icon ~= '' then
-          collection[i] = icon .. ' ' .. collection[i]
+        if collection[i] ~= '' then
+          local filename = extract_filename(collection[i])
+          local icon, icon_highlight = require'nvim-web-devicons'.get_icon(filename, string.match(filename, '%a+$'), {default = true})
+          if icon ~= '' then
+            collection[i] = icon .. ' ' .. collection[i]
+          end
         end
         i = i + 1
       end
