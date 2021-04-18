@@ -9,7 +9,7 @@ local M = {}
 
 function M.git_files(opts)
   opts = opts or {}
-  opts.source = bin('git', { 'ls-files', '$(git rev-parse --show-toplevel)' })
+  opts.source = bin('bash', { '-c', 'git ls-files $(git rev-parse --show-toplevel)' })
   opts.handler = function(line)
     helpers.open_file(line)
   end
@@ -32,8 +32,7 @@ end
 
 function M.git_commits(opts)
   opts = opts or {}
-  local commits = bin_source('git log --pretty=oneline --abbrev-commit')()
-  vim.inspect(commits)
+  local commits = bin('git', { 'log', '--pretty=oneline', '--abbrev-commit' })()
   opts.source = commits
   fuzzy.new(opts)
 end
@@ -41,7 +40,7 @@ end
 function M.git_bcommits(opts)
   opts = opts or {}
   local filename = vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf())
-  local commits = bin_source('git log --pretty=oneline --abbrev-commit ' .. filename)()
+  local commits = bin('git', { 'log', '--pretty=oneline', '--abbrev-commit', filename })()
   opts.source = commits
   opts.handler = function(line)
     local commit_hash = vim.split(line, ' ')[1]
@@ -55,7 +54,7 @@ end
 
 function M.git_checkout(opts)
   opts = opts or {}
-  local branches = bin_source('git --no-pager branch')()
+  local branches = bin('git', { '--no-pager', 'branch' })()
   opts.source = branches
   opts.handler = function(line)
     vim.cmd(string.format('! git checkout %s', vim.split(line, ' ')[2]))
