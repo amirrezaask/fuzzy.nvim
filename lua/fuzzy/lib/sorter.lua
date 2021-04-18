@@ -43,6 +43,7 @@ function Sorter.fzf_native(query, collection)
   collection = tbl_reverse(collection)
   return collection
 end
+
 function Sorter.fzf_spawn_native(query, collection)
   local spawn = require('spawn')
   collection = spawn({

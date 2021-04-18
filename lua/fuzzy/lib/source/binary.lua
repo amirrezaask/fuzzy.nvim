@@ -1,12 +1,11 @@
-local M = {}
-function M.bin_source(cmd)
-	return function()
-		local file = io.popen(cmd)
-		local output = file:read("*all")
-		file:close()
-		output = vim.split(output, "\n")
-		return output
-	end
-end
+local spawn = require('spawn')
 
-return M
+return function(command, args)
+  return function()
+    return spawn({
+      command = command,
+      args = args,
+      sync = { timeout = 1000, interval = 10 },
+    })
+  end
+end

@@ -2,7 +2,6 @@ local fuzzy = require('fuzzy.lib')
 local helpers = require('fuzzy.lib.helpers')
 local bin = require('fuzzy.lib.source.binary')
 local file_finder = require('fuzzy.lib.source.file_finder')
-local grep = require('fuzzy.lib.source.grep')
 
 M = {}
 
@@ -73,35 +72,46 @@ function M.fd(opts)
   if opts.hidden then
     opts.hidden = '--hidden'
   else
-    opts.hidden = ''
+    opts.hidden = nil
   end
   opts.path = opts.path or '.'
-  local program_name = 'fd'
+  local command = 'fd'
   if vim.fn.executable('fdfind') ~= 0 then
-    program_name = 'fdfind'
+    command = 'fdfind'
   end
-  local cmd = string.format('%s %s --type f --type s "" %s', program_name, opts.hidden, opts.path)
-  opts.source = bin.bin_source(cmd)
+  local args = {}
+  if opts.hidden then
+    table.insert(args, opts.hidden)
+  end
+  table.insert(args, '--type')
+  table.insert(args, 'f')
+  table.insert(args, '--type')
+  table.insert(args, 's')
+  table.insert(args, '')
+  table.insert(args, opts.path)
+  opts.source = bin(command, args)
   opts.handler = function(line)
     helpers.open_file(line)
   end
   fuzzy.new(opts)
 end
-
 function M.find(opts)
   opts = opts or {}
   opts.cwd = opts.cwd or '.'
   opts.hidden = opts.hidden or false
   opts.args = opts.args or {}
-  local hidden = [[-not -path '*/\.*']]
-  if opts.hidden then
-    hidden = ''
+  table.insert(opts.args, opts.cwd)
+  if not opts.hidden then
+    table.insert(opts.args, '-not')
+    table.insert(opts.args, '-path')
+    table.insert(opts.args, '*/.*')
   end
-  local cmd = string.format('find %s %s -type s,f', opts.cwd, hidden)
+  table.insert(opts.args, '-type')
+  table.insert(opts.args, 's,f')
   opts.handler = function(line)
     helpers.open_file(line)
   end
-  opts.source = bin.bin_source(cmd)
+  opts.source = bin('find', opts.args)
   fuzzy.new(opts)
 end
 
@@ -112,11 +122,13 @@ function M.cd(opts)
   opts.args = opts.args or {}
   table.insert(opts.args, opts.cwd)
   if not opts.hidden then
-    table.insert(opts.args, [[-not -path '*/\.*']])
+    table.insert(opts.args, '-not')
+    table.insert(opts.args, '-path')
+    table.insert(opts.args, '*/.*')
   end
-  table.insert(opts.args, '-type s,d')
-  local cmd = string.format('find %s', table.concat(opts.args, ' '))
-  opts.source = bin.bin_source(cmd)
+  table.insert(opts.args, '-type')
+  table.insert(opts.args, 's,d')
+  opts.source = bin('find', opts.args)
   opts.handler = function(line)
     vim.cmd(string.format('cd %s', line))
   end
