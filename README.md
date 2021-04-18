@@ -9,15 +9,16 @@ and then when I started implementing sorting algorithm in lua changed it to fuzz
 # Installation
 ## Packer.nvim
 ```lua
-use { 'amirrezaask/fuzzy.nvim', requires={'nvim-lua/plenary.nvim'}}
+use { 'amirrezaask/fuzzy.nvim', requires={'nvim-lua/plenary.nvim', 'kyazdani42/nvim-web-devicons'}}
 ```
 # Terminology:
-## Source: 
+## Source:
 source is either a function that returns a list of data that we are going to search or is simply just a lua table or a string which is a command that it's output will be used as a source.
-- table 
+- table
 - function
 - string ( system command )
-## Sorter 
+
+## Sorter
 Sorter is a function that gets our query and sorts the source data based on that.
 - string_distance: ( levenshtein string distance ), needs no dependency
 - fzy: uses fzy sorting algorith
@@ -27,30 +28,30 @@ Sorter is a function that gets our query and sorts the source data based on that
 handlers gets selected item and handles it, varies for each functionality.
 
 # Commands
-- IFiles 
-- Files 
-- Grep 
-- Commands 
-- MRU 
-- BLines 
-- Cd 
-- Help 
-- GitFiles 
-- GitGrep 
-- GitCommits 
-- GitBCommits 
-- GitCheckout 
-- Buffers 
-- Rg 
-- Colors 
-- LspReferences 
-- LspDocumentSymbols 
+- IFiles
+- Files
+- Grep
+- Commands
+- MRU
+- BLines
+- Cd
+- Help
+- GitFiles
+- GitGrep
+- GitCommits
+- GitBCommits
+- GitCheckout
+- Buffers
+- Rg
+- Colors
+- LspReferences
+- LspDocumentSymbols
 - LspWorkspaceSymbols
 - LspCodeActions
 - LspDefinitions
 
 
-# Customization 
+# Customization
 ```lua
 require'fuzzy.lib.options'.setup {
   width = 30,
@@ -58,7 +59,7 @@ require'fuzzy.lib.options'.setup {
   blacklist = {
     "vendor"
   },
-  location = loc.bottom_center, 
+  location = loc.bottom_center,
   sorter = require'fuzzy.lib.sorter'.fzf -- Also fzy, fzy_native, string_distance are supported
   prompt = '> '
 }
