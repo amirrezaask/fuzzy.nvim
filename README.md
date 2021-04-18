@@ -43,9 +43,30 @@ require'fuzzy.lib.options'.setup {
   prompt = '> '
 }
 ```
-
-
 # Builtin functions
+``` lua
+find_files: find files in recursively
+interactive_file_finder: A simple file browser.
+cd: Change directory of neovim.
+grep: grep a string.
+buffer_lines: search in current buffer lines
+buffers: neovim buffers.
+colors: change neovim colorscheme.
+commands: Run neovim command.
+recent_files: Search through neovim recent files.
+history: Search through neovim commands.
+help: Search through neovim help tags.
+mappings: Search through registered keymappings.
+git_files: List of files in current git repo.
+git_commits: List commits in repo.
+git_bcommits: List of commits happend on current file.
+git_checkout: List of branches to checkout to.
+lsp_document_symbols: List of document symbols from LSP server.
+lsp_workspace_symbols: List of workspace symbols from LSP server.
+lsp_references: List of references to current at point symbol from LSP server.
+lsp_implementations: List of implementations of current at point interface from LSP server.
+lsp_definitions:
+```
 
 # Credits
 - @tjdevries for awesome streams, plenary and telescope.nvim which I took multiple ideas from.
