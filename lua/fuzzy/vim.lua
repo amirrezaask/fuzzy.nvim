@@ -60,15 +60,6 @@ function M.history(opts)
   fuzzy.new(opts)
 end
 
-function M.projects(opts)
-  opts = opts or {}
-  local project_list = require('fuzzy.lib.source.projects').list_projects(opts.locations)
-  opts.source = project_list
-  opts.handler = function(path)
-    vim.cmd(string.format([[ cd %s ]], path))
-  end
-  fuzzy.new(opts)
-end
 function M.help(opts)
   opts = opts or {}
   opts.source = function()
