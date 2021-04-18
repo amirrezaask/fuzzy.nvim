@@ -10,6 +10,13 @@ function table.slice(tbl, first, last, step)
   end
   return sliced
 end
+local function extract_filename(line)
+  local splits = vim.split(line, ':')
+  if #splits < 2 then
+    return line
+  end
+  return splits[1]
+end
 
 function M.new(opts)
   opts = opts or {}
@@ -91,14 +98,34 @@ function M.new(opts)
         vim.api.nvim_buf_add_highlight(buf, FuzzyDrawerHighlight, 'Statusline', self.selected_line, 0, -1)
       end)
     end,
-    get_output = function()
+    get_output = function(self)
       local line = vim.api.nvim_buf_get_lines(
         CURRENT_FUZZY.buf,
         CURRENT_FUZZY.drawer.selected_line,
         CURRENT_FUZZY.drawer.selected_line + 1,
         false
       )[1]
+      if string.byte(line, 4) == string.byte(' ', 1) then
+        return string.sub(line, 5, #line)
+      end
       return line
+    end,
+    with_icons = function(collection)
+     local has_icons, icons = pcall(require, 'nvim-web-devicons') 
+     if not has_icons then 
+        print('for having icon in drawer install `nvim-web-devicons`')
+        return collection
+      end
+      local i = 1
+      while i < #collection+1 do
+        local filename = extract_filename(collection[i])
+        local icon, icon_highlight = require'nvim-web-devicons'.get_icon(filename, string.match(filename, '%a+$'), {default = true})
+        if icon ~= '' then
+          collection[i] = icon .. ' ' .. collection[i]
+        end
+        i = i + 1
+      end
+      return collection
     end,
     draw = function(self, collection)
       vim.api.nvim_buf_set_lines(buf, 0, -2, false, {})
@@ -118,6 +145,8 @@ function M.new(opts)
       if self._start_of_data < 1 then
         self._start_of_data = 1
       end
+      self.sorted_collection = collection
+      collection = self.with_icons(collection)
       collection = fill(collection, win_height - 1)
       self.selected_line = win_height - 1
       self:update_selection()

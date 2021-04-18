@@ -39,7 +39,7 @@ function Fuzzy.new(opts)
   end
 
   CURRENT_FUZZY.__handler = function(self)
-    local line = self.drawer.get_output()
+    local line = self.drawer:get_output()
     self:__close()
     self.handler(line)
   end
