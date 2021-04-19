@@ -30,8 +30,8 @@ function Fuzzy.setup(opts)
   Fuzzy.lsp_references = lsp.references
   Fuzzy.lsp_implementations = lsp.implementation
   Fuzzy.lsp_definitions = lsp.definitions
-  if opts.custom_functions then
-    for n, f in pairs(opts.custom_functions) do
+  if opts.register then
+    for n, f in pairs(opts.register) do
       Fuzzy[n] = f
     end
   end

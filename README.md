@@ -42,7 +42,7 @@ require'fuzzy'.setup {
   location = loc.bottom_center,
   sorter = require'fuzzy.lib.sorter'.fzy -- Also fzf_native, fzy_native, string_distance are supported
   prompt = '> ',
-  custom_functions = {
+  register = {
     some_custom_function = function() -- This function appears in complete menu when using :Fuzzy command.
     end
   }
@@ -83,7 +83,7 @@ let's say you want to define a simple fuzzy search on a simple lua table.
 - lsp_workspace_symbols: List of workspace symbols from LSP server.
 - lsp_references: List of references to current at point symbol from LSP server.
 - lsp_implementations: List of implementations of current at point interface from LSP server.
-- lsp_definitions: 
+- lsp_definitions: List or jump to defintions of current symbol.
 
 # Credits
 - @tjdevries for awesome streams, plenary and telescope.nvim which I took multiple ideas from.
