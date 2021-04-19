@@ -10,7 +10,7 @@ When I started this project the alternatives were fzf.vim which was in vimscript
 ## Packer.nvim
 ```lua
 use { 'kyazdani42/nvim-web-devicons' } --Optional if you want icons, also you need to have a patched font, look at nvim-web-devicons README for information.
-use { 'amirrezaask/fuzzy.nvim', requires={'nvim-lua/plenary.nvim'}}
+use { 'amirrezaask/fuzzy.nvim', requires={'amirrezaask/spawn.nvim'}}
 ```
 
 # Terminology:
