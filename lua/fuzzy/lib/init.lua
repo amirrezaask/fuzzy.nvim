@@ -44,6 +44,11 @@ function Fuzzy.new(opts)
     self.handler(line)
   end
 
+  CURRENT_FUZZY.__set_qflist = function(self)
+    local lines = vim.api.nvim_buf_get_lines(self.drawer.buf, 0, -1, false)
+    require('fuzzy.lib.qflist').set_qflist(lines)
+  end
+
   CURRENT_FUZZY.sorter = options.get_value(opts, 'sorter')
   CURRENT_FUZZY.current_win = vim.api.nvim_get_current_win()
   CURRENT_FUZZY.current_buf = vim.api.nvim_get_current_buf()
