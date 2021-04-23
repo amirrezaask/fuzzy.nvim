@@ -112,7 +112,7 @@ function M.new(opts)
       return line
     end,
     with_icons = function(collection)
-      local has_icons, icons = pcall(require, 'nvim-web-devicons')
+      local has_icons, _ = pcall(require, 'nvim-web-devicons')
       if not has_icons then
         print('for having icon in drawer install `nvim-web-devicons`')
         return collection
@@ -121,7 +121,7 @@ function M.new(opts)
       while i < #collection + 1 do
         if collection[i] ~= '' then
           local filename = extract_filename(collection[i])
-          local icon, icon_highlight =
+          local icon, _ =
             require('nvim-web-devicons').get_icon(filename, string.match(filename, '%a+$'), { default = true })
           if icon ~= '' then
             collection[i] = icon .. ' ' .. collection[i]
