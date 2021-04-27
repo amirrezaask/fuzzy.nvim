@@ -48,10 +48,15 @@ end
 function _mt:set_qflist()
   local lines = vim.api.nvim_buf_get_lines(self.drawer.buf, 0, -1, false)
   require('fuzzy.lib.qflist').set_qflist(lines)
-  self:__close()
+  self:close()
 end
 
-CURRENT_FUZZY = nil
+local CURRENT_FUZZY = nil
+
+function CurrentFuzzy()
+  return CURRENT_FUZZY
+end
+
 function Fuzzy.new(opts)
   CURRENT_FUZZY = opts
   setmetatable(CURRENT_FUZZY, _mt)

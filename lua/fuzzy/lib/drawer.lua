@@ -118,7 +118,7 @@ end
 function M.new(opts)
   opts = opts or {}
   opts.current_win = vim.api.nvim_get_current_win()
-  CURRENT_FUZZY.current_win = vim.api.nvim_get_current_win()
+  CurrentFuzzy().current_win = vim.api.nvim_get_current_win()
 
   -- create windows and buffers
   local buf, win, closer = floating.floating_buffer(opts)
@@ -138,7 +138,7 @@ function M.new(opts)
   vim.cmd([[ highlight default link FuzzyBorderNormal Normal ]])
   vim.cmd([[ highlight default link FuzzySelection Visual ]])
   vim.cmd([[ highlight default link FuzzyMatching Special ]])
-  vim.cmd([[ autocmd TextChangedI <buffer> lua CURRENT_FUZZY:updater() ]])
+  vim.cmd([[ autocmd TextChangedI <buffer> lua CurrentFuzzy():updater() ]])
   _mt.__index = _mt
   return setmetatable({
     buf = buf,
