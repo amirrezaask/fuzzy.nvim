@@ -1,14 +1,3 @@
-# Goals
-Simpler API, multiple mappings support [x], richer way to display items
-
-```lua
-source should return a list of result objects => 
-{
-    value = 'what to show in drawer and searched on', -- only this key is important and mandaatory
-    icon = 'icon to show',
-}
-
-```
 # fuzzy.nvim
 Fast, Simple, Powerfull fuzzy finder all in lua.
 
@@ -39,9 +28,9 @@ Sorter is a function that gets our query and sorts the source data based on that
 - fzf_native: uses fzf binary, needs fzf installed.
 
 ## Handler
-Handler is a function that gets called with the selected_line when you hit <CR> in the fuzzy window.
+Handler is a function that gets called with the selected_line when you hit `<CR>` in the fuzzy window.
 
-## mappings
+## Mappings
 You can attach any mappings you want with `mappings` key in fuzzy.new like below
 ```lua
 fuzzy.new {
