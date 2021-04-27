@@ -39,6 +39,7 @@ require'fuzzy'.setup {
   blacklist = {
     "vendor"
   },
+  border = 'yes' -- can be 'no' as well
   location = loc.bottom_center,
   sorter = require'fuzzy.lib.sorter'.fzy -- Also fzf_native, fzy_native, string_distance are supported
   prompt = '> ',

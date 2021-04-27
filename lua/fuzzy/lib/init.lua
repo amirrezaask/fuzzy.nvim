@@ -55,8 +55,11 @@ function Fuzzy.new(opts)
     CURRENT_FUZZY.collection = opts.source()
   elseif type(opts.source) == 'table' then
     CURRENT_FUZZY.collection = opts.source
-    -- elseif type(opts.source) == "string" then
-    -- 	CURRENT_FUZZY.collection = require("fuzzy.lib.source").bin_source(opts.source)
+  elseif type(opts.source) == 'string' then
+    local cmd = vim.split(opts.source, ' ')[1]
+    local args = vim.split(opts.source, ' ')
+    table.remove(args, 1)
+    CURRENT_FUZZY.collection = require('fuzzy.lib.source').bin_source(cmd, args)
   end
   CURRENT_FUZZY.original_collection = CURRENT_FUZZY.collection
   CURRENT_FUZZY:__updater()

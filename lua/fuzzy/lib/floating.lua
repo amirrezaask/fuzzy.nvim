@@ -27,7 +27,7 @@ return {
     api.nvim_buf_set_option(buf, 'buftype', 'prompt')
     local border_win
     local border = options.get_value(opts, 'border')
-    if border then
+    if border ~= 'no' then
       local border_opts = {
         style = 'minimal',
         relative = 'editor',
@@ -64,7 +64,7 @@ return {
     local win = api.nvim_open_win(buf, true, main_win_opts)
     api.nvim_win_set_option(win, 'winhl', 'Normal:FuzzyNormal')
     return buf, win, function()
-      if border then
+      if border ~= 'no' then
         vim.api.nvim_win_close(border_win, true)
       end
       vim.api.nvim_win_close(win, true)
