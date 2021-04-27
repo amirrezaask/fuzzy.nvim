@@ -35,22 +35,21 @@ end
 
 function _mt:get_output()
   return self.drawer:get_output()
-end 
+end
 
 function _mt:selection_up()
   return self.drawer:selection_up()
-end 
+end
 
 function _mt:selection_down()
   return self.drawer:selection_down()
-end 
+end
 
 function _mt:set_qflist()
   local lines = vim.api.nvim_buf_get_lines(self.drawer.buf, 0, -1, false)
   require('fuzzy.lib.qflist').set_qflist(lines)
   self:__close()
 end
-
 
 CURRENT_FUZZY = nil
 function Fuzzy.new(opts)
