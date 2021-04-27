@@ -28,8 +28,23 @@ Sorter is a function that gets our query and sorts the source data based on that
 - fzf_native: uses fzf binary, needs fzf installed.
 
 ## Handler
-handlers gets selected item and do smth with it, varies for each functionality.
+Handler is a function that gets called with the selected_line when you hit `<CR>` in the fuzzy window.
 
+## Mappings
+You can attach any mappings you want with `mappings` key in fuzzy.new like below
+```lua
+fuzzy.new {
+    source = ...,
+    sorter = ...,
+    mappings = {
+        ['<CR>'] = function()
+            local selected_line = CURRENT_FUZZY:get_output()
+            -- do anything you want
+        end
+    }
+}
+
+```
 # Customization
 ## Settings
 ```lua
@@ -39,6 +54,7 @@ require'fuzzy'.setup {
   blacklist = {
     "vendor"
   },
+  border = 'yes' -- can be 'no' as well
   location = loc.bottom_center,
   sorter = require'fuzzy.lib.sorter'.fzy -- Also fzf_native, fzy_native, string_distance are supported
   prompt = '> ',
