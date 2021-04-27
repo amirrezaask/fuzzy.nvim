@@ -8,7 +8,7 @@ local function default_mappings(mappings)
   if not mappings['<CR>'] then
     mappings['<CR>'] = function() 
       local line = CURRENT_FUZZY:get_output()
-      CURRENT_FUZZY:__close()
+      CURRENT_FUZZY:close()
       CURRENT_FUZZY.handler(line)
     end
   end
@@ -29,14 +29,14 @@ local function default_mappings(mappings)
   end
 
   if not mappings['<C-c>'] then 
-    mappings['<C-c>'] = function () CURRENT_FUZZY:__close() end
+    mappings['<C-c>'] = function () CURRENT_FUZZY:close() end
   end
 
   if not mappings['<esc>'] then 
-    mappings['<esc>'] = function () CURRENT_FUZZY:__close() end
+    mappings['<esc>'] = function () CURRENT_FUZZY:close() end
   end
   if not mappings['<C-q>'] then 
-    mappings['<C-q>'] = function () CURRENT_FUZZY:__set_qflist() end
+    mappings['<C-q>'] = function () CURRENT_FUZZY:set_qflist() end
   end
   return mappings
 end
@@ -96,7 +96,7 @@ function M.new(opts)
   vim.cmd([[ highlight default link FuzzySelection Visual ]])
   vim.cmd([[ highlight default link FuzzyMatching Special ]])
 
-  vim.cmd([[ autocmd TextChangedI <buffer> lua CURRENT_FUZZY:__updater() ]])
+  vim.cmd([[ autocmd TextChangedI <buffer> lua CURRENT_FUZZY:updater() ]])
 
   local function fill(collection, _height)
     for i = 1, #collection do
