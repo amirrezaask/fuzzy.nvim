@@ -1,3 +1,25 @@
+# Goals
+Simpler API, multiple mappings support, richer way to display items
+```lua
+fuzzy.new {
+    source = ...,
+    sorter = ...,
+    mappings = {
+        ['<CR>'] = function(result)
+        end
+    }
+}
+
+source should return a list of result objects => 
+{
+    to_show = 'what to show in drawer', -- only this key is important and mandaatory
+}
+
+```
+
+
+
+
 # fuzzy.nvim
 Fast, Simple, Powerfull fuzzy finder all in lua.
 
