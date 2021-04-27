@@ -3,6 +3,60 @@ local floating = require('fuzzy.lib.floating')
 local options = require('fuzzy.lib.options')
 local M = {}
 
+local function default_mappings(mappings)
+  mappings = mappings or {}
+  if not mappings['<CR>'] then
+    mappings['<CR>'] = function() 
+      local line = CURRENT_FUZZY:get_output()
+      CURRENT_FUZZY:__close()
+      CURRENT_FUZZY.handler(line)
+    end
+  end
+  if not mappings['<C-p>'] then 
+    mappings['<C-p>'] = function ()CURRENT_FUZZY.drawer:selection_up() end
+  end
+
+  if not mappings['<C-k>'] then 
+    mappings['<C-k>'] = function () CURRENT_FUZZY.drawer:selection_up() end
+  end
+
+  if not mappings['<C-n>'] then 
+    mappings['<C-n>'] = function () CURRENT_FUZZY.drawer:selection_down() end
+  end
+
+  if not mappings['<C-j>'] then 
+    mappings['<C-j>'] = function () CURRENT_FUZZY.drawer:selection_down() end
+  end
+
+  if not mappings['<C-c>'] then 
+    mappings['<C-c>'] = function () CURRENT_FUZZY:__close() end
+  end
+
+  if not mappings['<esc>'] then 
+    mappings['<esc>'] = function () CURRENT_FUZZY:__close() end
+  end
+  if not mappings['<C-q>'] then 
+    mappings['<C-q>'] = function () CURRENT_FUZZY:__set_qflist() end
+  end
+  return mappings
+end
+
+
+__FUZZY_FUNCTION_REGISTRY = {}
+local function set_mappings(buf, mappings)
+  mappings = default_mappings(mappings)  
+  local counter = 0
+  for key, handler in pairs(mappings) do
+    key = vim.api.nvim_replace_termcodes(key, true, true, true)
+    __FUZZY_FUNCTION_REGISTRY[string.format('%s', counter)] = function()
+      handler()
+    end
+    local map_cmd = string.format('<cmd>lua __FUZZY_FUNCTION_REGISTRY["%s"]()<CR>', counter)
+    vim.api.nvim_buf_set_keymap(buf, 'i', key, map_cmd, { noremap = true })
+    counter = counter + 1
+  end
+end
+
 function table.slice(tbl, first, last, step)
   local sliced = {}
   for i = first or 1, last or #tbl, step or 1 do
@@ -17,7 +71,6 @@ local function extract_filename(line)
   end
   return splits[1]
 end
-
 function M.new(opts)
   opts = opts or {}
   opts.current_win = vim.api.nvim_get_current_win()
@@ -32,14 +85,8 @@ function M.new(opts)
 
   local FuzzyDrawerHighlight = vim.api.nvim_create_namespace('FuzzyDrawerHighlight')
   vim.api.nvim_win_set_option(win, 'concealcursor', 'nc')
-  vim.api.nvim_buf_set_keymap(buf, 'i', '<C-p>', '<cmd> lua CURRENT_FUZZY.drawer:selection_up()<CR>', {})
-  vim.api.nvim_buf_set_keymap(buf, 'i', '<C-k>', '<cmd> lua CURRENT_FUZZY.drawer:selection_up()<CR>', {})
-  vim.api.nvim_buf_set_keymap(buf, 'i', '<C-n>', '<cmd> lua CURRENT_FUZZY.drawer:selection_down()<CR>', {})
-  vim.api.nvim_buf_set_keymap(buf, 'i', '<C-j>', '<cmd> lua CURRENT_FUZZY.drawer:selection_down()<CR>', {})
-  vim.api.nvim_buf_set_keymap(buf, 'i', '<CR>', '<cmd> lua CURRENT_FUZZY:__handler()<CR>', {})
-  vim.api.nvim_buf_set_keymap(buf, 'i', '<esc>', '<cmd> lua CURRENT_FUZZY:__close()<CR>', {})
-  vim.api.nvim_buf_set_keymap(buf, 'i', '<C-c>', '<cmd> lua CURRENT_FUZZY:__close()<CR>', {})
-  vim.api.nvim_buf_set_keymap(buf, 'i', '<C-q>', '<cmd> lua CURRENT_FUZZY:__set_qflist()<CR>', {})
+
+  set_mappings(buf, opts.mappings)
 
   opts.prompt = opts.prompt or FUZZY_OPTS.prompt or '> '
   vim.fn.prompt_setprompt(buf, opts.prompt)

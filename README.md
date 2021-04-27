@@ -1,25 +1,24 @@
 # Goals
-Simpler API, multiple mappings support, richer way to display items
+Simpler API, multiple mappings support [x], richer way to display items
 ```lua
 fuzzy.new {
     source = ...,
     sorter = ...,
     mappings = {
-        ['<CR>'] = function(result)
+        ['<CR>'] = function()
+            local selected_line = CURRENT_FUZZY:get_output()
+            -- do anything you want
         end
     }
 }
 
 source should return a list of result objects => 
 {
-    to_show = 'what to show in drawer', -- only this key is important and mandaatory
+    value = 'what to show in drawer and searched on', -- only this key is important and mandaatory
+    icon = 'icon to show',
 }
 
 ```
-
-
-
-
 # fuzzy.nvim
 Fast, Simple, Powerfull fuzzy finder all in lua.
 

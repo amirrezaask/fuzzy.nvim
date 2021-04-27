@@ -5,6 +5,7 @@ local options = require('fuzzy.lib.options')
 FUZZY_OPTS = FUZZY_OPTS or {}
 
 CURRENT_FUZZY = nil
+
 function Fuzzy.new(opts)
   CURRENT_FUZZY = opts
   CURRENT_FUZZY.__updater = function(self)
@@ -33,12 +34,9 @@ function Fuzzy.new(opts)
     vim.api.nvim_set_current_win(self.current_win)
     self.drawer:closer()
   end
-
-  CURRENT_FUZZY.__handler = function(self)
-    local line = self.drawer:get_output()
-    self:__close()
-    self.handler(line)
-  end
+  CURRENT_FUZZY.get_output = function(self)
+    return self.drawer:get_output()
+  end 
 
   CURRENT_FUZZY.__set_qflist = function(self)
     local lines = vim.api.nvim_buf_get_lines(self.drawer.buf, 0, -1, false)
