@@ -1,17 +1,7 @@
 # Goals
 Simpler API, multiple mappings support [x], richer way to display items
-```lua
-fuzzy.new {
-    source = ...,
-    sorter = ...,
-    mappings = {
-        ['<CR>'] = function()
-            local selected_line = CURRENT_FUZZY:get_output()
-            -- do anything you want
-        end
-    }
-}
 
+```lua
 source should return a list of result objects => 
 {
     value = 'what to show in drawer and searched on', -- only this key is important and mandaatory
@@ -49,8 +39,23 @@ Sorter is a function that gets our query and sorts the source data based on that
 - fzf_native: uses fzf binary, needs fzf installed.
 
 ## Handler
-handlers gets selected item and do smth with it, varies for each functionality.
+Handler is a function that gets called with the selected_line when you hit <CR> in the fuzzy window.
 
+## mappings
+You can attach any mappings you want with `mappings` key in fuzzy.new like below
+```lua
+fuzzy.new {
+    source = ...,
+    sorter = ...,
+    mappings = {
+        ['<CR>'] = function()
+            local selected_line = CURRENT_FUZZY:get_output()
+            -- do anything you want
+        end
+    }
+}
+
+```
 # Customization
 ## Settings
 ```lua
