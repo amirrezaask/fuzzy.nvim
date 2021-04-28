@@ -1,5 +1,28 @@
 local api = vim.api
 local options = require('fuzzy.lib.options')
+local function setup_border_win(buf, win, opts)
+  local top_line = '┌' .. string.rep('─', opts.win_width) .. '┐'
+  local middle_line = '│' .. string.rep(' ', opts.win_width) .. '│'
+  local bottom_line = '└' .. string.rep('─', opts.win_width) .. '┘'
+
+  local border_lines = { top_line }
+
+  for _ = 1, opts.win_height do
+    table.insert(border_lines, middle_line)
+  end
+
+  table.insert(border_lines, bottom_line)
+  for i = 0, opts.win_height - 1 do
+    api.nvim_buf_add_highlight(buf, 0, 'PopupWindowBorder', i, 0, -1)
+  end
+  api.nvim_buf_set_lines(buf, 0, -1, false, border_lines)
+  api.nvim_win_set_option(win, 'wrap', false)
+  api.nvim_win_set_option(win, 'number', false)
+  api.nvim_win_set_option(win, 'relativenumber', false)
+  api.nvim_win_set_option(win, 'cursorline', false)
+  api.nvim_win_set_option(win, 'signcolumn', 'no')
+  api.nvim_win_set_option(win, 'winhl', 'Normal:FuzzyBorderNormal')
+end
 
 -- Create a floating buffer with given win_width and win_height in given row and col.
 return {
@@ -14,7 +37,7 @@ return {
     opts.win_height = win_height
     opts.win_width = win_width
     local row, col = loc(opts.win_height, opts.win_width)
-    local main_win_opts = {
+    local results_win_opts = {
       style = 'minimal',
       relative = 'editor',
       width = opts.win_width,
@@ -22,13 +45,13 @@ return {
       row = row,
       col = col,
     }
-    local buf = api.nvim_create_buf(true, true)
-    api.nvim_buf_set_option(buf, 'bufhidden', 'wipe')
-    api.nvim_buf_set_option(buf, 'buftype', 'prompt')
+    local results_buf = api.nvim_create_buf(true, true)
+    api.nvim_buf_set_option(results_buf, 'bufhidden', 'wipe')
+    api.nvim_buf_set_option(results_buf, 'buftype', 'prompt')
     local border_win
     local border = options.get_value(opts, 'border')
     if border ~= 'no' then
-      local border_opts = {
+      local border_win_opts = {
         style = 'minimal',
         relative = 'editor',
         width = opts.win_width + 2,
@@ -37,37 +60,16 @@ return {
         col = col - 1,
       }
       local border_buf = api.nvim_create_buf(false, true)
-      local top_line = '┌' .. string.rep('─', opts.win_width) .. '┐'
-      local middle_line = '│' .. string.rep(' ', opts.win_width) .. '│'
-      local bottom_line = '└' .. string.rep('─', opts.win_width) .. '┘'
-
-      local border_lines = { top_line }
-
-      for i = 1, opts.win_height do
-        table.insert(border_lines, middle_line)
-      end
-
-      table.insert(border_lines, bottom_line)
-      for i = 0, opts.win_height - 1 do
-        api.nvim_buf_add_highlight(border_buf, 0, 'PopupWindowBorder', i, 0, -1)
-      end
-
-      api.nvim_buf_set_lines(border_buf, 0, -1, false, border_lines)
-      border_win = api.nvim_open_win(border_buf, true, border_opts)
-      api.nvim_win_set_option(border_win, 'wrap', false)
-      api.nvim_win_set_option(border_win, 'number', false)
-      api.nvim_win_set_option(border_win, 'relativenumber', false)
-      api.nvim_win_set_option(border_win, 'cursorline', false)
-      api.nvim_win_set_option(border_win, 'signcolumn', 'no')
-      api.nvim_win_set_option(border_win, 'winhl', 'Normal:FuzzyBorderNormal')
+      border_win = api.nvim_open_win(border_buf, true, border_win_opts)
+      setup_border_win(border_buf, border_win, opts)
     end
-    local win = api.nvim_open_win(buf, true, main_win_opts)
-    api.nvim_win_set_option(win, 'winhl', 'Normal:FuzzyNormal')
-    return buf, win, function()
+    local results_win = api.nvim_open_win(results_buf, true, results_win_opts)
+    api.nvim_win_set_option(results_win, 'winhl', 'Normal:FuzzyNormal')
+    return results_buf, results_win, function()
       if border ~= 'no' then
         vim.api.nvim_win_close(border_win, true)
       end
-      vim.api.nvim_win_close(win, true)
+      vim.api.nvim_win_close(results_win, true)
     end
   end,
 }
