@@ -51,7 +51,7 @@ function _mt:set_qflist()
   self:close()
 end
 
-local CURRENT_FUZZY = nil
+CURRENT_FUZZY = nil
 
 function CurrentFuzzy()
   return CURRENT_FUZZY

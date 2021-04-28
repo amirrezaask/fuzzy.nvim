@@ -1,8 +1,5 @@
 local fuzzy = require('fuzzy.lib')
-local sorter = require('fuzzy.lib.sorter')
 local helpers = require('fuzzy.lib.helpers')
-local drawer = require('fuzzy.lib.drawer')
-local options = vim.g.fuzzy_options or {}
 
 local M = {}
 

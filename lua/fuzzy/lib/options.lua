@@ -11,7 +11,7 @@ local defaults = {
   prompt = '> ',
   sorter = require('fuzzy.lib.sorter').fzy,
   no_luv_finder = false,
-  border = true,
+  border = 'yes',
 }
 
 function M.get_value(opts, key)

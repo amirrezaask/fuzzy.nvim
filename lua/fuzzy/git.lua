@@ -1,10 +1,6 @@
 local fuzzy = require('fuzzy.lib')
 local helpers = require('fuzzy.lib.helpers')
 local bin = require('fuzzy.lib.source.binary')
-local sorter = require('fuzzy.lib.sorter')
-local drawer = require('fuzzy.lib.drawer')
-local options = vim.g.fuzzy_options or {}
-
 local M = {}
 
 function M.git_files(opts)
