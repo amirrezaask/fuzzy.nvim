@@ -1,5 +1,7 @@
 # fuzzy.nvim
 Fast, Simple, Powerfull fuzzy finder all in lua.
+# Disclaimer
+Telescope.nvim is far more advanced and a community around it so I suggest use that instead.
 
 ## Why another fuzzy finder ?
 When I started this project the alternatives were fzf.vim which was in vimscript but I needed my fuzzy finder to be completely in Lua and also telescope.nvim in the early stages, my problem with telescope was that it was too complicated
