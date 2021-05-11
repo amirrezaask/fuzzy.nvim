@@ -19,6 +19,11 @@ local function extract_filename(line)
   end
   return splits[1]
 end
+
+function table.clone(original)
+  return {unpack(original)}
+end
+
 local _mt = {}
 function _mt:draw(collection)
   vim.api.nvim_buf_set_lines(self.buf, 0, -2, false, {})
@@ -38,9 +43,9 @@ function _mt:draw(collection)
   if self._start_of_data < 1 then
     self._start_of_data = 1
   end
-  self.sorted_collection = collection
-  collection = self:with_icons(collection)
-  collection = self:fill(collection, self.win_height - 1)
+  self.sorted_collection = table.clone(collection) 
+  collection = self:with_icons(self.sorted_collection)
+  collection = self:fill(self.sorted_collection, self.win_height - 1)
   self.selected_line = self.win_height - 1
   self:update_selection()
 end
@@ -90,15 +95,17 @@ end
 
 function _mt:get_output()
   local line = vim.api.nvim_buf_get_lines(self.buf, self.selected_line, self.selected_line + 1, false)[1]
-  if string.byte(line, 4) == string.byte(' ', 1) then
-    return string.sub(line, 5, #line)
+  if self.has_icons then
+    if string.byte(line, 4) == string.byte(' ', 1) then
+      return string.sub(line, 5, #line)
+    end
   end
   return line
 end
 function _mt:with_icons(collection)
   local has_icons, _ = pcall(require, 'nvim-web-devicons')
   if not has_icons then
-    print('for having icon in drawer install `nvim-web-devicons`')
+    -- print('for having icon in drawer install `nvim-web-devicons`')
     return collection
   end
   local i = 1
@@ -113,6 +120,7 @@ function _mt:with_icons(collection)
     end
     i = i + 1
   end
+  self.has_icons = true
   return collection
 end
 function M.new(opts)
@@ -137,7 +145,7 @@ function M.new(opts)
   vim.cmd([[ highlight default link FuzzyNormal Normal ]])
   vim.cmd([[ highlight default link FuzzyBorderNormal Normal ]])
   vim.cmd([[ highlight default link FuzzySelection Visual ]])
-  vim.cmd([[ highlight default link FuzzyMatching Special ]])
+  vim.cmd([[ highlight FuzzyMatching guifg=#f2904b ]])
   vim.cmd([[ autocmd TextChangedI <buffer> lua CurrentFuzzy():updater() ]])
   _mt.__index = _mt
   return setmetatable({
