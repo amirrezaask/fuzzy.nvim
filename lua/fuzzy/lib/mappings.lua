@@ -1,39 +1,33 @@
-local get_mapping = require('fuzzy.lib.options').get_mapping
+local defaults = require('fuzzy.lib.options').defaults
 
-local function all_mappings()
-  local mappings = {}
-  -- TODO(amirrreza): use default table in options instead of hardcoded
-  mappings.i = {
-    ['<CR>']  = get_mapping(CurrentFuzzy(), 'i', '<CR>'),
-    ['<C-p>'] = get_mapping(CurrentFuzzy(), 'i', '<C-p>'),
-    ['<C-k>'] = get_mapping(CurrentFuzzy(), 'i', '<C-k>'),
-    ['<C-n>'] = get_mapping(CurrentFuzzy(), 'i', '<C-n>'),
-    ['<C-j>'] = get_mapping(CurrentFuzzy(), 'i', '<C-j>'),
-    ['<C-c>'] = get_mapping(CurrentFuzzy(), 'i', '<C-c>'),
-    ['<C-q>'] = get_mapping(CurrentFuzzy(), 'i', '<C-q>'),
-  }
-  mappings.n = {
-    ['j'] = get_mapping(CurrentFuzzy(), 'n', 'j'),
-    ['k'] = get_mapping(CurrentFuzzy(), 'n', 'k'),
-  }
-  -- mappings['<esc>'] = get_mapping(CurrentFuzzy(), '<esc>')
-  if FUZZY_OPTS.mappings and FUZZY_OPTS.mappings.i then
-    for lhs, fn in pairs(FUZZY_OPTS.mappings.i) do
-      mappings.i[lhs] = fn
+__FUZZY_FUNCTION_REGISTRY = {}
+
+local function get_mappings()
+  local opts = CurrentFuzzy()
+  local mappings = defaults.mappings
+  if FUZZY_OPTS.mappings then
+    for mode, _ in pairs(FUZZY_OPTS.mappings) do
+      if FUZZY_OPTS.mappings[mode] then
+        for key, handler in pairs(FUZZY_OPTS.mappings[mode]) do
+          mappings[mode][key] = handler
+        end
+      end
     end
   end
-  if CurrentFuzzy().mappings and CurrentFuzzy().mappings.i then
-    for lhs, fn in pairs(CurrentFuzzy().mappings.i) do
-      mappings.i[lhs] = fn
+  if opts.mappings then
+    for mode, _ in pairs(opts.mappings) do
+      if opts.mappings[mode] then
+        for key, handler in pairs(opts.mappings[mode]) do
+          mappings[mode][key] = handler
+        end
+      end
     end
   end
   return mappings
 end
 
-__FUZZY_FUNCTION_REGISTRY = {}
-
 return function(buf)
-  local mappings = all_mappings()
+  local mappings = get_mappings()
   local counter = 0
   for mode, _ in pairs(mappings) do
     for key, handler in pairs(mappings[mode]) do
