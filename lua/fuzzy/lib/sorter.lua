@@ -1,6 +1,6 @@
 -- Sorter.lua
 -- Sorter interface for Fuzzy
--- Sorters are function(query, collection): table
+-- Sorters are function(query, collection): sorted collection 
 local lev = require('fuzzy.lib.alg.levenshtein')
 local fzy = require('fuzzy.lib.alg.fzy')
 local tbl_reverse = require('fuzzy.lib.helpers').tbl_reverse

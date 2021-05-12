@@ -43,10 +43,9 @@ end
 
 function M.rg(opts)
   opts = opts or {}
-  opts.query = vim.fn.input("Query: ")
   opts.source = {}
   opts.sorter = function(query, _)
-    return bin('rg', { '--column', '--line-number', '--no-heading', '--ignore-case', opts.query or query })()
+    return bin('rg', { '--column', '--line-number', '--no-heading', '--ignore-case', query })()
   end
   opts.handler = function(line)
     local filename = vim.split(line, ':')[1]

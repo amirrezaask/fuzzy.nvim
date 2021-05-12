@@ -143,7 +143,7 @@ function M.new(opts)
   opts.prompt = opts.prompt or FUZZY_OPTS.prompt or '> '
   vim.fn.prompt_setprompt(buf, opts.prompt)
 
-  vim.cmd([[ autocmd TextChangedI <buffer> lua CurrentFuzzy():updater() ]])
+  vim.cmd([[ autocmd TextChangedI,TextChanged <buffer> lua CurrentFuzzy():updater() ]])
   _mt.__index = _mt
   return setmetatable({
     buf = buf,
