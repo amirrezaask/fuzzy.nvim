@@ -5,6 +5,7 @@ local file_finder = require('fuzzy.lib.source.file_finder')
 local grep = require('fuzzy.lib.source.grep')
 M = {}
 
+-- TODO(amirreza): Add initial query for greps
 function M.grep(opts)
   opts = opts or {}
   if vim.fn.executable('rg') ~= 0 then

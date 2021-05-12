@@ -11,7 +11,7 @@ function M.set_qflist(results)
     if v ~= '' then
       local parts = vim.split(v, ':')
       if #parts > 1 then
-        table.insert(qflist, { filename = remove_icon(parts[1]), lnum = parts[2], col = parts[3] })
+        table.insert(qflist, { filename = remove_icon(parts[1]), lnum = parts[2], col = parts[3], text= parts[4] })
       else
         table.insert(qflist, { filename = remove_icon(v), lnum = 0, col = 0 })
       end

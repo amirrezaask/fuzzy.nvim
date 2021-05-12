@@ -8,6 +8,8 @@ local Fuzzy = {}
 
 function Fuzzy.setup(opts)
   require('fuzzy.lib.options').setup(opts)
+  Fuzzy.new = require('fuzzy.lib').new
+  Fuzzy.CurrentFuzzy = CurrentFuzzy 
   Fuzzy.find_files = files.find_files
   Fuzzy.interactive_file_finder = files.interactive_finder
   Fuzzy.cd = files.cd
