@@ -142,10 +142,6 @@ function M.new(opts)
   opts.prompt = opts.prompt or FUZZY_OPTS.prompt or '> '
   vim.fn.prompt_setprompt(buf, opts.prompt)
 
-  vim.cmd([[ highlight default link FuzzyNormal Normal ]])
-  vim.cmd([[ highlight default link FuzzyBorderNormal Normal ]])
-  vim.cmd([[ highlight default link FuzzySelection Visual ]])
-  vim.cmd([[ highlight FuzzyMatching guifg=#f2904b ]])
   vim.cmd([[ autocmd TextChangedI <buffer> lua CurrentFuzzy():updater() ]])
   _mt.__index = _mt
   return setmetatable({

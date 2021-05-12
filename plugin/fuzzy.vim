@@ -1,3 +1,8 @@
+highlight default link FuzzyNormal Normal 
+highlight default link FuzzyBorderNormal Normal
+highlight default link FuzzySelection Visual
+highlight FuzzyMatching guifg=#f2904b
+
 function! s:fuzzy_complete(arg,line,pos)
   let l:funtions = luaeval('vim.tbl_keys(require("fuzzy"))')
 
