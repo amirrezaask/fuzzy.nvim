@@ -1,11 +1,10 @@
-local spawn = require('spawn')
+local job = require('plenary.job')
 
 return function(command, args)
   return function()
-    return spawn({
+    return job:new({
       command = command,
       args = args,
-      sync = { timeout = 1000, interval = 10 },
-    })
+    }):sync(1000)
   end
 end
