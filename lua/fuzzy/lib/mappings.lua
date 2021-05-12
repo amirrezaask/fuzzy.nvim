@@ -1,58 +1,33 @@
-local function default_mappings(mappings)
-  mappings = mappings or {}
-  if not mappings['<CR>'] then
-    mappings['<CR>'] = function()
-      local line = CurrentFuzzy():get_output()
-      CurrentFuzzy():close()
-      CurrentFuzzy().handler(line)
-    end
-  end
-  if not mappings['<C-p>'] then
-    mappings['<C-p>'] = function()
-      CurrentFuzzy().drawer:selection_up()
-    end
-  end
+local get_mapping = require('fuzzy.lib.options').get_mapping
 
-  if not mappings['<C-k>'] then
-    mappings['<C-k>'] = function()
-      CurrentFuzzy().drawer:selection_up()
+local function default_mappings()
+  local mappings = {}
+  -- TODO(amirrreza): use default table in options instead of hardcoded
+  mappings['<CR>']  = get_mapping(CurrentFuzzy(), '<CR>')
+  mappings['<C-p>'] = get_mapping(CurrentFuzzy(), '<C-p>')
+  mappings['<C-k>'] = get_mapping(CurrentFuzzy(), '<C-k>')
+  mappings['<C-n>'] = get_mapping(CurrentFuzzy(), '<C-n>')
+  mappings['<C-j>'] = get_mapping(CurrentFuzzy(), '<C-j>')
+  mappings['<C-c>'] = get_mapping(CurrentFuzzy(), '<C-c>')
+  mappings['<esc>'] = get_mapping(CurrentFuzzy(), '<esc>')
+  mappings['<C-q>'] = get_mapping(CurrentFuzzy(), '<C-q>')
+  if FUZZY_OPTS.mappings then
+    for lhs, fn in pairs(FUZZY_OPTS.mappings) do
+      mappings[lhs] = fn
     end
   end
-
-  if not mappings['<C-n>'] then
-    mappings['<C-n>'] = function()
-      CurrentFuzzy().drawer:selection_down()
-    end
-  end
-
-  if not mappings['<C-j>'] then
-    mappings['<C-j>'] = function()
-      CurrentFuzzy().drawer:selection_down()
-    end
-  end
-
-  if not mappings['<C-c>'] then
-    mappings['<C-c>'] = function()
-      CurrentFuzzy():close()
-    end
-  end
-
-  if not mappings['<esc>'] then
-    mappings['<esc>'] = function()
-      CurrentFuzzy():close()
-    end
-  end
-  if not mappings['<C-q>'] then
-    mappings['<C-q>'] = function()
-      CurrentFuzzy():set_qflist()
+  if CurrentFuzzy().mappings then
+    for lhs, fn in pairs(CurrentFuzzy().mappings) do
+      mappings[lhs] = fn
     end
   end
   return mappings
 end
 
 __FUZZY_FUNCTION_REGISTRY = {}
-return function(buf, mappings)
-  mappings = default_mappings(mappings)
+
+return function(buf)
+  local mappings = default_mappings()
   local counter = 0
   for key, handler in pairs(mappings) do
     key = vim.api.nvim_replace_termcodes(key, true, true, true)

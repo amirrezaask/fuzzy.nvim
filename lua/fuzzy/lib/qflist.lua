@@ -1,10 +1,6 @@
 local M = {}
-local function remove_icon(line)
-  if string.byte(line, 4) == string.byte(' ', 1) then
-    return string.sub(line, 5, #line)
-  end
-  return line
-end
+local remove_icon = require('fuzzy.lib.helpers').remove_icon
+
 function M.set_qflist(results)
   local qflist = {}
   for _, v in pairs(results) do

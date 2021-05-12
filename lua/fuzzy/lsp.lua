@@ -32,7 +32,7 @@ function M.workspace_symbols(opts)
   opts = opts or {}
   local params = vim.lsp.util.make_position_params()
   params.context = { includeDeclaration = true }
-  params.query = ''
+  params.query = vim.fn.input('Query: ')
   local results_lsp = vim.lsp.buf_request_sync(0, 'workspace/symbol', params, opts.timeout or 10000)
   local locations = {}
   for _, server_results in pairs(results_lsp) do

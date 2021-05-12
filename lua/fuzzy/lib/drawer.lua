@@ -135,8 +135,9 @@ function M.new(opts)
   local FuzzyDrawerHighlight = vim.api.nvim_create_namespace('FuzzyDrawerHighlight')
 
   vim.cmd([[ startinsert! ]])
+
   -- set mappings
-  set_mappings(buf, opts.mappings)
+  set_mappings(buf)
 
   -- setup the prompt
   opts.prompt = opts.prompt or FUZZY_OPTS.prompt or '> '

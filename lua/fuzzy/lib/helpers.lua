@@ -67,4 +67,11 @@ return {
     end
     return new_t
   end,
+  remove_icon = function(line)
+    if string.byte(line, 4) == string.byte(' ', 1) then
+      return string.sub(line, 5, #line)
+    end
+    return line
+  end
+
 }
