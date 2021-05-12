@@ -77,6 +77,41 @@ let's say you want to define a simple fuzzy search on a simple lua table.
   }
 
 ```
+
+## Extending Fuzzy
+You can extend fuzzy.nvim with new features since almost all properties of fuzzy can be changed or even adding new ones,
+forexample a preview window using fuzzy.lib tools that you can open with a keymapping.
+
+```lua
+require('fuzzy').setup {
+    ... other keys
+    mappings = {
+        ['P'] = function preview()
+          local parser = function(line)
+              local parts = vim.split(line, ':')
+              return remove_icon(parts[1]), parts[2]
+            end
+          local preview_window = function (line)
+            local floating_buffer = require('fuzzy.lib.floating').floating_buffer
+            local buf, win, _ = floating_buffer {
+              height = 50,
+              width = 50,
+              location = loc.center,
+              border = 'no',
+            }
+            local file, lnum = parser(line)
+            require('fuzzy.lib.helpers').open_file_at(file, lnum)
+            vim.cmd([[ call feedkeys("\<C-c>") ]])
+            vim.api.nvim_buf_set_option(0, 'modifiable', false)
+          end
+          local line = require('fuzzy').CurrentFuzzy():get_output()
+          preview_window(line)
+        end
+    }
+}
+
+```
+
 # Builtin functions
 - find_files: find files in recursively
 - interactive_file_finder: A simple file browser.
