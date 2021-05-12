@@ -19,7 +19,9 @@ function _mt:updater()
   if not vim.api.nvim_buf_is_valid(self.buf) then
     return
   end
-  vim.fn.matchadd('FuzzyMatching', self.input)
+  if options.get_value(self, 'highlight_matches') == 'yes' then
+    vim.fn.matchadd('FuzzyMatching', self.input)
+  end
   self.collection = self.original_collection
   if self.sorter then
     self.collection = self.sorter(self.input, self.collection)

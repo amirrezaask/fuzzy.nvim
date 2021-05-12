@@ -12,6 +12,7 @@ M.defaults = {
   sorter = require('fuzzy.lib.sorter').fzy,
   no_luv_finder = false,
   border = 'yes',
+  highlight_matches = 'yes',
   mappings = {
     n = {
       ['k'] = function()
@@ -20,7 +21,10 @@ M.defaults = {
       ['j'] = function()
         CurrentFuzzy().drawer:selection_down()
       end,
-     ['<C-c>'] = function()
+      ['<C-c>'] = function()
+        CurrentFuzzy():close()
+      end,
+      ['q'] = function()
         CurrentFuzzy():close()
       end,
       ['<esc>'] = function()
@@ -32,7 +36,6 @@ M.defaults = {
         CurrentFuzzy().handler(line)
       end,
     },
-
     i = {
       ['<CR>'] = function()
         local line = CurrentFuzzy():get_output()
@@ -46,6 +49,9 @@ M.defaults = {
         CurrentFuzzy().drawer:selection_up()
       end,
       ['<C-j>'] = function()
+        CurrentFuzzy().drawer:selection_down()
+      end,
+      ['<C-n>'] = function()
         CurrentFuzzy().drawer:selection_down()
       end,
       ['<C-c>'] = function()
