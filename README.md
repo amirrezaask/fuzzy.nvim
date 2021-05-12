@@ -9,7 +9,7 @@ When I started this project the alternatives were fzf.vim which was in vimscript
 ## Packer.nvim
 ```lua
 use { 'kyazdani42/nvim-web-devicons' } --Optional if you want icons, also you need to have a patched font, look at nvim-web-devicons README for information.
-use { 'amirrezaask/fuzzy.nvim', requires={'amirrezaask/spawn.nvim'}}
+use { 'amirrezaask/fuzzy.nvim', requires={'nvim-lua/plenary.nvim'}}
 ```
 
 # Terminology:
@@ -111,6 +111,11 @@ require('fuzzy').setup {
 }
 
 ```
+## Configuration
+Fuzzy.nvim uses a 3 layered approach for configuration, based on priority:
+1. opts table passed in calling fuzzy.new or any fuzzy function like fuzzy.find_files
+2. global user configuration set in fuzzy.setup
+3. fuzzy defaults
 
 # Builtin functions
 - find_files: find files in recursively
