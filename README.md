@@ -1,11 +1,8 @@
 # fuzzy.nvim
 Fast, Simple, Powerfull fuzzy finder all in lua.
-# Disclaimer
-Telescope.nvim is far more advanced and a community around it so I suggest use that instead.
 
 ## Why another fuzzy finder ?
-When I started this project the alternatives were fzf.vim which was in vimscript but I needed my fuzzy finder to be completely in Lua and also telescope.nvim in the early stages, my problem with telescope was that it was too complicated
- to use and customize and add custom functions, so i started this.
+When I started this project the alternatives were fzf.vim which was in vimscript but I needed my fuzzy finder to be completely in Lua, so i started this.
 [Demo](https://www.youtube.com/watch?v=YCUSN59FBSY)
 
 # Installation
@@ -35,7 +32,7 @@ Handler is a function that gets called with the selected_line when you hit `<CR>
 ## Mappings
 You can attach any mappings you want with `mappings` key in fuzzy.new like below
 ```lua
-fuzzy.new {
+require('fuzzy').new {
     source = ...,
     sorter = ...,
     mappings = {
@@ -69,7 +66,7 @@ require'fuzzy'.setup {
 ## Custom Fuzzy usage
 let's say you want to define a simple fuzzy search on a simple lua table.
 ```lua
-  require'fuzzy.lib'.new {
+  require'fuzzy'.new {
     source = {
       'data1', ...
     },
