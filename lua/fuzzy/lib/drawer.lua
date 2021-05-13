@@ -44,7 +44,9 @@ function _mt:draw(collection)
     self._start_of_data = 1
   end
   self.sorted_collection = table.clone(collection) 
-  collection = self:with_icons(self.sorted_collection)
+  if options.get_value(CurrentFuzzy(), 'icons') == 'yes' then
+    collection = self:with_icons(self.sorted_collection)
+  end 
   collection = self:fill(self.sorted_collection, self.win_height - 1)
   self.selected_line = self.win_height - 1
   self:update_selection()

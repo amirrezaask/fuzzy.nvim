@@ -8,6 +8,7 @@ M.defaults = {
   blacklist = {
     '.git',
   },
+  icons = 'yes',
   prompt = '> ',
   sorter = require('fuzzy.lib.sorter').fzy,
   no_luv_finder = false,
