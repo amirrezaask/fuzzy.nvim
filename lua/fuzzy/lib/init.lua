@@ -120,24 +120,36 @@ local function fuzzy(opts)
 
   local results = resolve_source(opts.source)
   local original_results = table.clone(results)
-  local selection = #results - 1
   local buf, win = floating_win(#results+1, opts.window.width)
   vim.api.nvim_buf_set_option(buf, 'buftype', 'prompt')
 
-  local function shift_selection(amount)
-    local last_idx = #results -1
-    selection = selection + amount
-    if selection < 0 then
-      selection = last_idx 
+  local function set_cursor(line, col)
+    if not col then col = 0 end
+    if line == -1 then
+      line = vim.api.nvim_win_get_height(win) - 2
     end
-    if selection > last_idx then
-      selection = 0
+    if line <= 0 then
+      line = 1
     end
     vim.schedule(function()
       vim.api.nvim_buf_clear_namespace(buf, FuzzyHi, 0, -1)
-      vim.api.nvim_buf_add_highlight(buf, FuzzyHi, opts.selection_highlight, selection, 0, -1)
+      vim.api.nvim_buf_add_highlight(buf, FuzzyHi, opts.selection_highlight, line-1, 0, -1)
     end)
-    vim.api.nvim_win_set_cursor(win, {selection+1, 0})
+    P(line)
+    vim.api.nvim_win_set_cursor(win, {line, col})
+  end
+
+  local function shift_cursor(amount)
+    local current = vim.api.nvim_win_get_cursor(win)[1]
+    current = current + amount
+    local last_idx = vim.api.nvim_win_get_height(win) - 1
+    if current == 0 then
+      current = last_idx
+    end
+    if current > last_idx then
+      current = 1
+    end
+    set_cursor(current)
   end
 
   local function exit()
@@ -145,6 +157,7 @@ local function fuzzy(opts)
   end
 
   local function get_selection()
+    local selection = vim.api.nvim_win_get_cursor(win)[1] - 1
     return vim.api.nvim_buf_get_lines(buf, selection, selection+1, false)[1]
   end
   vim.fn.prompt_setprompt(buf, opts.prompt)
@@ -152,11 +165,13 @@ local function fuzzy(opts)
   autocmd('TextChangedI,TextChanged', '<buffer>', function()
     local query = vim.api.nvim_buf_get_lines(buf, -2, -1, false)[1]
     query = string.sub(query, #opts.prompt + 1, #query)
+    P(query)
     results = opts.sorter(query, original_results)
     resize_window(win, #results+1)
     vim.api.nvim_buf_set_lines(buf, 0, -2, false, results)
-    selection = #results -1
-    highlight_item(buf, selection, opts.selection_highlight)
+    -- vim.api.nvim_win_set_cursor(win, {0, 0})
+    set_cursor(-1, #query+#opts.prompt+1)
+    highlight_item(buf, vim.api.nvim_win_get_height(win)-1, opts.selection_highlight)
   end)
   autocmd('BufLeave', '<buffer>', function()
     exit_insert()
@@ -164,25 +179,25 @@ local function fuzzy(opts)
   vim.cmd [[ startinsert! ]]
   map(buf, {
     ['n k'] = function()
-      shift_selection(-1)
+      shift_cursor(-1)
     end,
     ['n j'] = function()
-      shift_selection(1)
+      shift_cursor(1)
     end,
     ['n q'] = function()
       exit()
     end,
     ['i <C-k>'] = function()
-      shift_selection(-1)
+      shift_cursor(-1)
     end,
     ['i <C-j>'] = function()
-      shift_selection(1)
+      shift_cursor(1)
     end,
     ['i <C-p>'] = function()
-      shift_selection(-1)
+      shift_cursor(-1)
     end,
     ['i <C-n>'] = function()
-      shift_selection(1)
+      shift_cursor(1)
     end,
     ['i <C-c>'] = function()
       exit()
