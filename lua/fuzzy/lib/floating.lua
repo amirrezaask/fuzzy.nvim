@@ -49,6 +49,7 @@ return {
     api.nvim_buf_set_option(results_buf, 'bufhidden', 'wipe')
     api.nvim_buf_set_option(results_buf, 'buftype', 'prompt')
     local border_win
+    local border_buf
     local border = options.get_value(opts, 'border')
     if border ~= 'no' then
       local border_win_opts = {
@@ -59,17 +60,19 @@ return {
         row = row - 1,
         col = col - 1,
       }
-      local border_buf = api.nvim_create_buf(false, true)
+      border_buf = api.nvim_create_buf(false, true)
       border_win = api.nvim_open_win(border_buf, true, border_win_opts)
       setup_border_win(border_buf, border_win, opts)
     end
     local results_win = api.nvim_open_win(results_buf, true, results_win_opts)
     api.nvim_win_set_option(results_win, 'winhl', 'Normal:FuzzyNormal')
     return results_buf, results_win, function()
-      if border ~= 'no' then
+      if border == 'yes' then
         vim.api.nvim_win_close(border_win, true)
+        -- vim.api.nvim_buf_delete(border_buf, {force=true})
       end
       vim.api.nvim_win_close(results_win, true)
+      -- vim.api.nvim_buf_delete(results_buf, {force=true})
     end
   end,
 }
