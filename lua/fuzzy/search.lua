@@ -1,7 +1,6 @@
 local fuzzy = require('fuzzy.lib')
 local helpers = require('fuzzy.lib.helpers')
 local bin = require('fuzzy.lib.source.binary')
-local file_finder = require('fuzzy.lib.source.file_finder')
 local grep = require('fuzzy.lib.source.grep')
 M = {}
 
@@ -15,30 +14,6 @@ function M.grep(opts)
   else
     return require('fuzzy.search').luv_grep(opts)
   end
-end
-
-function M.luv_grep(opts)
-  opts = opts or {}
-  opts.cwd = '.'
-  opts.hidden = opts.hidden or false
-  local source_and_sorter = function()
-    local files = file_finder.find({
-      path = opts.cwd,
-      depth = opts.depth,
-      hidden = opts.hidden,
-    })
-    local lines = grep.grep(files, CURRENT_FUZZY.input or '')
-    return lines
-  end
-  opts.source = source_and_sorter
-  opts.sorter = source_and_sorter
-  opts.handler = function(line)
-    local filename = vim.split(line, ':')[1]
-    local linum = vim.split(line, ':')[2]
-    CURRENT_FUZZY.__grep_cache = {}
-    helpers.open_file_at(filename, linum)
-  end
-  fuzzy(opts)
 end
 
 function M.rg(opts)

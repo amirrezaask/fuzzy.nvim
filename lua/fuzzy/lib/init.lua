@@ -26,6 +26,7 @@ local function autocmd(event, filter, callback)
   __FUZZY_AU_REGISTRY[event.. ' ' ..filter] = callback
   vim.cmd(string.format([[ autocmd %s %s lua __FUZZY_AU_REGISTRY['%s']() ]], event, filter, event .. ' ' .. filter))
 end
+
 --@returns table to be searched on, collection is a list of item tables { value, metadata(icon, score, ...) }
 local function resolve_source(source)
   if type(source) == 'string' then
@@ -58,9 +59,12 @@ end
 --@param width_scale is a number that is the percentage of neovim width
 --@returns bufnr, winid
 local function floating_win(height, width_scale)
+  local MIN_H = 3
   local win_width = math.ceil(vim.api.nvim_get_option('columns') * width_scale / 100)
   local nvim_width = vim.api.nvim_get_option('columns')
   local nvim_height = vim.api.nvim_get_option('lines')
+  height = math.min(height, nvim_height)
+  if height < MIN_H then height = nvim_height end
   local row = math.ceil((nvim_height - height))
   local col = math.ceil((nvim_width - win_width) / 2)
   local results_win_opts = {
@@ -82,7 +86,7 @@ local function highlight_item(buf, lnum, hi)
 end
 
 local function exit_insert()
-  vim.cmd [[ call feedkeys("\<C-c>") ]]
+  vim.cmd [[ silent! call feedkeys("\<C-c>") ]]
 end
 
 
@@ -92,6 +96,7 @@ local function fuzzy(opts)
   assert(opts.handler, 'you need a handler after all')
   assert(opts.source, 'you need a source for fuzzy search')
   opts.sorter = opts.sorter or default_sorter()
+
   -- TODO(amirreza): Add previewer function
   opts.prompt = opts.prompt or '> '
   opts.selection_highlight = opts.selection_highlight or 'StatusLine'
@@ -99,6 +104,7 @@ local function fuzzy(opts)
     height = 100,
     width = 60
   }
+
   local results = resolve_source(opts.source)
   local original_results = table.clone(results)
   local selection = #results - 1
@@ -136,6 +142,9 @@ local function fuzzy(opts)
     vim.api.nvim_buf_set_lines(buf, 0, -2, false, results)
     selection = #results -1
     highlight_item(buf, selection, opts.selection_highlight)
+  end)
+  autocmd('BufLeave', '<buffer>', function()
+    exit_insert()
   end)
   vim.cmd [[ startinsert! ]]
   map(buf, {

@@ -1,7 +1,6 @@
 local fuzzy = require('fuzzy.lib')
 local helpers = require('fuzzy.lib.helpers')
 local bin = require('fuzzy.lib.source.binary')
-local file_finder = require('fuzzy.lib.source.file_finder')
 
 M = {}
 
@@ -10,8 +9,6 @@ function M.find_files(opts)
   if opts.path then
     opts.path = vim.fn.expand(opts.path)
   end
-  -- if not FUZZY_OPTS.no_luv_finder then
-    -- return require('fuzzy.files').luv_finder(opts)
   if vim.fn.executable('fdfind') ~= 0 or vim.fn.executable('fd') ~= 0 then
     return require('fuzzy.files').fd(opts)
   elseif vim.fn.executable('git') and vim.fn.isdirectory('.git') then
@@ -42,30 +39,6 @@ end
 --   require('fuzzy').luv_finder(opts)
 -- end
 
-function M.luv_finder(opts)
-  opts = opts or {}
-  opts.path = opts.path or '.'
-  opts.hidden = opts.hidden or true
-  opts.depth = opts.depth or FILE_FINDER_DEFAULT_DEPTH
-  opts.include_dirs = opts.include_dirs or false
-  opts.include_previous_link = opts.include_previous_link or false
-  opts.blacklist = opts.blacklist or FUZZY_OPTS.blacklist or {}
-  opts.handler = opts.handler or function(line)
-    helpers.open_file(line)
-  end
-  opts.source = function()
-    return file_finder.find({
-      path = opts.path,
-      depth = opts.depth,
-      hidden = opts.hidden,
-      include_dirs = opts.include_dirs,
-      include_previous_link = opts.include_previous_link,
-      blacklist = opts.blacklist,
-    })
-  end
-  fuzzy(opts)
-end
-
 function M.fd(opts)
   opts = opts or {}
   opts.hidden = opts.hidden or false
@@ -86,15 +59,17 @@ function M.fd(opts)
   table.insert(args, '--type')
   table.insert(args, 'f')
   table.insert(args, '--type')
-  table.insert(args, 's')
+  table.insert(args, 'symlink')
   table.insert(args, '')
   table.insert(args, opts.path)
+  P(command .. ' ' .. table.concat(args, ' '))
   opts.source = bin(command, args)
   opts.handler = function(line)
     helpers.open_file(line)
   end
   fuzzy(opts)
 end
+
 function M.find(opts)
   opts = opts or {}
   opts.cwd = opts.cwd or '.'
