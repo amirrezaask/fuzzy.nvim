@@ -22,25 +22,25 @@ function M.find_files(opts)
 end
 
 --TODO: improve
-function M.interactive_finder(opts)
-  opts = opts or {}
-  opts.path = opts.path or '.'
-  opts.hidden = opts.hidden or true
-  opts.depth = 1
-  opts.include_dirs = true
-  opts.include_previous_link = true
-  opts.handler = function(line)
-    if file_finder.file_type(line) == 'directory' then
-      vim.cmd(string.format('cd %s', line))
-      vim.schedule(function()
-        require('fuzzy').interactive_finder({ path = '.' })
-      end)
-    else
-      helpers.open_file(line)
-    end
-  end
-  require('fuzzy').luv_finder(opts)
-end
+-- function M.interactive_finder(opts)
+--   opts = opts or {}
+--   opts.path = opts.path or '.'
+--   opts.hidden = opts.hidden or true
+--   opts.depth = 1
+--   opts.include_dirs = true
+--   opts.include_previous_link = true
+--   opts.handler = function(line)
+--     if file_finder.file_type(line) == 'directory' then
+--       vim.cmd(string.format('cd %s', line))
+--       vim.schedule(function()
+--         require('fuzzy').interactive_finder({ path = '.' })
+--       end)
+--     else
+--       helpers.open_file(line)
+--     end
+--   end
+--   require('fuzzy').luv_finder(opts)
+-- end
 
 function M.luv_finder(opts)
   opts = opts or {}
@@ -63,7 +63,7 @@ function M.luv_finder(opts)
       blacklist = opts.blacklist,
     })
   end
-  fuzzy.new(opts)
+  fuzzy(opts)
 end
 
 function M.fd(opts)
@@ -93,7 +93,7 @@ function M.fd(opts)
   opts.handler = function(line)
     helpers.open_file(line)
   end
-  fuzzy.new(opts)
+  fuzzy(opts)
 end
 function M.find(opts)
   opts = opts or {}
@@ -112,7 +112,7 @@ function M.find(opts)
     helpers.open_file(line)
   end
   opts.source = bin('find', opts.args)
-  fuzzy.new(opts)
+  fuzzy(opts)
 end
 
 function M.cd(opts)
@@ -132,7 +132,7 @@ function M.cd(opts)
   opts.handler = function(line)
     vim.cmd(string.format('cd %s', line))
   end
-  fuzzy.new(opts)
+  fuzzy(opts)
 end
 
 function M.find_repo(opts)
@@ -142,7 +142,7 @@ function M.find_repo(opts)
   opts.handler = function(path)
     vim.cmd(string.format([[ cd %s ]], path))
   end
-  fuzzy.new(opts)
+  fuzzy(opts)
 end
 
 return M
