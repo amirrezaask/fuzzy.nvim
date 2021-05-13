@@ -25,7 +25,7 @@ function M.document_symbols(opts)
     local segments = vim.split(line, ':')
     helpers.open_file_at(segments[1], segments[2])
   end
-  fuzzy.new(opts)
+  fuzzy(opts)
 end
 
 function M.workspace_symbols(opts)
@@ -49,7 +49,7 @@ function M.workspace_symbols(opts)
     local segments = vim.split(line, ':')
     helpers.open_file_at(segments[1], segments[2])
   end
-  fuzzy.new(opts)
+  fuzzy(opts)
 end
 
 function M.references(opts)
@@ -81,7 +81,7 @@ function M.references(opts)
     local segments = vim.split(line, ':')
     helpers.open_file_at(segments[1], segments[2])
   end
-  fuzzy.new(opts)
+  fuzzy(opts)
 end
 
 function M.implementation(opts)
@@ -114,7 +114,7 @@ function M.implementation(opts)
     local segments = vim.split(line, ':')
     helpers.open_file_at(segments[1], segments[2])
   end
-  fuzzy.new(opts)
+  fuzzy(opts)
 end
 
 local function do_lsp_code_action(code_action)
@@ -174,7 +174,7 @@ function M.code_actions(opts)
     code_action = results[tonumber(vim.split(code_action, '%.')[1])]
     do_lsp_code_action(code_action)
   end
-  fuzzy.new(opts)
+  fuzzy(opts)
 end
 
 function M.definitions(opts)
@@ -207,7 +207,7 @@ function M.definitions(opts)
     local segments = vim.split(line, ':')
     helpers.open_file_at(segments[1], segments[2])
   end
-  fuzzy.new(opts)
+  fuzzy(opts)
 end
 
 return M

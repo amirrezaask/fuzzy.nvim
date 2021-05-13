@@ -81,6 +81,10 @@ local function highlight_item(buf, lnum, hi)
   vim.api.nvim_buf_add_highlight(buf, FuzzyHi, hi, lnum, 0, -1)
 end
 
+local function exit_insert()
+  vim.cmd [[ call feedkeys("\<C-c>") ]]
+end
+
 
 --@param opts is a table with other optional configs
 local function fuzzy(opts)
@@ -133,6 +137,7 @@ local function fuzzy(opts)
     selection = #results -1
     highlight_item(buf, selection, opts.selection_highlight)
   end)
+  vim.cmd [[ startinsert! ]]
   map(buf, {
     ['n k'] = function()
       shift_selection(-1)
@@ -164,11 +169,13 @@ local function fuzzy(opts)
     ['n <CR>'] = function()
       local line = get_selection()
       exit()
+      exit_insert()
       opts.handler(line)
     end,
     ['i <CR>'] = function()
       local line = get_selection()
       exit()
+      exit_insert()
       opts.handler(line)
     end
   })

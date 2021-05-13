@@ -7,7 +7,7 @@ function M.colors(opts)
     vim.cmd(string.format('colorscheme %s', color))
   end
   opts.source = vim.fn.getcompletion('', 'color')
-  fuzzy.new(opts)
+  fuzzy(opts)
 end
 
 function M.buffers(opts)
@@ -30,7 +30,7 @@ function M.buffers(opts)
     vim.cmd(string.format('buffer %s', buffer_name))
   end
   opts.source = _buffers
-  fuzzy.new(opts)
+  fuzzy(opts)
 end
 
 function M.commands(opts)
@@ -39,7 +39,7 @@ function M.commands(opts)
   opts.handler = function(command)
     vim.cmd(command)
   end
-  fuzzy.new(opts)
+  fuzzy(opts)
 end
 
 function M.mru(opts)
@@ -48,7 +48,7 @@ function M.mru(opts)
   opts.handler = function(file)
     vim.cmd(string.format('e %s', vim.split(file, ':')[2]))
   end
-  fuzzy.new(opts)
+  fuzzy(opts)
 end
 
 function M.history(opts)
@@ -57,7 +57,7 @@ function M.history(opts)
   opts.handler = function(command)
     vim.cmd(vim.split(command, ' ')[2])
   end
-  fuzzy.new(opts)
+  fuzzy(opts)
 end
 
 function M.help(opts)
@@ -71,7 +71,7 @@ function M.help(opts)
   opts.handler = function(line)
     vim.cmd([[ h ]] .. line)
   end
-  fuzzy.new(opts)
+  fuzzy(opts)
 end
 
 function M.mappings(opts)
@@ -82,7 +82,7 @@ function M.mappings(opts)
     local command = vim.split(line, ' ')[3]
     vim.fn.execute(command)
   end
-  fuzzy.new(opts)
+  fuzzy(opts)
 end
 
 return M

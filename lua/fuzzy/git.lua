@@ -9,7 +9,7 @@ function M.git_files(opts)
   opts.handler = function(line)
     helpers.open_file(line)
   end
-  fuzzy.new(opts)
+  fuzzy(opts)
 end
 
 function M.git_grep(opts)
@@ -23,14 +23,14 @@ function M.git_grep(opts)
     local linum = vim.split(line, ':')[2]
     helpers.open_file_at(filename, linum)
   end
-  fuzzy.new(opts)
+  fuzzy(opts)
 end
 
 function M.git_commits(opts)
   opts = opts or {}
   local commits = bin('git', { 'log', '--pretty=oneline', '--abbrev-commit' })()
   opts.source = commits
-  fuzzy.new(opts)
+  fuzzy(opts)
 end
 
 function M.git_bcommits(opts)
@@ -45,7 +45,7 @@ function M.git_bcommits(opts)
       diff_command = diff_command .. ' | bat --style plain'
     end
   end
-  fuzzy.new(opts)
+  fuzzy(opts)
 end
 
 function M.git_checkout(opts)
@@ -56,6 +56,6 @@ function M.git_checkout(opts)
     vim.cmd(string.format('! git checkout %s', vim.split(line, ' ')[2]))
   end
 
-  fuzzy.new(opts)
+  fuzzy(opts)
 end
 return M

@@ -10,9 +10,9 @@ function M.find_files(opts)
   if opts.path then
     opts.path = vim.fn.expand(opts.path)
   end
-  if not FUZZY_OPTS.no_luv_finder then
-    return require('fuzzy.files').luv_finder(opts)
-  elseif vim.fn.executable('fdfind') ~= 0 or vim.fn.executable('fd') ~= 0 then
+  -- if not FUZZY_OPTS.no_luv_finder then
+    -- return require('fuzzy.files').luv_finder(opts)
+  if vim.fn.executable('fdfind') ~= 0 or vim.fn.executable('fd') ~= 0 then
     return require('fuzzy.files').fd(opts)
   elseif vim.fn.executable('git') and vim.fn.isdirectory('.git') then
     return require('fuzzy.git').git_files(opts)

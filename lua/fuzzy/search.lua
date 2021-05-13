@@ -38,7 +38,7 @@ function M.luv_grep(opts)
     CURRENT_FUZZY.__grep_cache = {}
     helpers.open_file_at(filename, linum)
   end
-  fuzzy.new(opts)
+  fuzzy(opts)
 end
 
 function M.rg(opts)
@@ -52,7 +52,7 @@ function M.rg(opts)
     local linum = vim.split(line, ':')[2]
     helpers.open_file_at(filename, linum)
   end
-  fuzzy.new(opts)
+  fuzzy(opts)
 end
 
 function M.buffer_lines(opts)
@@ -66,7 +66,7 @@ function M.buffer_lines(opts)
   opts.handler = function(line)
     helpers.open_file_at(filename, vim.split(line, ':')[1])
   end
-  fuzzy.new(opts)
+  fuzzy(opts)
 end
 
 return M
