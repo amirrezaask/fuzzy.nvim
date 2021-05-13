@@ -137,6 +137,7 @@ local function fuzzy(opts)
       vim.api.nvim_buf_clear_namespace(buf, FuzzyHi, 0, -1)
       vim.api.nvim_buf_add_highlight(buf, FuzzyHi, opts.selection_highlight, selection, 0, -1)
     end)
+    vim.api.nvim_win_set_cursor(win, {selection+1, 0})
   end
 
   local function exit()
