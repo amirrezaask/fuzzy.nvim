@@ -123,8 +123,14 @@ local function fuzzy(opts)
   local buf, win = floating_win(#results+1, opts.window.width)
   vim.api.nvim_buf_set_option(buf, 'buftype', 'prompt')
 
+  local function get_query()
+    local query = vim.api.nvim_buf_get_lines(buf, -2, -1, false)[1]
+    query = string.sub(query, #opts.prompt + 1, #query)
+    return query
+  end
+
   local function set_cursor(line, col)
-    if not col then col = 0 end
+    if not col then col = #opts.prompt + #(get_query()) end
     if line == -1 then
       line = vim.api.nvim_win_get_height(win) - 1
     end
@@ -157,14 +163,15 @@ local function fuzzy(opts)
 
   local function get_selection()
     local selection = vim.api.nvim_win_get_cursor(win)[1] - 1
+    if selection == vim.api.nvim_win_get_height(win) - 1 then
+      selection = vim.api.nvim_win_get_height(win) - 2
+    end
     return vim.api.nvim_buf_get_lines(buf, selection, selection+1, false)[1]
   end
   vim.fn.prompt_setprompt(buf, opts.prompt)
 
   autocmd('TextChangedI,TextChanged', '<buffer>', function()
-    local query = vim.api.nvim_buf_get_lines(buf, -2, -1, false)[1]
-    query = string.sub(query, #opts.prompt + 1, #query)
-    P(query)
+    local query = get_query()
     results = opts.sorter(query, original_results)
     resize_window(win, #results+1)
     vim.api.nvim_buf_set_lines(buf, 0, -2, false, results)
