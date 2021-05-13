@@ -126,7 +126,7 @@ local function fuzzy(opts)
   local function set_cursor(line, col)
     if not col then col = 0 end
     if line == -1 then
-      line = vim.api.nvim_win_get_height(win) - 2
+      line = vim.api.nvim_win_get_height(win) - 1
     end
     if line <= 0 then
       line = 1
@@ -135,7 +135,6 @@ local function fuzzy(opts)
       vim.api.nvim_buf_clear_namespace(buf, FuzzyHi, 0, -1)
       vim.api.nvim_buf_add_highlight(buf, FuzzyHi, opts.selection_highlight, line-1, 0, -1)
     end)
-    P(line)
     vim.api.nvim_win_set_cursor(win, {line, col})
   end
 
@@ -171,7 +170,7 @@ local function fuzzy(opts)
     vim.api.nvim_buf_set_lines(buf, 0, -2, false, results)
     -- vim.api.nvim_win_set_cursor(win, {0, 0})
     set_cursor(-1, #query+#opts.prompt+1)
-    highlight_item(buf, vim.api.nvim_win_get_height(win)-1, opts.selection_highlight)
+    vim.cmd [[ z- ]]
   end)
   autocmd('BufLeave', '<buffer>', function()
     exit_insert()
