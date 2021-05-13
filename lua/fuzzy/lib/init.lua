@@ -82,7 +82,7 @@ local function floating_win(height, width_scale)
 end
 
 local function exit_insert()
-  vim.cmd [[ silent! call feedkeys("\<C-c>") ]]
+  vim.cmd [[ silent call feedkeys("\<esc>") ]]
 end
 
 local function resize_window(win, new_height)
@@ -187,28 +187,6 @@ local function fuzzy(opts)
     ['n q'] = function()
       exit()
     end,
-    -- ['i <C-k>'] = function()
-    --   exit_insert()
-    --   shift_cursor(-1)
-    -- end,
-    -- ['i <C-j>'] = function()
-
-    --   exit_insert()
-    --   shift_cursor(1)
-    -- end,
-    -- ['i <C-p>'] = function()
-
-    --   exit_insert()
-    --   shift_cursor(-1)
-    -- end,
-    -- ['i <C-n>'] = function()
-
-    --   exit_insert()
-    --   shift_cursor(1)
-    -- end,
-    -- ['i <C-c>'] = function()
-    --   exit()
-    -- end,
     ['n <C-c>'] = function()
       exit()
     end,
