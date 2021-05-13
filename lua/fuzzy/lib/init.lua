@@ -81,10 +81,6 @@ local function floating_win(height, width_scale)
   return buf, win
 end
 
-local function highlight_item(buf, lnum, hi)
-  vim.api.nvim_buf_add_highlight(buf, FuzzyHi, hi, lnum, 0, -1)
-end
-
 local function exit_insert()
   vim.cmd [[ silent! call feedkeys("\<C-c>") ]]
 end
@@ -175,9 +171,7 @@ local function fuzzy(opts)
     results = opts.sorter(query, original_results)
     resize_window(win, #results+1)
     vim.api.nvim_buf_set_lines(buf, 0, -2, false, results)
-    -- vim.api.nvim_win_set_cursor(win, {0, 0})
     set_cursor(-1, #query+#opts.prompt+1)
-    vim.cmd [[ z- ]]
   end)
   autocmd('BufLeave', '<buffer>', function()
     exit_insert()
@@ -193,21 +187,28 @@ local function fuzzy(opts)
     ['n q'] = function()
       exit()
     end,
-    ['i <C-k>'] = function()
-      shift_cursor(-1)
-    end,
-    ['i <C-j>'] = function()
-      shift_cursor(1)
-    end,
-    ['i <C-p>'] = function()
-      shift_cursor(-1)
-    end,
-    ['i <C-n>'] = function()
-      shift_cursor(1)
-    end,
-    ['i <C-c>'] = function()
-      exit()
-    end,
+    -- ['i <C-k>'] = function()
+    --   exit_insert()
+    --   shift_cursor(-1)
+    -- end,
+    -- ['i <C-j>'] = function()
+
+    --   exit_insert()
+    --   shift_cursor(1)
+    -- end,
+    -- ['i <C-p>'] = function()
+
+    --   exit_insert()
+    --   shift_cursor(-1)
+    -- end,
+    -- ['i <C-n>'] = function()
+
+    --   exit_insert()
+    --   shift_cursor(1)
+    -- end,
+    -- ['i <C-c>'] = function()
+    --   exit()
+    -- end,
     ['n <C-c>'] = function()
       exit()
     end,
