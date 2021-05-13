@@ -89,8 +89,21 @@ local function exit_insert()
   vim.cmd [[ silent! call feedkeys("\<C-c>") ]]
 end
 
+local function resize_window(win, new_height)
+  local current_config = vim.api.nvim_win_get_config(win)
+  local nvim_width = vim.api.nvim_get_option('columns')
+  local nvim_height = vim.api.nvim_get_option('lines')
+  local row = math.ceil((nvim_height - new_height))
+  local col = math.ceil((nvim_width - current_config.width) / 2)
+  current_config.height = new_height
+  current_config.row = row
+  current_config.col = col
+  vim.api.nvim_win_set_config(win, current_config)
+end
 
---@param opts is a table with other optional configs
+--@param opts is a table 
+--@param opts.source look into resolve_source
+--@param opts.handler function
 local function fuzzy(opts)
   assert(opts, 'you need to pass opts')
   assert(opts.handler, 'you need a handler after all')
@@ -108,7 +121,7 @@ local function fuzzy(opts)
   local results = resolve_source(opts.source)
   local original_results = table.clone(results)
   local selection = #results - 1
-  local buf, _ = floating_win(#results+1, opts.window.width)
+  local buf, win = floating_win(#results+1, opts.window.width)
   vim.api.nvim_buf_set_option(buf, 'buftype', 'prompt')
 
   local function shift_selection(amount)
@@ -139,6 +152,7 @@ local function fuzzy(opts)
     local query = vim.api.nvim_buf_get_lines(buf, -2, -1, false)[1]
     query = string.sub(query, #opts.prompt + 1, #query)
     results = opts.sorter(query, original_results)
+    resize_window(win, #results+1)
     vim.api.nvim_buf_set_lines(buf, 0, -2, false, results)
     selection = #results -1
     highlight_item(buf, selection, opts.selection_highlight)
