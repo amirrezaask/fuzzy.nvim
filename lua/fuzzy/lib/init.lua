@@ -146,7 +146,7 @@ local function fuzzy(opts)
   local function shift_cursor(amount)
     local current = vim.api.nvim_win_get_cursor(win)[1]
     current = current + amount
-    local last_idx = vim.api.nvim_win_get_height(win) - 1
+    local last_idx = vim.api.nvim_buf_line_count(buf) - 1
     if current == 0 then
       current = last_idx
     end
