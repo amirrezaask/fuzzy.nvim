@@ -125,7 +125,10 @@ local function fuzzy(opts)
     return query
   end
 
-  local function set_cursor(line, col)
+  local function set_cursor(line, col, move_cursor)
+    if move_cursor == nil then
+      move_cursor = true
+    end
     if not col then col = #opts.prompt + #(get_query()) end
     if line == -1 then
       line = vim.api.nvim_win_get_height(win) - 1
@@ -133,16 +136,22 @@ local function fuzzy(opts)
     if line <= 0 then
       line = 1
     end
+    selection = line - 1 -- fucking idxs everywhere
     vim.schedule(function()
       vim.api.nvim_buf_clear_namespace(buf, FuzzyHi, 0, -1)
-      vim.api.nvim_buf_add_highlight(buf, FuzzyHi, opts.selection_highlight, line-1, 0, -1)
+      vim.api.nvim_buf_add_highlight(buf, FuzzyHi, opts.selection_highlight, selection, 0, -1)
     end)
-    selection = line - 1
-    vim.api.nvim_win_set_cursor(win, {line, col})
+    P(selection)
+    if move_cursor then
+      vim.api.nvim_win_set_cursor(win, {line, col})
+    end
   end
 
-  local function shift_cursor(amount)
+  local function shift_cursor(amount, move_cursor)
     local current = vim.api.nvim_win_get_cursor(win)[1]
+    if current ~= selection + 1 then
+      current = selection + 1
+    end
     current = current + amount
     local last_idx = vim.api.nvim_buf_line_count(buf) - 1
     if current == 0 then
@@ -151,7 +160,7 @@ local function fuzzy(opts)
     if current > last_idx then
       current = 1
     end
-    set_cursor(current)
+    set_cursor(current, move_cursor)
   end
 
   local function exit()
@@ -193,6 +202,19 @@ local function fuzzy(opts)
       exit_insert()
       opts.handler(line)
     end,
+    ['i <C-n>'] = function()
+      shift_cursor(1, false)
+    end,
+    ['i <C-p>'] = function()
+      shift_cursor(-1, false)
+    end,
+    ['i <C-j>'] = function()
+      shift_cursor(1, false)
+    end,
+    ['i <C-k>'] = function()
+      shift_cursor(-1, false)
+    end,
+
     ['i <CR>'] = function()
       local line = get_selected()
       exit()
