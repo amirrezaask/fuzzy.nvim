@@ -56,7 +56,7 @@ function fuzzy.setup(opts)
 end
 
 return setmetatable(fuzzy, {
-  __call = function(...)
-    return require('fuzzy.lib')(...)
+  __call = function(_, opts)
+    return require('fuzzy.lib')(opts)
   end
 })
