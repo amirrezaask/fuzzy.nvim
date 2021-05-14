@@ -1,5 +1,6 @@
 local sorters = require('fuzzy.lib.sorter')
 local FuzzyHi = vim.api.nvim_create_namespace('FuzzyHi')
+local config = require('fuzzy.lib.config')
 
 function table.clone(original)
   return {unpack(original)}
@@ -104,16 +105,13 @@ local function fuzzy(opts)
   assert(opts, 'you need to pass opts')
   assert(opts.handler, 'you need a handler after all')
   assert(opts.source, 'you need a source for fuzzy search')
+  -- TODO(amirreza): maybe use config ?
   opts.sorter = opts.sorter or default_sorter()
 
   -- TODO(amirreza): Add previewer function
-  opts.prompt = opts.prompt or '> '
-  opts.selection_highlight = opts.selection_highlight or 'StatusLine'
-  opts.window = opts.window or {
-    height = 100,
-    width = 60
-  }
-
+  opts.prompt = config(opts, 'prompt')
+  opts.selection_highlight = config(opts, 'selection_highlight')
+  opts.window = config(opts, 'window')
   local results = resolve_source(opts.source)
   local selection = #results
   local original_results = table.clone(results)
