@@ -125,29 +125,33 @@ local function fuzzy(opts)
     return query
   end
 
-  local function set_cursor(line, col, move_cursor)
+  local function set_selection(line, col, move_cursor)
     if move_cursor == nil then
       move_cursor = true
     end
     if not col then col = #opts.prompt + #(get_query()) end
     if line == -1 then
-      line = vim.api.nvim_win_get_height(win) - 1
+      line = vim.api.nvim_buf_line_count(buf) - 1
     end
     if line <= 0 then
       line = 1
+    end
+    local ll = vim.api.nvim_buf_line_count(buf) - 1
+    P(line - ll)
+    if math.abs(line - ll) >= vim.api.nvim_win_get_height(win) then
+      exit_insert()
     end
     selection = line - 1 -- fucking idxs everywhere
     vim.schedule(function()
       vim.api.nvim_buf_clear_namespace(buf, FuzzyHi, 0, -1)
       vim.api.nvim_buf_add_highlight(buf, FuzzyHi, opts.selection_highlight, selection, 0, -1)
     end)
-    P(selection)
     if move_cursor then
       vim.api.nvim_win_set_cursor(win, {line, col})
     end
   end
 
-  local function shift_cursor(amount, move_cursor)
+  local function shift_selection(amount, move_cursor)
     local current = vim.api.nvim_win_get_cursor(win)[1]
     if current ~= selection + 1 then
       current = selection + 1
@@ -160,7 +164,7 @@ local function fuzzy(opts)
     if current > last_idx then
       current = 1
     end
-    set_cursor(current, move_cursor)
+    set_selection(current, move_cursor)
   end
 
   local function exit()
@@ -177,7 +181,7 @@ local function fuzzy(opts)
     results = opts.sorter(query, original_results)
     resize_window(win, #results+1)
     vim.api.nvim_buf_set_lines(buf, 0, -2, false, results)
-    set_cursor(-1, #query+#opts.prompt+1)
+    set_selection(-1, #query+#opts.prompt+1)
   end)
   autocmd('BufLeave', '<buffer>', function()
     exit_insert()
@@ -185,10 +189,10 @@ local function fuzzy(opts)
   vim.cmd [[ startinsert! ]]
   map(buf, {
     ['n k'] = function()
-      shift_cursor(-1)
+      shift_selection(-1)
     end,
     ['n j'] = function()
-      shift_cursor(1)
+      shift_selection(1)
     end,
     ['n q'] = function()
       exit()
@@ -203,16 +207,16 @@ local function fuzzy(opts)
       opts.handler(line)
     end,
     ['i <C-n>'] = function()
-      shift_cursor(1, false)
+      shift_selection(1, false)
     end,
     ['i <C-p>'] = function()
-      shift_cursor(-1, false)
+      shift_selection(-1, false)
     end,
     ['i <C-j>'] = function()
-      shift_cursor(1, false)
+      shift_selection(1, false)
     end,
     ['i <C-k>'] = function()
-      shift_cursor(-1, false)
+      shift_selection(-1, false)
     end,
 
     ['i <CR>'] = function()
