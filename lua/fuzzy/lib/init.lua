@@ -137,7 +137,7 @@ local function fuzzy(opts)
       line = 1
     end
     local ll = vim.api.nvim_buf_line_count(buf) - 1
-    P(line - ll)
+    --TODO(amirreza): fix this!!
     if math.abs(line - ll) >= vim.api.nvim_win_get_height(win) then
       exit_insert()
     end
@@ -186,6 +186,10 @@ local function fuzzy(opts)
   autocmd('BufLeave', '<buffer>', function()
     exit_insert()
   end)
+  autocmd('CursorMoved', '<buffer>', function()
+    local cursor_line = vim.api.nvim_win_get_cursor(win)[1]
+    set_selection(cursor_line, #opts.prompt+#(get_query())+1, false)
+  end)
   vim.cmd [[ startinsert! ]]
   map(buf, {
     ['n k'] = function()
@@ -218,7 +222,6 @@ local function fuzzy(opts)
     ['i <C-k>'] = function()
       shift_selection(-1, false)
     end,
-
     ['i <CR>'] = function()
       local line = get_selected()
       exit()
