@@ -115,9 +115,11 @@ local function fuzzy(opts)
   }
 
   local results = resolve_source(opts.source)
+  local selection = #results
   local original_results = table.clone(results)
   local buf, win = floating_win(#results+1, opts.window.width)
   vim.api.nvim_buf_set_option(buf, 'buftype', 'prompt')
+  vim.api.nvim_buf_set_option(buf, 'bufhidden', 'wipe')
 
   local function get_query()
     local query = vim.api.nvim_buf_get_lines(buf, -2, -1, false)[1]
@@ -137,6 +139,7 @@ local function fuzzy(opts)
       vim.api.nvim_buf_clear_namespace(buf, FuzzyHi, 0, -1)
       vim.api.nvim_buf_add_highlight(buf, FuzzyHi, opts.selection_highlight, line-1, 0, -1)
     end)
+    selection = line - 1
     vim.api.nvim_win_set_cursor(win, {line, col})
   end
 
@@ -157,11 +160,7 @@ local function fuzzy(opts)
     vim.api.nvim_buf_delete(buf, {force = true})
   end
 
-  local function get_selection()
-    local selection = vim.api.nvim_win_get_cursor(win)[1] - 1
-    if selection == vim.api.nvim_win_get_height(win) - 1 then
-      selection = vim.api.nvim_win_get_height(win) - 2
-    end
+  local function get_selected()
     return vim.api.nvim_buf_get_lines(buf, selection, selection+1, false)[1]
   end
   vim.fn.prompt_setprompt(buf, opts.prompt)
@@ -191,13 +190,13 @@ local function fuzzy(opts)
       exit()
     end,
     ['n <CR>'] = function()
-      local line = get_selection()
+      local line = get_selected()
       exit()
       exit_insert()
       opts.handler(line)
     end,
     ['i <CR>'] = function()
-      local line = get_selection()
+      local line = get_selected()
       exit()
       exit_insert()
       opts.handler(line)
