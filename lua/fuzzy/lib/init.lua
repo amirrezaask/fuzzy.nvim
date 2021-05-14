@@ -186,6 +186,9 @@ local function fuzzy(opts)
   autocmd('BufLeave', '<buffer>', function()
     exit_insert()
   end)
+  autocmd('BufEnter', '<buffer>', function()
+   vim.cmd [[ startinsert! ]] 
+  end)
   autocmd('CursorMoved', '<buffer>', function()
     local cursor_line = vim.api.nvim_win_get_cursor(win)[1]
     set_selection(cursor_line, #opts.prompt+#(get_query())+1, false)
