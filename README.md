@@ -14,7 +14,6 @@ use { 'amirrezaask/fuzzy.nvim', requires={'nvim-lua/plenary.nvim'}}
 
 # Terminology:
 ## Source:
-source is either a function that returns a list of data that we are going to search or is simply just a lua table or a string which is a command that it's output will be used as a source.
 - table
 - function
 - string ( system command )

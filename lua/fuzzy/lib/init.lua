@@ -79,6 +79,7 @@ local function floating_win(height, width_scale)
     }
   local buf = vim.api.nvim_create_buf(false, true)
   local win = vim.api.nvim_open_win(buf, true, results_win_opts)
+  -- vim.api.nvim_win_set_option(win, 'winhl', 'Normal:FuzzyNormal')
   return buf, win
 end
 
@@ -183,17 +184,22 @@ local function fuzzy(opts)
     vim.api.nvim_buf_set_lines(buf, 0, -2, false, results)
     set_selection(-1, #query+#opts.prompt+1)
   end)
+
   autocmd('BufLeave', '<buffer>', function()
     exit_insert()
   end)
+
   autocmd('BufEnter', '<buffer>', function()
    vim.cmd [[ startinsert! ]] 
   end)
+
   autocmd('CursorMoved', '<buffer>', function()
     local cursor_line = vim.api.nvim_win_get_cursor(win)[1]
     set_selection(cursor_line, #opts.prompt+#(get_query())+1, false)
   end)
+
   vim.cmd [[ startinsert! ]]
+  -- TODO(amirreza): mappings should come from config
   map(buf, {
     ['n k'] = function()
       shift_selection(-1)
@@ -213,18 +219,18 @@ local function fuzzy(opts)
       exit_insert()
       opts.handler(line)
     end,
-    ['i <C-n>'] = function()
-      shift_selection(1, false)
-    end,
-    ['i <C-p>'] = function()
-      shift_selection(-1, false)
-    end,
-    ['i <C-j>'] = function()
-      shift_selection(1, false)
-    end,
-    ['i <C-k>'] = function()
-      shift_selection(-1, false)
-    end,
+    -- ['i <C-n>'] = function()
+    --   shift_selection(1, false)
+    -- end,
+    -- ['i <C-p>'] = function()
+    --   shift_selection(-1, false)
+    -- end,
+    -- ['i <C-j>'] = function()
+    --   shift_selection(1, false)
+    -- end,
+    -- ['i <C-k>'] = function()
+    --   shift_selection(-1, false)
+    -- end,
     ['i <CR>'] = function()
       local line = get_selected()
       exit()
