@@ -219,18 +219,18 @@ local function fuzzy(opts)
       exit_insert()
       opts.handler(line)
     end,
-    -- ['i <C-n>'] = function()
-    --   shift_selection(1, false)
-    -- end,
-    -- ['i <C-p>'] = function()
-    --   shift_selection(-1, false)
-    -- end,
-    -- ['i <C-j>'] = function()
-    --   shift_selection(1, false)
-    -- end,
-    -- ['i <C-k>'] = function()
-    --   shift_selection(-1, false)
-    -- end,
+    ['i <C-n>'] = function()
+      shift_selection(1, false)
+    end,
+    ['i <C-p>'] = function()
+      shift_selection(-1, false)
+    end,
+    ['i <C-j>'] = function()
+      shift_selection(1, false)
+    end,
+    ['i <C-k>'] = function()
+      shift_selection(-1, false)
+    end,
     ['i <CR>'] = function()
       local line = get_selected()
       exit()
